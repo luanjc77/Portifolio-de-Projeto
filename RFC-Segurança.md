@@ -29,7 +29,7 @@ Segurança digital é uma área que está em constante crescimento, juntamente c
 
 - **Objetivo principal:** Desenvolver um game Web(para navegador), com puzzles semelhantes ao jogo "Enigma do Medo", com resoluções práticas de malweres
 
-- **malweres e conceios a serem explorados:** spyware, keylogger, brutforce, ransonware, criptografia/descriptografia, phishing, trojan.
+- **malweres e conceios a serem explorados:** spyware, keylogger, brutforce, ransonware, criptografia/descriptografia, phishing, trojan e redes.
 
 ---
 
@@ -43,3 +43,22 @@ Web Game voltado a área de cibersegurança, com uma pequena história e minigam
 
 - Desenvolver uma história coerente com o tema.
 - Criação de minigames interessantes e ao mesmo tempo com um pouco mais de complexidade.
+
+## 3. Especificação Técnica
+
+### 3.1 Requisitos de Software
+
+#### Lista de Requisitos
+
+**Requisitos Funcionais (RF):**
+
+- RF01 – Sistema de fases com progressão
+- RF02 – Feedback e pontuação ao final de cada fase
+- RF03 – Apresentação dos conceitos ao final de cada desafio
+- RF04 – Sistema de dicas
+- RF05 – Suporte a diferentes conceitos de cibersegurança
+
+
+## 4. Próximos Passos
+
+- [Trello do Desenvolvimento do Projeto]([https://www.scraperapi.com/](https://trello.com/b/K4ynR7fl/portifolio-de-projeto))
