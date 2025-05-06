@@ -61,4 +61,4 @@ Web Game voltado a área de cibersegurança, com uma pequena história e minigam
 
 ## 4. Próximos Passos
 
-- [Trello do Desenvolvimento do Projeto]([https://www.scraperapi.com/](https://trello.com/b/K4ynR7fl/portifolio-de-projeto))
+- [Trello do Desenvolvimento do Projeto](https://trello.com/b/K4ynR7fl/portifolio-de-projeto)
