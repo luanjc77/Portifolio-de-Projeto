@@ -3,9 +3,8 @@
 ## Capa
 
 **Título do Projeto:** Agregador Inteligente de Anúncios Imobiliários por Localidade  
-**Nome do Estudante:** Luan [Seu Sobrenome Aqui]  
+**Nome do Estudante:** Luan Jacomini Costa
 **Curso:** Engenharia de Software  
-**Data de Entrega:** [Data da Entrega]
 
 ---
 
