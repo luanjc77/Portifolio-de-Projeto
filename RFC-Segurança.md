@@ -1,4 +1,4 @@
-# Game para ensinar conseitos de cybersegurança de maneira Prática
+# Game para ensinar conceitos de cybersegurança de maneira Prática
 
 ## Capa
 
