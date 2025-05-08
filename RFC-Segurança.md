@@ -91,7 +91,7 @@ Um site interativo, que conversa com o jogador e apresenta o ambiete, similar a 
 ### Primeiras Telas
 ![login](https://github.com/user-attachments/assets/e09b297c-da1e-4780-92dc-25ce2c941843)
 
-![início](![image](https://github.com/user-attachments/assets/f11e7efa-3a3d-4ec3-9b5b-c4692d3ef950)
+![início](https://github.com/user-attachments/assets/f11e7efa-3a3d-4ec3-9b5b-c4692d3ef950)
 
 OBS: para o início da exploração, o jogador deverá excoler entre dois ambientes, superficie e profundezas, introduzindo assim o conceito de surface e deep/dark web
 mas para acessar o ambiente das profundezas é nescessário obter o login e a senha de uma vpn para poder se conectar a mesma rede profunda e explorar seus conteudos,
@@ -122,6 +122,7 @@ essas credenciais serão desbloquiadas pelo usuário atráves de uma dinamica pr
 - **Linguagens**:
   - JavaScript
   - HTML5 / CSS3
+  - PHP
 - **Frameworks e Bibliotecas**:
   - Phaser.js (motor de jogos em 2D)
   - Bootstrap (para UI)
