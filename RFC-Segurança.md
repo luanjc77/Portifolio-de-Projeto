@@ -75,11 +75,12 @@ Um site interativo, que conversa com o jogador e apresenta o ambiete, similar a 
 - RNF04 – Armazenamento local de progresso e pontuação do jogador.
 - RNF05 – Facilidade de deploy em servidores web simples.
 
-#### Representação dos Requisitos
-
-![Diagrama de Casos de Uso UML](diagrama-casos-de-uso.png) <!-- Substitua pelo seu arquivo de imagem UML -->
-
 ---
+
+## Mapa Mental 
+
+![Process Mapping Whiteboard in Dark Blue Blue Light Blue Monochromatic Style](https://github.com/user-attachments/assets/1df02b57-ae3b-4be9-bac0-742eb30426c6)
+
 
 ### 3.2 Considerações de Design
 
@@ -90,7 +91,7 @@ Um site interativo, que conversa com o jogador e apresenta o ambiete, similar a 
 ### Primeiras Telas
 ![login](https://github.com/user-attachments/assets/e09b297c-da1e-4780-92dc-25ce2c941843)
 
-![início](https://github.com/user-attachments/assets/67b477f2-4322-457a-a2d5-3bf9fc4e6163)
+![início](![image](https://github.com/user-attachments/assets/f11e7efa-3a3d-4ec3-9b5b-c4692d3ef950)
 
 OBS: para o início da exploração, o jogador deverá excoler entre dois ambientes, superficie e profundezas, introduzindo assim o conceito de surface e deep/dark web
 mas para acessar o ambiente das profundezas é nescessário obter o login e a senha de uma vpn para poder se conectar a mesma rede profunda e explorar seus conteudos,
