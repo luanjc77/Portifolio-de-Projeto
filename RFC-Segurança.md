@@ -87,6 +87,15 @@ Um site interativo, que conversa com o jogador e apresenta o ambiete, similar a 
 - O visual seguirá um estilo retrô, remetendo à estética hacker e à internet antiga.
 - Os desafios serão progressivamente mais complexos para manter o interesse.
 
+### Primeiras Telas
+![login](https://github.com/user-attachments/assets/e09b297c-da1e-4780-92dc-25ce2c941843)
+
+![início](https://github.com/user-attachments/assets/67b477f2-4322-457a-a2d5-3bf9fc4e6163)
+
+OBS: para o início da exploração, o jogador deverá excoler entre dois ambientes, superficie e profundezas, introduzindo assim o conceito de surface e deep/dark web
+mas para acessar o ambiente das profundezas é nescessário obter o login e a senha de uma vpn para poder se conectar a mesma rede profunda e explorar seus conteudos,
+essas credenciais serão desbloquiadas pelo usuário atráves de uma dinamica prática.
+
 #### Visão Inicial da Arquitetura
 
 - Frontend em HTML/CSS/JavaScript
@@ -154,7 +163,7 @@ Um site interativo, que conversa com o jogador e apresenta o ambiete, similar a 
 - [Hack The Box](https://www.hackthebox.com/)
 - [Guardey Game](https://guardey.io/)
 - Enigma Negro (jogo nacional com enigmas e narrativa)
-
+- [Welcome to the game](https://store.steampowered.com/app/485380/Welcome_to_the_Game/?l=portuguese)
 ---
 
 
