@@ -23,7 +23,7 @@ Em um mundo onde a segurança digital é cada vez mais vital, este projeto surge
 
 ### Justificativa
 
-A segurança digital é uma área crítica e cada vez mais presente na vida cotidiana. Muitos têm curiosidade sobre o tema, mas encontram barreiras técnicas ou conteúdos excessivamente complexos e tóricos. O CyberGame gamifica conceitos como keyloggers, brute force, phishing, criptografia e redes de forma acessível, prática e imersiva, estimulando o senso crítico e a proteção digital entre novos universitários.
+A segurança digital é uma área crítica e cada vez mais presente na vida cotidiana. Muitos têm curiosidade sobre o tema, mas encontram barreiras técnicas ou conteúdos excessivamente complexos e teóricos. O CyberGame gamifica conceitos como keyloggers, brute force, phishing, criptografia e redes de forma acessível, prática e imersiva, estimulando o senso crítico e a proteção digital entre novos universitários.
 
 ### Objetivos
 
