@@ -149,7 +149,7 @@ Um site interativo, que conversa com o jogador e apresenta o ambiete, similar a 
 
 - [Phaser.js Game Engine](https://phaser.io/)
 - [OWASP Cheat Sheet Series](https://cheatsheetseries.owasp.org/)
-- [Terminal 00 (referência estética)](https://terminal00.neocities.org/)
+- [Terminal 00 (referência estética)](https://angusnicneven.com/)
 - [TryHackMe](https://tryhackme.com/)
 - [Hack The Box](https://www.hackthebox.com/)
 - [Guardey Game](https://guardey.io/)
