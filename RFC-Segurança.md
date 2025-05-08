@@ -1,4 +1,4 @@
-# CyberGame
+# Gamificação de estudos sobre cibersegurança
 
 ## Capa
 
