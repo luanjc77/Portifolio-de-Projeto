@@ -93,8 +93,8 @@ Um site interativo, que conversa com o jogador e apresenta o ambiete, similar a 
 
 ![início](https://github.com/user-attachments/assets/8efb9b88-14d9-4c8a-9d0f-00debf6da446)
 
-
-OBS: para o início da exploração, o jogador deverá excoler entre dois ambientes, superficie e profundezas, introduzindo assim o conceito de surface e deep/dark web
+##OBS
+Para o início da exploração, o jogador deverá excoler entre dois ambientes, superficie e profundezas, introduzindo assim o conceito de surface e deep/dark web
 mas para acessar o ambiente das profundezas é nescessário obter o login e a senha de uma vpn para poder se conectar a mesma rede profunda e explorar seus conteudos,
 essas credenciais serão desbloquiadas pelo usuário atráves de uma dinamica prática.
 
