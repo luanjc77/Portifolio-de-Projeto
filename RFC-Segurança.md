@@ -77,9 +77,9 @@ Um site interativo, que conversa com o jogador e apresenta o ambiete, similar a 
 
 ---
 
-## Mapa Mental 
+## Diagrama
 
-![Process Mapping Whiteboard in Dark Blue Blue Light Blue Monochromatic Style](https://github.com/user-attachments/assets/1df02b57-ae3b-4be9-bac0-742eb30426c6)
+![Blank diagram (1)](https://github.com/user-attachments/assets/e7cc7051-3d35-4ea3-a129-8a7a8504c0be)
 
 
 ### 3.2 Considerações de Design
