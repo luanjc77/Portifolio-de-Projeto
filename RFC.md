@@ -1,16 +1,17 @@
-# Agregador de Anúncios Imobiliários
+# Gamificação de estudos sobre cibersegurança
 
 ## Capa
 
-**Título do Projeto:** Agregador Inteligente de Anúncios Imobiliários por Localidade  
-**Nome do Estudante:** Luan Jacomini Costa
-**Curso:** Engenharia de Software  
+- **Título do Projeto**:   
+- **Nome do Estudante**: Luan Jacomini Costa  
+- **Curso**: Engenharia de Software  
+- **Data de Entrega**: 
 
 ---
 
 ## Resumo
 
-Este projeto propõe o desenvolvimento de um sistema web (e futuramente mobile) para a agregação de anúncios de imóveis (casas, apartamentos, terrenos, salões, etc.) disponíveis para venda ou aluguel, publicados em sites de imobiliárias. O sistema utilizará geolocalização e scraping automatizado para reunir e exibir os anúncios em um único local, facilitando a consulta e comparação por parte dos usuários. O objetivo é servir como um intermediador de informações, sem envolver-se diretamente nas negociações.
+Este projeto tem como objetivo demonstrar, de maneira prática e envolvente, conceitos fundamentais de cibersegurança por meio de um ambiente web interativo. O CyberGame guiará o jogador por meio de uma pequena narrativa com desafios e puzzles que abordam desde ataques como phishing e ransomware até fundamentos de redes e sistemas operacionais. Voltado para jovens universitários, o "jogo" proporciona uma experiência gamificada de aprendizado técnico, diferente de abordagens que nescessitam de um breve conhecimento ou mais infantis.
 
 ---
 
@@ -18,16 +19,20 @@ Este projeto propõe o desenvolvimento de um sistema web (e futuramente mobile) 
 
 ### Contexto
 
-A busca por imóveis geralmente envolve a navegação por diversos sites de imobiliárias, o que torna o processo moroso e fragmentado. Uma solução que centralize esses dados pode otimizar a experiência do usuário.
+Em um mundo onde a segurança digital é cada vez mais vital, este projeto surge como uma proposta inovadora de ensino prático e interativo. A maioria dos jogos existentes sobre o tema são voltados ao público infantil ou ao público já técnico. O CyberGame visa preencher essa lacuna ao se direcionar a iniciantes no ensino superior em áreas de tecnologia.
 
 ### Justificativa
 
-O projeto apresenta relevância ao propor uma ferramenta de automação e centralização de informações imobiliárias, aliando engenharia de software, scraping de dados, geolocalização e notificações inteligentes.
+A segurança digital é uma área crítica e cada vez mais presente na vida cotidiana. Muitos têm curiosidade sobre o tema, mas encontram barreiras técnicas ou conteúdos excessivamente complexos e teóricos. O CyberGame gamifica conceitos como keyloggers, brute force, phishing, criptografia e redes de forma acessível, prática e imersiva, estimulando o senso crítico e a proteção digital entre novos universitários.
 
 ### Objetivos
 
-- **Objetivo principal:** Desenvolver um agregador de anúncios imobiliários com filtros e sugestões baseadas em geolocalização.
-- **Objetivos secundários:** Permitir cadastro de usuários e envio de notificações sobre novos anúncios de interesse.
+- **Objetivo principal**: Desenvolver um jogo web interativo com narrativa e minigames que ensinem conceitos práticos de cibersegurança.
+- **Objetivos secundários**:
+  - Criar uma narrativa imersiva.
+  - Explorar conceitos como phishing, brute force, ransomware, redes e sistemas operacionais.
+  - Utilizar puzzles inspirados em jogos como "Enigma do Medo" e "Black Riddle"
+  - Ambientação enigmática que desperta curiosidade, como o site "Terminal 00".
 
 ---
 
@@ -35,19 +40,18 @@ O projeto apresenta relevância ao propor uma ferramenta de automação e centra
 
 ### Tema do Projeto
 
-Ferramenta web que agrega e exibe anúncios de imóveis por localidade com base em filtros definidos pelo usuário (tipo, valor, tamanho etc.) e usa scraping via Google Search Scraper para buscar anúncios atualizados em sites de imobiliárias.
+Um site interativo, que conversa com o jogador e apresenta o ambiete, similar a deep/dark web (local na internet que atrai a curiosidade de muitos) e leva o jogador a desafios práticos sobre segurança e estabelece primeiro contato do jogador será com um ataque de phishing, já fazendo parte do enredo.
 
 ### Problemas a Resolver
 
-- Centralização de anúncios dispersos em diferentes sites
-- Dificuldade de comparação entre anúncios
-- Falta de notificações personalizadas para novos imóveis
+- Tornar o aprendizado de cibersegurança acessível a estudantes iniciantes.
+- Criar uma narrativa coesa e envolvente com progressão por fases.
+- Desenvolver minigames que equilibrem complexidade e diversão.
 
 ### Limitações
 
-- O sistema **não realizará** intermediação ou negociação direta entre comprador e vendedor
-- O scraping será limitado por políticas de uso de cada site
-- Sujeito à disponibilidade e estrutura dos sites de origem
+- O jogo não abordará técnicas de engenharia reversa avançadas nem simulações realistas de ambientes profissionais.
+- O projeto não será voltado a certificações.
 
 ---
 
@@ -55,114 +59,125 @@ Ferramenta web que agrega e exibe anúncios de imóveis por localidade com base 
 
 ### 3.1 Requisitos de Software
 
-#### Lista de Requisitos
+#### Requisitos Funcionais (RF)
 
-**Requisitos Funcionais (RF):**
+- RF01 – Sistema de fases com progressão.
+- RF02 – Feedback e pontuação ao final de cada fase.
+- RF03 – Apresentação dos conceitos ao final de cada desafio.
+- RF04 – Sistema de dicas durante os puzzles.
+- RF05 – Integração com ranking de jogadores.
 
-- RF01 – Permitir busca de imóveis por localidade e tipo
-- RF02 – Exibir anúncios encontrados
-- RF03 – Permitir visualização do anúncio original
-- RF04 – Cadastrar usuário
-- RF05 – Configurar preferências de notificação
-- RF06 – Receber notificações personalizadas (e-mail, SMS, WhatsApp)
-- RF07 – Exibir sugestões de imóveis com base na localização do usuário
+#### Requisitos Não-Funcionais (RNF)
 
-**Requisitos Não-Funcionais (RNF):**
-
-- RNF01 – Sistema web responsivo
-- RNF02 – Tempo de resposta inferior a 3 segundos
-- RNF03 – Código modular e escalável
-- RNF04 – Conformidade com LGPD no tratamento de dados
-
-#### Representação dos Requisitos
-
-*Ver diagrama de casos de uso em: `docs/diagrama-casos-de-uso.png`*
+- RNF01 – Interface amigável, responsiva e acessível.
+- RNF02 – Boa performance nos principais navegadores modernos.
+- RNF03 – Código seguro com proteção contra injeção de scripts.
+- RNF04 – Armazenamento local de progresso e pontuação do jogador.
+- RNF05 – Facilidade de deploy em servidores web simples.
 
 ---
 
+## Diagrama
+
+![Blank diagram (1)](https://github.com/user-attachments/assets/e7cc7051-3d35-4ea3-a129-8a7a8504c0be)
+
+
 ### 3.2 Considerações de Design
+
+- O jogo será modular, com fases independentes conectadas por uma narrativa.
+- O visual seguirá um estilo retrô, remetendo à estética hacker e à internet antiga.
+- Os desafios serão progressivamente mais complexos para manter o interesse.
+
+### Primeiras Telas
+![login](https://github.com/user-attachments/assets/e09b297c-da1e-4780-92dc-25ce2c941843)
+
+![início](https://github.com/user-attachments/assets/8efb9b88-14d9-4c8a-9d0f-00debf6da446)
+
+#### Observação
+Para o início da exploração, o jogador deverá excoler entre dois ambientes, superficie e profundezas, introduzindo assim o conceito de surface e deep/dark web
+mas para acessar o ambiente das profundezas é nescessário obter o login e a senha de uma vpn para poder se conectar a mesma rede profunda e explorar seus conteudos,
+essas credenciais serão desbloquiadas pelo usuário atráves de uma dinamica prática.
 
 #### Visão Inicial da Arquitetura
 
-- Backend: Responsável por orquestrar scraping, autenticação e envio de notificações
-- Frontend: Interface web com formulário de busca, listagem de anúncios e sugestões
-- Banco de dados: Armazena preferências e dados de usuários
+- Frontend em HTML/CSS/JavaScript
+- Backend opcional com Node.js + Express (para ranking e autenticação simples)
+- JSON como formato de dados para puzzles e fases
 
 #### Padrões de Arquitetura
 
-- MVC (Model-View-Controller)
+- Padrão MVC simplificado no front (componentes lógicos e visuais)
+- Modularização por fases/minigames
 
 #### Modelos C4
 
-- Nível 1 – Sistema: Ferramenta de agregação de anúncios
-- Nível 2 – Contêineres: WebApp, API de scraping, Banco de Dados, Serviço de Notificações
-- Nível 3 – Componentes: Scraper, Geolocalização, Autenticação, Notificação
-- Nível 4 – Código: (a ser detalhado no desenvolvimento)
+1. **Contexto**: Navegador do usuário acessa o site com puzzles educativos.
+2. **Contêineres**: Frontend (UI + lógica de jogo), Backend (ranking e cadastro).
+3. **Componentes**: Jogo principal, gerador de puzzles, componente de ranking.
+4. **Código**: Modular JS com controllers para fases e interações.
 
 ---
 
 ### 3.3 Stack Tecnológica
 
-#### Linguagens de Programação
-
-- Python (backend, scraping)
-- JavaScript (frontend)
-- HTML/CSS
-
-#### Frameworks e Bibliotecas
-
-- Flask ou FastAPI (Python)
-- BeautifulSoup / Playwright (scraping)
-- Leaflet.js (geolocalização com OpenStreetMap)
-- Email/SMS APIs (Twilio, SMTP)
-
-#### Ferramentas de Desenvolvimento
-
-- Git / GitHub
-- Trello (gestão)
-- Visual Studio Code
-- Postman (testes de API)
+- **Linguagens**:
+  - JavaScript
+  - HTML5 / CSS3
+  - PHP
+- **Frameworks e Bibliotecas**:
+  - Phaser.js (motor de jogos em 2D)
+  - Bootstrap (para UI)
+  - Node.js + Express
+- **Ferramentas de Desenvolvimento**:
+  - Visual Studio Code
+  - Trello (gestão de tarefas)
+  - Git/GitHub (versionamento)
+- **Outras Tecnologias**:
+  - JSON (para puzzles)
+  - Canva/Figma (para mockups)
+  - Draw.io (diagramas)
 
 ---
 
 ### 3.4 Considerações de Segurança
 
-- Respeito às políticas dos sites ao fazer scraping
-- Criptografia de senhas e dados sensíveis
-- Conformidade com LGPD
-- Autenticação via tokens
+- As simulações serão feitas de maneira controlada e educativa, sem qualquer execução de códigos maliciosos reais.
+- Proteções contra XSS, CSRF e injeções serão consideradas.
+- O armazenamento de dados do jogador será mínimo e opcional.
 
 ---
 
 ## 4. Próximos Passos
 
-| Etapa | Início | Fim | Descrição |
-|------|--------|-----|-----------|
-| Planejamento | Semana 1 | Semana 2 | Levantamento de requisitos e escopo |
-| Design e Arquitetura | Semana 3 | Semana 4 | Modelagem de sistema e protótipos |
-| Desenvolvimento Inicial | Semana 5 | Semana 8 | Scraper e busca funcional |
-| Funcionalidades Avançadas | Semana 9 | Semana 11 | Cadastro, notificações, sugestões |
-| Testes e Validação | Semana 12 | Semana 13 | Testes e ajustes |
-| Documentação e Apresentação | Semana 14 | Semana 16 | Finalização da entrega |
+- Finalizar storyboard e narrativa principal.
+- Implementar primeiros minigames.
+- Conectar sistema de pontuação e ranking.
+- Testes de usabilidade com estudantes-alvo.
+- Expansão e refinamento.
 
 ---
 
 ## 5. Referências
 
-- [Google Search Scraper API](https://www.scraperapi.com/)
-- [BeautifulSoup Documentation](https://www.crummy.com/software/BeautifulSoup/)
-- [OpenStreetMap](https://www.openstreetmap.org/)
-- [Twilio API](https://www.twilio.com/)
-- LGPD - Lei Geral de Proteção de Dados (Lei nº 13.709/2018)
-
+- [Phaser.js Game Engine](https://phaser.io/)
+- [OWASP Cheat Sheet Series](https://cheatsheetseries.owasp.org/)
+- [Terminal 00](https://angusnicneven.com/)
+- [TryHackMe](https://tryhackme.com/)
+- [Hack The Box](https://www.hackthebox.com/)
+- [Guardey Game](https://guardey.io/)
+- Enigma Negro (jogo nacional com enigmas e narrativa)
+- [Welcome to the game](https://store.steampowered.com/app/485380/Welcome_to_the_Game/?l=portuguese)
 ---
 
-## 6. Apêndices (Opcionais)
 
-- Imagens de protótipos
-- Resultados de scraping simulados
-- Logs de testes de API
-- Capturas de tela de notificações
 
----
+## 7. Avaliações de Professores
 
+- **Considerações Professor(a):**  
+  Assinatura: _______________________________
+
+- **Considerações Professor(a):**  
+  Assinatura: _______________________________
+
+- **Considerações Professor(a):**  
+  Assinatura: _______________________________
