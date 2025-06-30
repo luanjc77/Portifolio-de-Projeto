@@ -2,10 +2,10 @@
 
 ## Capa
 
-- **Título do Projeto**:   
+- **Título do Projeto**: DarkAccess  
 - **Nome do Estudante**: Luan Jacomini Costa  
 - **Curso**: Engenharia de Software  
-- **Data de Entrega**: 
+- **Data de Entrega**: 30/06/2025
 
 ---
 
