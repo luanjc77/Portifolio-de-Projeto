@@ -1,59 +1,91 @@
 .homeContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  padding: 2rem;
-  box-sizing: border-box; /* Garante que o padding não estoure a tela */
-  color: white;
-  text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+    padding-top: 15%; /* Espaço para o narrador no topo */
+    box-sizing: border-box;
+    color: white;
+    text-align: center;
+    min-height: 100vh;
 }
-
 .header h1 {
-  font-size: 3rem;
-  margin-bottom: 0.5rem;
-  font-family: 'Courier New', Courier, monospace; /* Estilo mais hacker */
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+    font-family: 'Courier New', Courier, monospace;
 }
-
 .header h2 {
-  font-size: 1.2rem;
-  font-weight: normal;
-  margin-bottom: 3rem;
+    font-size: 1.2rem;
+    font-weight: normal;
+    margin-bottom: 3rem;
 }
-
 .challengeGrid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr); /* Cria 4 colunas */
-  gap: 1.5rem; /* Espaçamento entre os botões */
-  width: 100%;
-  max-width: 800px; /* Largura máxima da grade de botões */
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 800px;
 }
-
 .challengeButton {
-  background-color: rgba(0, 0, 0, 0.4);
-  border: 1px solid #0366fc;
-  color: white;
-  padding: 1rem;
-  font-size: 1rem;
-  font-weight: bold;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s, transform 0.2s;
-  text-decoration: none; /* Remove o sublinhado do link <a> */
-  display: flex; /* Para centralizar o texto no link <a> */
-  align-items: center;
-  justify-content: center;
+    background-color: rgba(0, 0, 0, 0.4);
+    border: 1px solid #00ff00; /* Cor verde para combinar com o narrador */
+    color: white;
+    padding: 1rem;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
-
 .challengeButton:hover {
-  background-color: rgba(3, 102, 252, 0.5);
-  transform: translateY(-3px); /* Efeito de levantar ao passar o mouse */
+    background-color: rgba(0, 255, 0, 0.2);
+    transform: translateY(-3px);
+}
+@media (max-width: 768px) {
+    .challengeGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
-/* Deixa a grade responsiva para telas menores */
-@media (max-width: 768px) {
-  .challengeGrid {
-    grid-template-columns: repeat(2, 1fr); /* 2 colunas em telas menores */
-  }
+.activeChallenges {
+    margin-top: 4rem;
+    width: 100%;
+    max-width: 600px;
+}
+.activeChallenges h3 {
+    font-size: 1.5rem;
+    border-bottom: 1px solid #00ff00;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+}
+.activeChallenges ul {
+    list-style: none;
+    padding: 0;
+}
+.activeChallenges li {
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: 1rem;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1rem;
+}
+.activeChallenges li button {
+    background-color: transparent;
+    border: 1px solid #FF4136;
+    color: #FF4136;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.activeChallenges li button:hover {
+    background-color: #FF4136;
+    color: white;
 }

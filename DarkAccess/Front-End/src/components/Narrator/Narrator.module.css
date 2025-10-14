@@ -1,0 +1,25 @@
+.narratorBox {
+    position: absolute;
+    top: 5%;
+    left: 0;
+    right: 0;
+    font-size: 1.5rem;
+    text-shadow: 0 0 8px #00ff00;
+    width: 100%;
+    padding: 1rem 0;
+    text-align: center;
+    font-family: 'Courier New', Courier, monospace;
+    color: #00FF00;
+    height: 40px; 
+}
+.cursor {
+    animation: blink 1s step-end infinite;
+}
+@keyframes blink {
+    from, to {
+        color: transparent;
+    }
+    50% {
+        color: #00FF00;
+    }
+}

@@ -1,0 +1,56 @@
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #1a1a1a;
+    color: #00ff00;
+    font-family: 'Courier New', Courier, monospace;
+}
+.content {
+    text-align: center;
+    max-width: 800px;
+}
+.title {
+    font-size: 3rem;
+    text-shadow: 0 0 10px #00ff00;
+    margin-bottom: 1.5rem;
+}
+.description {
+    font-size: 1.1rem;
+    color: #aaa;
+    line-height: 1.6;
+    margin-bottom: 3rem;
+}
+.pathGroup {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+}
+.pathButton {
+    background-color: #222;
+    border: 2px solid #444;
+    color: #ddd;
+    padding: 1.5rem;
+    font-size: 1.5rem;
+    font-family: inherit;
+    cursor: pointer;
+    width: 80%;
+    transition: all 0.3s ease;
+}
+.pathButton:hover {
+    border-color: #00ff00;
+    color: #00ff00;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+}
+.locked {
+    color: #555;
+    border-color: #333;
+    cursor: not-allowed;
+}
+.locked:hover {
+    color: #555;
+    border-color: #333;
+    box-shadow: none;
+}
