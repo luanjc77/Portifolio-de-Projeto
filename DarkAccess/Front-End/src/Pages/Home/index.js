@@ -1,10 +1,14 @@
 import React, { useState } from "react";
 import styles from "./HomePage.module.css";
 import Narrator from "../../components/Narrator";
+import { FaUserCircle } from 'react-icons/fa'; 
 
 function HomePage() {
-    const API_URL = 'tiddly-marge-morbifically.ngrok-free.dev'; // SUBSTITUA PELO SEU IP PÚBLICO
+    const API_URL = 'http://SEU_IP_OU_NGROK_AQUI:3001'; 
+    
     const [activeChallenges, setActiveChallenges] = useState([]);
+    const [playerLife, setPlayerLife] = useState(100); 
+
     const narratorMessages = [
         "Olá, explorador.",
         "Vejo que você tem curiosidade...",
@@ -12,6 +16,11 @@ function HomePage() {
         "Você tem o que é preciso para encontrá-los?",
         "Comece sua jornada abaixo."
     ];
+
+
+    const simulateLifeLoss = () => {
+        setPlayerLife(prev => Math.max(0, prev - 10)); 
+    };
 
     const handleStartChallenge = async (challengeId) => {
         console.log(`Iniciando requisição para o desafio: ${challengeId}`);
@@ -34,6 +43,7 @@ function HomePage() {
         } catch (error) {
             console.error('Erro ao conectar com a API:', error);
             alert('Não foi possível conectar com o servidor.');
+            simulateLifeLoss(); 
         }
     };
 
@@ -64,6 +74,14 @@ function HomePage() {
         <div className={styles.homeContainer}>
             <Narrator messages={narratorMessages} />
 
+            <div 
+                className={styles.playerLifeCircle}
+                style={{ '--life-percentage': `${playerLife}%` }} 
+            >
+                <div className={styles.lifeBar}></div> 
+                <FaUserCircle className={styles.icon} />
+            </div>
+
             <header className={styles.header}>
                 <h1>DarkAccess</h1>
                 <h2>Selecione o tema que deseja explorar:</h2>
@@ -72,7 +90,12 @@ function HomePage() {
             <main className={styles.challengeGrid}>
                 <button className={styles.challengeButton} onClick={() => handleStartChallenge('phishing')}>Phishing</button>
                 <button className={styles.challengeButton} onClick={() => handleStartChallenge('keylogger')}>Keylogger</button>
-                {/* Outros botões podem ser adicionados aqui */}
+                <button className={styles.challengeButton} onClick={() => handleStartChallenge('ransomware')}>Ransomware</button>
+                <button className={styles.challengeButton} onClick={() => handleStartChallenge('brute-force')}>Brute Force</button>
+                <button className={styles.challengeButton} onClick={() => handleStartChallenge('sql-injection')}>SQL Injection</button>
+                <button className={styles.challengeButton} onClick={() => handleStartChallenge('social-engineering')}>Engenharia Social</button>
+                <button className={styles.challengeButton} onClick={() => handleStartChallenge('redes')}>Redes</button>
+                <button className={styles.challengeButton} onClick={() => handleStartChallenge('criptografia')}>Criptografia</button>
             </main>
 
             {activeChallenges.length > 0 && (

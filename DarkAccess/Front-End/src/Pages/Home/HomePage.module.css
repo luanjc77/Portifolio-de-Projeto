@@ -3,7 +3,7 @@
     flex-direction: column;
     align-items: center;
     padding: 2rem;
-    padding-top: 15%; /* Espaço para o narrador no topo */
+    padding-top: 15%; 
     box-sizing: border-box;
     color: white;
     text-align: center;
@@ -28,7 +28,7 @@
 }
 .challengeButton {
     background-color: rgba(0, 0, 0, 0.4);
-    border: 1px solid #00ff00; /* Cor verde para combinar com o narrador */
+    border: 1px solid #00ff00; 
     color: white;
     padding: 1rem;
     font-size: 1rem;
@@ -88,4 +88,55 @@
 .activeChallenges li button:hover {
     background-color: #FF4136;
     color: white;
+}
+
+.playerLifeCircle {
+    position: absolute; 
+    top: 20px; 
+    right: 20px;
+    width: 60px; 
+    height: 60px;
+    border-radius: 50%; 
+    background-color: #333; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; 
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.5); 
+    z-index: 100; 
+}
+
+.playerLifeCircle::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50px; 
+    height: 50px;
+    border-radius: 50%;
+    background-color: #1a1a1a; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2; 
+}
+
+.playerLifeCircle .icon {
+    position: relative;
+    font-size: 2rem; 
+    color: #00ff00; 
+    z-index: 3; 
+}
+
+.lifeBar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: conic-gradient(#ff0000 var(--life-percentage, 100%), #333 0%); 
+
+    transition: background 0.5s ease-out;
 }
