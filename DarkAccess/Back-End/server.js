@@ -177,6 +177,21 @@ app.post('/api/challenges/stop', (req, res) => {
     });
 });
 
+// Rota para liberar acesso à Deep Web
+app.patch('/api/user/:id/deepweb-access', async (req, res) => {
+    const { id } = req.params;
+    try {
+        await db.query(
+            "UPDATE usuarios SET deepweb_access = 'S' WHERE id = $1",
+            [id]
+        );
+        res.status(200).json({ success: true, message: 'Acesso à Deep Web liberado!' });
+    } catch (error) {
+        console.error('Erro ao liberar Deep Web:', error.message);
+        res.status(500).json({ success: false, message: 'Erro no servidor.' });
+    }
+});
+
 
 // --- Middleware do Proxy Reverso ---
 app.use('/challenge/:sessionId', (req, res, next) => {

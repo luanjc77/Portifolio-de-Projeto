@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styles from "./HomePage.module.css";
 import Narrator from "../../components/Narrator";
-import { FaUserCircle } from 'react-icons/fa'; 
+import User from "../../components/User";
 
 function HomePage() {
     const API_URL = 'https://tiddly-marge-morbifically.ngrok-free.dev:3001'; 
@@ -17,10 +17,6 @@ function HomePage() {
         "Comece sua jornada abaixo."
     ];
 
-
-    const simulateLifeLoss = () => {
-        setPlayerLife(prev => Math.max(0, prev - 10)); 
-    };
 
     const handleStartChallenge = async (challengeId) => {
         console.log(`Iniciando requisição para o desafio: ${challengeId}`);
@@ -43,7 +39,6 @@ function HomePage() {
         } catch (error) {
             console.error('Erro ao conectar com a API:', error);
             alert('Não foi possível conectar com o servidor.');
-            simulateLifeLoss(); 
         }
     };
 
@@ -74,13 +69,7 @@ function HomePage() {
         <div className={styles.homeContainer}>
             <Narrator messages={narratorMessages} />
 
-            <div 
-                className={styles.playerLifeCircle}
-                style={{ '--life-percentage': `${playerLife}%` }} 
-            >
-                <div className={styles.lifeBar}></div> 
-                <FaUserCircle className={styles.icon} />
-            </div>
+            <User playerLife={playerLife} />
 
             <header className={styles.header}>
                 <h1>DarkAccess</h1>

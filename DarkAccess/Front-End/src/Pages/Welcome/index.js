@@ -1,27 +1,26 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Welcome.module.css';
+import Narrator from '../../components/Narrator';
 
 function WelcomePage() {
   const navigate = useNavigate();
-
-  const handleRegister = () => {
+  const handleNavigateToRegister = () => {
     navigate('/register');
   };
-
-  const handleLogin = () => {
-    navigate('/login'); 
-};
+  const handleNavigateToLogin = () => {
+    navigate('/login');
+  };
 
   return (
     <div className={styles.container}>
       <div className={styles.content}>
-        <h1 className={styles.title}>ACESSO RESTRITO! IDENTIFIQUE-SE</h1>
+        <Narrator messages={["Olá Explorador!", "Identifique-se primeiramente..."]} className={styles.narrator} />
         <div className={styles.buttonGroup}>
-          <button className={styles.button} onClick={handleLogin}>
+          <button className={styles.startButton} onClick={handleNavigateToLogin}>
             LOGIN
           </button>
-          <button className={`${styles.button} ${styles.secondary}`} onClick={handleRegister}>
+          <button className={styles.startButton} onClick={handleNavigateToRegister}>
             CADASTRO
           </button>
         </div>
