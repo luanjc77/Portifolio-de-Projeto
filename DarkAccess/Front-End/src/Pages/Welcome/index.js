@@ -16,7 +16,7 @@ function WelcomePage() {
   return (
     <div className={styles.container}>
       <div className={styles.content}>
-        <h1 className={styles.title}>BEM-VINDO AO DARKACCESS</h1>
+        <h1 className={styles.title}>ACESSO RESTRITO! IDENTIFIQUE-SE</h1>
         <div className={styles.buttonGroup}>
           <button className={styles.button} onClick={handleLogin}>
             LOGIN

@@ -4,8 +4,8 @@ import styles from './Login.module.css';
 
 function LoginPage() {
   const navigate = useNavigate();
-  const [identifier, setIdentifier] = useState('');
-  const [password, setPassword] = useState('');
+  const [identifier, setIdentifier] = useState('pingu');
+  const [password, setPassword] = useState('123');
 
   const API_URL = 'https://tiddly-marge-morbifically.ngrok-free.dev'; 
 
@@ -21,8 +21,9 @@ function LoginPage() {
       const data = await response.json();
 
       if (data.success) {
-        alert('Login bem-sucedido!');
-        navigate('/jornada');
+        //alert('Login bem-sucedido!');
+        localStorage.setItem('user', JSON.stringify(data.user));
+        navigate('/inicio');
       } else {
         alert(`Erro no login: ${data.message}`);
       }

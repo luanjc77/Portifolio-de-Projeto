@@ -1,9 +1,10 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import HomePage from "./Pages/Home";
 import WelcomePage from "./Pages/Welcome";
-import JourneyStartPage from "./Pages/JourneyStart";
+import StartPage from "./Pages/Start";
 import RegisterPage from "./Pages/Register"; 
 import LoginPage from "./Pages/Login";
+import DeepWebPage from "Pages/DeepWeb";
 
 function AppRoutes() {
   return (
@@ -12,7 +13,8 @@ function AppRoutes() {
           <Route path="/" element={<WelcomePage />}></Route>
           <Route path="/login" element={<LoginPage />}></Route> 
           <Route path="/register" element={<RegisterPage />}></Route>
-          <Route path="/jornada" element={<JourneyStartPage />}></Route>
+          <Route path="/inicio" element={<StartPage />}></Route>
+          <Route path="/deep-web" element={<DeepWebPage />}></Route>
           <Route path="/home" element={<HomePage />}></Route>
       </Routes>
     </BrowserRouter>

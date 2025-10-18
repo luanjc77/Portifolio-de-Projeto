@@ -1,0 +1,19 @@
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #000000;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.content {
+    text-align: center;
+}
+
+.text {
+    color: #ff0000;
+    font-size: 2rem;
+    text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+    margin: 0;
+}

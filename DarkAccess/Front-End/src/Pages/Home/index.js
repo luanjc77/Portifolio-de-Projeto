@@ -4,7 +4,7 @@ import Narrator from "../../components/Narrator";
 import { FaUserCircle } from 'react-icons/fa'; 
 
 function HomePage() {
-    const API_URL = 'http://SEU_IP_OU_NGROK_AQUI:3001'; 
+    const API_URL = 'https://tiddly-marge-morbifically.ngrok-free.dev:3001'; 
     
     const [activeChallenges, setActiveChallenges] = useState([]);
     const [playerLife, setPlayerLife] = useState(100); 
