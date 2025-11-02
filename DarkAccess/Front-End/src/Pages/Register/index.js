@@ -8,7 +8,7 @@ function RegisterPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const API_URL = 'https://tiddly-marge-morbifically.ngrok-free.dev'; 
+  const API_URL = 'http://35.238.81.86:3001'; 
 
   const handleSubmit = async (event) => {
     event.preventDefault();

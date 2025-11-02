@@ -1,0 +1,154 @@
+.container {
+  max-width: 980px;
+  margin: 32px auto;
+  padding: 20px;
+  background: #0f0f11;
+  color: #e6e6e6;
+  border-radius: 12px;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.6);
+}
+
+.topSection {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.avatarColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.avatarRing {
+  --size: 200px;
+  width: var(--size);
+  height: var(--size);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: conic-gradient(#39ff14 var(--life), #2b2b2b 0);
+  padding: 8px;
+  position: relative;
+}
+
+.avatar {
+  width: calc(var(--size) - 28px);
+  height: calc(var(--size) - 28px);
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid rgba(0,0,0,0.5);
+  background: #fff;
+}
+
+.editButton {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  background: rgba(0,0,0,0.6);
+  border: none;
+  color: #fff;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.lifeLabel {
+  margin-top: 8px;
+  font-weight: 600;
+}
+
+.achievements {
+  flex: 1;
+  min-width: 280px;
+}
+
+.achievementsGrid {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.badge {
+  background: linear-gradient(180deg, #222 0%, #1a1a1a 100%);
+  border: 1px solid rgba(255,255,255,0.06);
+  padding: 12px 18px;
+  border-radius: 8px;
+  min-width: 88px;
+  text-align: center;
+  color: #cfcfcf;
+}
+
+.form {
+  margin-top: 12px;
+  display: grid;
+  gap: 12px;
+}
+
+.label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.labelSmall {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.input {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: #0b0b0c;
+  color: #e6e6e6;
+}
+
+.passwordRow {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.passwordToggle {
+  background: #222;
+  color: #e6e6e6;
+  border: 1px solid rgba(255,255,255,0.04);
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.row {
+  display: flex;
+  gap: 12px;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.saveButton {
+  background: #39ff14;
+  color: #000;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+@media (max-width: 720px) {
+  .topSection {
+    flex-direction: column;
+    gap: 16px;
+  }
+  .avatarRing { --size: 140px; }
+}

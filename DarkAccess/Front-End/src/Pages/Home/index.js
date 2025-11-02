@@ -4,7 +4,7 @@ import Narrator from "../../components/Narrator";
 import User from "../../components/User";
 
 function HomePage() {
-    const API_URL = 'https://tiddly-marge-morbifically.ngrok-free.dev:3001'; 
+    const API_URL = 'http://35.238.81.86:3001'; 
     
     const [activeChallenges, setActiveChallenges] = useState([]);
     const [playerLife, setPlayerLife] = useState(100); 
