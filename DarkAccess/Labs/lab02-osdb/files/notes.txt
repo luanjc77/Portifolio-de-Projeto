@@ -1,0 +1,3 @@
+Relatório de deploy:
+- Servidor app: app01
+- Admin test account: admin:test123

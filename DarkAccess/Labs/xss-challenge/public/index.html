@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DALL·E Tech — Soluções Inovadoras</title>
+  <style>
+    :root {
+      --green: #007953;
+      --light-green: #2abf77;
+      --gray: #f5f6f7;
+      --dark: #1e1e1e;
+      --text: #333;
+      --muted: #555;
+      font-family: "Inter", "Segoe UI", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: #fff;
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--green), var(--light-green));
+      color: white;
+      text-align: center;
+      padding: 100px 20px;
+    }
+
+    header h1 {
+      font-size: 42px;
+      margin-bottom: 10px;
+    }
+
+    header p {
+      max-width: 700px;
+      margin: 0 auto 30px;
+      font-size: 18px;
+    }
+
+    header button {
+      background: white;
+      color: var(--green);
+      border: none;
+      padding: 14px 26px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    header button:hover {
+      background: #f0f0f0;
+    }
+
+    section {
+      padding: 80px 20px;
+      max-width: 1100px;
+      margin: auto;
+    }
+
+    section h2 {
+      text-align: center;
+      color: var(--green);
+      margin-bottom: 40px;
+      font-size: 30px;
+    }
+
+    .services {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .service {
+      background: var(--gray);
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .service h3 {
+      color: var(--green);
+      margin-top: 0;
+    }
+
+    .tech-grid, .partners {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .chip {
+      background: var(--gray);
+      color: var(--muted);
+      padding: 10px 16px;
+      border-radius: 999px;
+      font-weight: 500;
+      border: 1px solid #e0e0e0;
+    }
+
+    form {
+      max-width: 600px;
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    input, textarea {
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 15px;
+      width: 100%;
+    }
+
+    button.submit {
+      background: var(--green);
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    button.submit:hover {
+      background: var(--light-green);
+    }
+
+    #unsafe-output {
+      margin-top: 10px;
+      padding: 20px;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      min-height: 60px;
+    }
+
+    footer {
+      background: var(--dark);
+      color: #ccc;
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    footer a {
+      color: #89f7d6;
+      text-decoration: none;
+    }
+
+    hr {
+      border: none;
+      border-top: 1px solid #eee;
+      margin: 60px 0;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>DALL·E Tech</h1>
+    <p>Inovação, segurança e performance. Desenvolvemos soluções tecnológicas para o futuro do mercado financeiro e corporativo.</p>
+    <button onclick="window.scrollTo({top: document.querySelector('#sobre').offsetTop, behavior: 'smooth'})">Saiba mais</button>
+  </header>
+
+  <section id="sobre">
+    <h2>Sobre a DALL·E Tech</h2>
+    <p>
+      A DALL·E Tech é uma empresa de tecnologia especializada em criar, integrar e gerenciar sistemas de alto desempenho para o setor bancário e financeiro.  
+      Nascemos com o propósito de oferecer infraestrutura digital sólida, segura e escalável — apoiando bancos, fintechs e plataformas digitais.
+    </p>
+    <p>
+      Com foco em engenharia de software, automação e nuvem, fornecemos soluções customizadas que garantem disponibilidade e segurança em grande escala.
+    </p>
+  </section>
+
+  <section id="servicos">
+    <h2>O que fazemos</h2>
+    <div class="services">
+      <div class="service">
+        <h3>Plataformas Financeiras</h3>
+        <p>Desenvolvemos e mantemos sistemas de pagamento, conciliação bancária e processamento de transações em tempo real.</p>
+      </div>
+      <div class="service">
+        <h3>Integração e APIs</h3>
+        <p>Criamos APIs de alto desempenho para integração com bancos, gateways e provedores de dados, com autenticação segura e versionamento contínuo.</p>
+      </div>
+      <div class="service">
+        <h3>Infraestrutura e Cloud</h3>
+        <p>Trabalhamos com AWS e Kubernetes, garantindo escalabilidade e resiliência. Monitoramento ativo e automação de deploys fazem parte do nosso dia a dia.</p>
+      </div>
+      <div class="service">
+        <h3>Segurança da Informação</h3>
+        <p>Executamos testes de invasão, auditorias de código e implementamos controles de segurança com foco em conformidade e mitigação de risco.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="tecnologias">
+    <h2>Tecnologias e Parceiros</h2>
+    <div class="tech-grid">
+      <span class="chip">AWS</span>
+      <span class="chip">Kubernetes</span>
+      <span class="chip">Docker</span>
+      <span class="chip">Node.js</span>
+      <span class="chip">Python</span>
+      <span class="chip">PostgreSQL</span>
+      <span class="chip">Redis</span>
+      <span class="chip">Grafana</span>
+    </div>
+    <br />
+    <div class="partners">
+      <span class="chip">Nubank</span>
+      <span class="chip">Bradesco</span>
+      <span class="chip">Caixa Econômica</span>
+      <span class="chip">Banco Inter</span>
+    </div>
+  </section>
+
+  <section id="contato">
+    <h2>Entre em Contato</h2>
+    <form onsubmit="event.preventDefault(); alert('Mensagem enviada com sucesso! (simulação)')">
+      <input type="text" placeholder="Seu nome" required />
+      <input type="email" placeholder="Seu e-mail" required />
+      <textarea placeholder="Mensagem" rows="4"></textarea>
+      <button type="submit" class="submit">Enviar</button>
+    </form>
+  </section>
+
+  <section id="trabalhe">
+    <h2>Trabalhe Conosco</h2>
+    <p style="text-align:center;max-width:700px;margin:auto;">
+      Cadastre seu interesse em fazer parte da nossa equipe.  
+      Este formulário contém uma vulnerabilidade proposital de <strong>XSS refletido</strong> para fins educacionais.
+    </p>
+
+    <form id="xssForm" onsubmit="handleSubmit(event)">
+      <input type="text" id="nome" placeholder="Nome completo" required />
+      <input type="text" id="mensagem" placeholder="Mensagem (ex: <img src=x onerror=alert('XSS')>)" />
+      <button type="submit" class="submit">Enviar candidatura</button>
+    </form>
+
+    <div id="unsafe-output"></div>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 DALL·E Tech — Todos os direitos reservados.</p>
+    <small>Ambiente de laboratório • Conteúdo fictício</small>
+  </footer>
+
+  <script>
+    // Formulário vulnerável
+    function handleSubmit(e) {
+      e.preventDefault();
+      const nome = document.getElementById("nome").value;
+      const msg = document.getElementById("mensagem").value;
+      const div = document.getElementById("unsafe-output");
+      div.innerHTML = `<strong>${nome}</strong><br>${msg}`; // vulnerável (sem sanitização)
+    }
+
+    // XSS via parâmetro ?q=
+    const params = new URLSearchParams(window.location.search);
+    const q = params.get("q");
+    if (q) document.getElementById("unsafe-output").innerHTML = q;
+  </script>
+
+  <!--
+    === ACESSO INTERNO VAZADO (intencional para o lab) ===
+    /leaked-config.json
+    {
+      "admin_user": "root",
+      "admin_pass": "D4ll3_Adm!n_2025",
+      "database_path": "darknet://orion-db.core/system/main.sqlite"
+    }
+  -->
+</body>
+</html>

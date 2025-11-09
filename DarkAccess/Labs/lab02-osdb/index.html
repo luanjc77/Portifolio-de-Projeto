@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Lab02 - Terminal Virtual</title>
+    <style>
+        body {
+            background: #000;
+            color: #0f0;
+            font-family: monospace;
+            margin: 0;
+        }
+
+        #terminal {
+            padding: 20px;
+            height: 90vh;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+
+        #input-line {
+            display: flex;
+        }
+
+        #prompt {
+            color: #0ff;
+            margin-right: 5px;
+        }
+
+        #cmd {
+            flex: 1;
+            background: none;
+            border: none;
+            color: #0f0;
+            font-family: inherit;
+            outline: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="terminal">
+        <div>Conectado ao ambiente seguro da DALL·E Tech...</div>
+    </div>
+    <div id="input-line">
+        <span id="prompt">root@dalle-lab02:~$</span>
+        <input id="cmd" autofocus autocomplete="off" />
+    </div>
+
+    <script>
+        const term = document.getElementById('terminal');
+        const input = document.getElementById('cmd');
+
+        input.addEventListener('keydown', async (e) => {
+            if (e.key === 'Enter') {
+                const command = input.value.trim();
+                if (!command) return;
+                append(`\nroot@dalle-lab02:~$ ${command}`);
+                input.value = '';
+
+                const res = await fetch('/api/exec', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ command })
+                });
+                const data = await res.json();
+                append(data.stdout || data.stderr || '[sem saída]');
+                term.scrollTop = term.scrollHeight;
+            }
+        });
+
+        function append(text) {
+            term.textContent += '\n' + text;
+        }
+    </script>
+</body>
+
+</html>

@@ -4,7 +4,9 @@ import Narrator from "../../components/Narrator";
 import User from "../../components/User";
 
 function HomePage() {
-    const API_URL = 'http://35.238.81.86:3001'; 
+    const API_HOST = process.env.REACT_APP_API_HOST;
+    const API_PORT = process.env.REACT_APP_API_PORT;
+    const API_URL = process.env.REACT_APP_API_URL || `http://${API_HOST}:${API_PORT}`;
     
     const [activeChallenges, setActiveChallenges] = useState([]);
     const [playerLife, setPlayerLife] = useState(100); 
@@ -74,10 +76,10 @@ function HomePage() {
             <header className={styles.header}>
                 <h1>DarkAccess</h1>
                 <h2>Selecione o tema que deseja explorar:</h2>
-            </header>
+            </header>   
 
             <main className={styles.challengeGrid}>
-                <button className={styles.challengeButton} onClick={() => handleStartChallenge('phishing')}>Phishing</button>
+                <button className={styles.challengeButton} onClick={() => handleStartChallenge('xss')}>Lab-01</button>
                 <button className={styles.challengeButton} onClick={() => handleStartChallenge('keylogger')}>Keylogger</button>
                 <button className={styles.challengeButton} onClick={() => handleStartChallenge('ransomware')}>Ransomware</button>
                 <button className={styles.challengeButton} onClick={() => handleStartChallenge('brute-force')}>Brute Force</button>

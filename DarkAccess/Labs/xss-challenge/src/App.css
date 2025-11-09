@@ -36,3 +36,9 @@
     transform: rotate(360deg);
   }
 }
+
+
+body { margin: 0; background: #0f1720; color: #e6ffee; }
+.App h1 { color: #6ee7b7; }
+input { padding: 8px; margin-right: 8px; }
+button { padding: 8px 12px; }

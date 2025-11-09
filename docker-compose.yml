@@ -1,0 +1,43 @@
+##version: "3.9"
+
+services:
+  darkaccess-backend:
+    build: ./DarkAccess/Back-End
+    container_name: darkaccess-backend
+    ports:
+      - "3001:3001"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./DarkAccess/Back-End:/app
+    environment:
+      - NODE_ENV=development
+      - DB_HOST=darkaccess-db
+      - DB_USER=postgres
+      - DB_PASS=postgres
+      - DB_NAME=darkaccess
+    depends_on:
+      - darkaccess-db
+    networks:
+      - darkaccess-net
+    restart: unless-stopped
+
+  darkaccess-db:
+    image: postgres:16-alpine
+    container_name: darkaccess-db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: darkaccess
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - darkaccess-net
+
+networks:
+  darkaccess-net:
+    driver: bridge
+
+volumes:
+  db_data:

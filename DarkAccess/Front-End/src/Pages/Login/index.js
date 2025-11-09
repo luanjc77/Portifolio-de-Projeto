@@ -4,10 +4,12 @@ import styles from './Login.module.css';
 
 function LoginPage() {
   const navigate = useNavigate();
-  const [identifier, setIdentifier] = useState('pingu');
+  const [identifier, setIdentifier] = useState('pinguin');
   const [password, setPassword] = useState('123');
 
-  const API_URL = 'http://35.238.81.86:3001'; 
+  const API_HOST = process.env.REACT_APP_API_HOST;
+  const API_PORT = process.env.REACT_APP_API_PORT;
+  const API_URL = process.env.REACT_APP_API_URL || `http://${API_HOST}:${API_PORT}`;
 
   const handleSubmit = async (event) => {
     event.preventDefault();

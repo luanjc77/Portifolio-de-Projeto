@@ -1,0 +1,6 @@
+{
+  "admin_user": "root",
+  "admin_pass": "D4ll3_Adm!n_2025",
+  "database_path": "darknet://orion-db.core/system/main.sqlite",
+  "note": "Credenciais fictícias - ambiente de laboratório"
+}

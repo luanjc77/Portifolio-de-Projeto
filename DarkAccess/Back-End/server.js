@@ -1,31 +1,62 @@
+// server.js - DarkAccess backend (com build dinâmico e tag-única)
 const express = require('express');
 const cors = require('cors');
 const { exec } = require('child_process');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 const { v4: uuidv4 } = require('uuid');
-const db = require('./db'); 
-const bcrypt = require('bcrypt'); 
+const bcrypt = require('bcrypt');
+const fs = require('fs');
+const path = require('path');
+const db = require('./db');
 
 const app = express();
-const PORT = 3001;
+const API_HOST = process.env.REACT_APP_API_HOST;
+const API_PORT = process.env.REACT_APP_API_PORT;
 
-// --- Middlewares ---
+// Middlewares
 app.use(cors());
 app.use(express.json());
 
-
-// --- Mapeamento de Desafios ---
-const challengeImages = {
-    phishing: 'teste-simples:1.0',
-    keylogger: 'teste-simples-2:1.0', 
+// === Configs de labs ===
+// Mapear challengeId -> pasta do lab (relativa a DarkAccess/Labs) e baseImageName
+const challengeConfigs = {
+  xss: {
+    folder: 'xss-challenge',
+    baseImage: 'darkaccess/xss-challenge:latest'
+  },
+  phishing: {
+    folder: 'lab02-phishing',
+    baseImage: 'darkaccess/lab02-phishing'
+  },
+  keylogger: {
+    folder: 'lab03-keylogger',
+    baseImage: 'darkaccess/lab03-keylogger'
+  },
+  // adicione outros labs aqui conforme for criando
 };
 
-// "Banco de dados" em memória para sessões ativas
+// Sessões ativas e TTL
 const activeSessions = {};
+const SESSION_TTL = 1000 * 60 * 45; // 45 minutos
 
+// === Função auxiliar: criar config.json dinâmico ===
+function createSessionConfig(sessionId) {
+  const dir = '/tmp/lab-configs';
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+
+  const filePath = path.join(dir, `${sessionId}-config.json`);
+  const data = {
+    admin_user: "root",
+    admin_pass: "9d7f4c2_key_part1",
+    database_path: "darknet://orion-db.core/system/main.sqlite",
+    session_id: sessionId,
+    created_at: new Date().toISOString(),
+  };
+  fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+  return filePath;
+}
 
 // --- Rotas da API ---
-
 // Rota de Cadastro de Novo Usuário
 app.post('/api/auth/register', async (req, res) => {
     const { username, email, password } = req.body;
@@ -95,120 +126,210 @@ app.post('/api/auth/login', async (req, res) => {
     }
 });
 
-
-// Rota para Iniciar um Desafio
+// === Rota para iniciar um desafio ===
 app.post('/api/challenges/start', (req, res) => {
-    const { challengeId } = req.body;
-    const imageName = challengeImages[challengeId];
-    console.log(`\n--- REQUISIÇÃO PARA INICIAR: ${challengeId} ---`);
+  const { challengeId } = req.body;
+  const cfg = challengeConfigs[challengeId];
 
-    if (!imageName) {
-        return res.status(400).json({ success: false, message: 'Desafio não encontrado.' });
+  if (!cfg) {
+    return res.status(400).json({ success: false, message: 'Desafio não encontrado.' });
+  }
+
+  const sessionId = uuidv4();
+  const containerName = `lab_${challengeId}_${sessionId.substring(0, 8)}`;
+  const baseImage = cfg.baseImage;
+
+  console.log(`\nPreparando ambiente para o desafio: ${challengeId}`);
+  console.log(`[+] Usando imagem existente: ${baseImage}`);
+
+  // Executa o container a partir da imagem já existente (sem rebuildar)
+  const runCmd = `docker run -d -P --name ${containerName} ${baseImage}`;
+  console.log(`[+] Iniciando container: ${containerName}`);
+
+  exec(runCmd, (runError, runStdout, runStderr) => {
+    if (runError) {
+      console.error(`Erro ao iniciar contêiner:`, runStderr || runError.message);
+      return res.status(500).json({ success: false, message: 'Erro ao iniciar contêiner.' });
     }
 
-    const command = `docker run -d -P ${imageName}`;
-    exec(command, (runError, containerId, runStderr) => {
-        if (runError) { 
-            console.error(`Erro ao iniciar o contêiner: ${runStderr}`);
-            return res.status(500).json({ success: false, message: 'Erro no servidor ao iniciar o desafio.' });
+    const containerId = runStdout.trim();
+
+    // Inspeciona o container para pegar a porta exposta
+    const inspectCmd = `docker inspect ${containerId}`;
+    exec(inspectCmd, (inspectError, inspectStdout, inspectStderr) => {
+      if (inspectError) {
+        console.error(`Erro ao inspecionar o contêiner:`, inspectStderr || inspectError.message);
+        return res.status(500).json({ success: false, message: 'Erro ao inspecionar contêiner.' });
+      }
+
+      try {
+        const info = JSON.parse(inspectStdout)[0];
+        let publicPort = null;
+        const ports = info.NetworkSettings?.Ports;
+
+        if (ports && Object.keys(ports).length > 0) {
+          const internalPort = Object.keys(ports)[0];
+          publicPort =
+            ports[internalPort] && ports[internalPort][0] && ports[internalPort][0].HostPort;
         }
-        const trimmedContainerId = containerId.trim();
 
-        const inspectCommand = `docker inspect ${trimmedContainerId}`;
-        exec(inspectCommand, (inspectError, inspectStdout, inspectStderr) => {
-            if (inspectError) { 
-                console.error(`Erro ao inspecionar o contêiner: ${inspectStderr}`);
-                return res.status(500).json({ success: false, message: 'Erro ao inspecionar o contêiner.' });
-            }
-            try {
-                const containerInfo = JSON.parse(inspectStdout);
-                const ports = containerInfo[0].NetworkSettings.Ports;
-                const internalPort = Object.keys(ports)[0];
-                const publicPort = ports[internalPort][0].HostPort;
-                const sessionId = uuidv4();
+        if (!publicPort) {
+          console.error('Não foi possível obter porta pública do contêiner.');
+          exec(`docker rm -f ${containerId}`, () => {});
+          return res.status(500).json({ success: false, message: 'Falha ao mapear porta do contêiner.' });
+        }
 
-                activeSessions[sessionId] = { 
-                    port: publicPort,
-                    containerId: trimmedContainerId 
-                };
+        // Registra a sessão ativa
+        activeSessions[sessionId] = {
+          containerId,
+          containerName,
+          port: publicPort,
+          createdAt: Date.now(),
+        };
 
-                console.log(`Sessão ${sessionId} criada para a porta ${publicPort} (Contêiner: ${trimmedContainerId.substring(0, 12)})`);
-                res.json({ success: true, sessionId: sessionId });
-
-            } catch (parseError) { 
-                console.error("ERRO: Falha ao parsear a saída do 'docker inspect'.", parseError);
-                return res.status(500).json({ success: false, message: 'Erro ao ler a configuração do contêiner.' });
-            }
-        });
+        const proxiedUrl = `http://${API_HOST}:${API_PORT}/challenge/${sessionId}/`;  
+        console.log(`Sessão ${sessionId} iniciada na porta ${publicPort} (container ${containerId.substring(0,12)})`);
+        return res.json({ success: true, sessionId, url: proxiedUrl });
+      } catch (err) {
+        console.error('Erro ao parsear saída do inspect:', err);
+        return res.status(500).json({ success: false, message: 'Erro ao ler informações do contêiner.' });
+      }
     });
+  });
 });
 
-// Rota para Encerrar um Desafio
+
+// === Rota para encerrar sessão ===
 app.post('/api/challenges/stop', (req, res) => {
-    const { sessionId } = req.body;
-    const session = activeSessions[sessionId];
+  const { sessionId } = req.body;
+  const session = activeSessions[sessionId];
 
-    if (!session) {
-        return res.status(404).json({ success: false, message: 'Sessão não encontrada.' });
-    }
+  if (!session) return res.status(404).json({ success: false, message: 'Sessão não encontrada.' });
 
-    const { containerId } = session;
-    console.log(`\n--- REQUISIÇÃO PARA ENCERRAR: Sessão ${sessionId} (Contêiner: ${containerId.substring(0, 12)}) ---`);
+  const { containerId, configPath } = session;
 
-    const stopCommand = `docker stop ${containerId}`;
-    const removeCommand = `docker rm ${containerId}`;
-
-    exec(stopCommand, (stopError, stdout, stderr) => {
-        if (stopError) {
-            console.error(`Erro ao parar contêiner ${containerId}: ${stderr}`);
-        }
-        console.log(`Contêiner ${containerId.substring(0, 12)} parado.`);
-
-        exec(removeCommand, (rmError, stdout, stderr) => {
-            if (rmError) {
-                console.error(`Erro ao remover contêiner ${containerId}: ${stderr}`);
-            }
-            console.log(`Contêiner ${containerId.substring(0, 12)} removido.`);
-
-            delete activeSessions[sessionId];
-            console.log(`Sessão ${sessionId} encerrada.`);
-            res.json({ success: true, message: 'Desafio encerrado com sucesso.' });
-        });
-    });
-});
-
-// Rota para liberar acesso à Deep Web
-app.patch('/api/user/:id/deepweb-access', async (req, res) => {
-    const { id } = req.params;
-    try {
-        await db.query(
-            "UPDATE usuarios SET deepweb_access = 'S' WHERE id = $1",
-            [id]
-        );
-        res.status(200).json({ success: true, message: 'Acesso à Deep Web liberado!' });
-    } catch (error) {
-        console.error('Erro ao liberar Deep Web:', error.message);
-        res.status(500).json({ success: false, message: 'Erro no servidor.' });
-    }
+  exec(`docker rm -f ${containerId}`, (err) => {
+    if (err) console.error(`Erro ao remover contêiner ${containerId}: ${err}`);
+    if (configPath && fs.existsSync(configPath)) fs.unlinkSync(configPath);
+    delete activeSessions[sessionId];
+    console.log(`Sessão ${sessionId} encerrada e limpa.`);
+    res.json({ success: true });
+  });
 });
 
 
-// --- Middleware do Proxy Reverso ---
+// POST /api/lab/:sessionId/exec
+// body: { command: "ls -la" }
+app.post('/api/lab/:sessionId/exec', (req, res) => {
+  const { sessionId } = req.params;
+  const { command } = req.body;
+  const session = activeSessions[sessionId];
+  if (!session) return res.status(404).json({ success:false, message: 'Sessão não encontrada' });
+
+  if (!command || typeof command !== 'string' || command.length > 1000) {
+    return res.status(400).json({ success:false, message: 'Comando inválido' });
+  }
+
+  // sanitize mínimo: rejeita pipes e redirecionamentos perigosos
+  if (/[;&|`$()<>]/.test(command)) {
+    return res.status(400).json({ success:false, message: 'Comando contém caracteres proibidos' });
+  }
+
+  // monta exec seguro: passa comando como único argumento para run.sh
+  // usamos JSON.stringify(command) para adicionar aspas e escapar corretamente
+  const dockerExec = `docker exec ${session.containerId} /lab/run.sh ${JSON.stringify(command)}`;
+
+  console.log(`Exec na sessão ${sessionId}: ${command}`);
+  exec(dockerExec, { timeout: 8000, maxBuffer: 1024 * 1024 }, (err, stdout, stderr) => {
+    if (err) {
+      console.error(`Erro exec (${sessionId}):`, err && err.message);
+      // devolve stdout/stderr se houver
+      return res.json({ success: false, stdout: stdout ? stdout.toString() : '', stderr: stderr ? stderr.toString() : (err && err.message) });
+    }
+    res.json({ success: true, stdout: stdout ? stdout.toString() : '', stderr: stderr ? stderr.toString() : '' });
+  });
+});
+
+
+// === Proxy reverso para o laboratório ===
+app.use((req, res, next) => {
+  const assetMatch = req.path.match(/^\/(static|asset-manifest.json|manifest.json|favicon.ico|robots.txt)/);
+  if (assetMatch) {
+    const referer = req.get('referer') || '';
+    const m = referer.match(/\/challenge\/([a-f0-9-]+)/);
+    if (m) {
+      const sessionId = m[1];
+      const session = activeSessions[sessionId];
+      if (session) {
+        const target = `http://127.0.0.1:${session.port}`;
+        console.log(`Proxy de asset ${req.path} para sessão ${sessionId} -> ${target}`);
+        // repassa a requisição ao container (sem reescrever caminho)
+        return createProxyMiddleware({
+          target,
+          changeOrigin: true,
+          logLevel: 'warn',
+          onProxyReq(proxyReq) {
+            proxyReq.setHeader('Host', `127.0.0.1:${session.port}`);
+          },
+          onError(err, req, res) {
+            console.error('Erro no proxy de asset:', err && err.message);
+            res.status(502).send('Erro no proxy de assets do laboratório.');
+          }
+        })(req, res, next);
+      }
+    }
+  }
+  return next();
+});
+
+// Proxy reverso para a rota principal do laboratório
 app.use('/challenge/:sessionId', (req, res, next) => {
-    const sessionId = req.params.sessionId;
-    const session = activeSessions[sessionId];
-    if (!session) {
-        return res.status(404).send('Sessão do desafio não encontrada ou expirada.');
-    }
-    createProxyMiddleware({
-        target: `http://127.0.0.1:${session.port}`,
-        changeOrigin: true,
-        pathRewrite: { [`^/challenge/${sessionId}`]: '/' },
-    })(req, res, next);
+  const sessionId = req.params.sessionId;
+  const session = activeSessions[sessionId];
+
+  if (!session) {
+    return res.status(404).send('Sessão do desafio não encontrada ou expirada.');
+  }
+
+  const target = `http://127.0.0.1:${session.port}`;
+  console.log(`Proxy ativo para sessão ${sessionId} -> ${target}${req.originalUrl}`);
+
+  const proxy = createProxyMiddleware({
+    target,
+    changeOrigin: true,
+    // REMOVE o prefixo /challenge/:sessionId antes de repassar para o container
+    pathRewrite: {
+      [`^/challenge/${sessionId}`]: ''
+    },
+    onProxyReq(proxyReq, req, res) {
+      // Ajusta o Host header (React/Nginx podem validar isso)
+      proxyReq.setHeader('Host', `127.0.0.1:${session.port}`);
+    },
+    onError(err, req, res) {
+      console.error(`Erro no proxy da sessão ${sessionId}:`, err.message);
+      res.status(502).send('Erro no proxy para o laboratório.');
+    },
+    logLevel: 'warn',
+  });
+
+  proxy(req, res, next);
 });
 
 
-// --- Inicialização do Servidor ---
+// === Auto-cleanup (encerra labs inativos) ===
+setInterval(() => {
+  const now = Date.now();
+  Object.entries(activeSessions).forEach(([id, sess]) => {
+    if (now - sess.createdAt > SESSION_TTL) {
+      exec(`docker rm -f ${sess.containerId}`, () => {});
+      if (fs.existsSync(sess.configPath)) fs.unlinkSync(sess.configPath);
+      delete activeSessions[id];
+      console.log(`Sessão ${id} encerrada por inatividade.`);
+    }
+  });
+}, 1000 * 60 * 2);
+
+// === Inicialização ===
 app.listen(PORT, () => {
-    console.log(`Servidor da API do DarkAccess rodando na porta ${PORT}`);
+  console.log(`DarkAccess backend rodando na porta ${PORT}`);
 });

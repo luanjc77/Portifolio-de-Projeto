@@ -29,7 +29,9 @@ function StartPage() {
 
   async function liberarDeepWebAccess(userId) {
     try {//ajustar isso que ainda não está funcionando
-      const response = await fetch(`https://tiddly-marge-morbifically.ngrok-free.dev:3001/api/user/${userId}/deepweb-access`, {
+      const API_HOST = process.env.REACT_APP_API_HOST;
+      const API_PORT = process.env.REACT_APP_API_PORT;
+      const response = await fetch(`https://${API_HOST}:${API_PORT}/api/user/${userId}/deepweb-access`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
