@@ -1,6 +1,18 @@
-##version: "3.9"
-
 services:
+  db_darkaccess:
+    image: costaluan/db_darkaccess
+    container_name: db_darkaccess
+    environment:
+      POSTGRES_USER: pinguin
+      POSTGRES_PASSWORD: postgress_pinguin_77
+      POSTGRES_DB: darkaccess
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - darkaccess-net
+    ports:
+      - "5432:5432"
+
   darkaccess-backend:
     build: ./DarkAccess/Back-End
     container_name: darkaccess-backend
@@ -10,28 +22,31 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./DarkAccess/Back-End:/app
     environment:
-      - NODE_ENV=development
-      - DB_HOST=darkaccess-db
-      - DB_USER=postgres
-      - DB_PASS=postgres
-      - DB_NAME=darkaccess
+      DB_HOST: db_darkaccess
+      DB_USER: pinguin
+      DB_PASS: postgress_pinguin_77
+      DB_NAME: darkaccess
+      DB_PORT: 5432
+      API_HOST: 34.132.60.57
+      API_PORT: 3001
     depends_on:
-      - darkaccess-db
+      - db_darkaccess
     networks:
       - darkaccess-net
-    restart: unless-stopped
 
-  darkaccess-db:
-    image: postgres:16-alpine
-    container_name: darkaccess-db
+  traefik:
+    image: traefik:v3.0
+    command:
+      - "--providers.docker=true"
+      - "--providers.file.filename=/etc/traefik/dynamic.yml"
+      - "--entrypoints.web.address=:80"
     ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: darkaccess
+      - "80:80"
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./traefik/traefik.yml:/etc/traefik/traefik.yml"
+      - "./traefik/dynamic.yml:/etc/traefik/dynamic.yml"
+      - "./traefik/acme.json:/acme.json"
     networks:
       - darkaccess-net
 
