@@ -1,0 +1,25 @@
+name: Deploy to VM
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: SSH into VM and pull changes
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}      
+        username: ${{ secrets.SSH_USER }}   
+        key: ${{ secrets.SSH_KEY }} 
+        port: 22        
+        script: |
+          echo "Conectado à VM!"
+          echo "Navegando para a pasta do projeto..."
+          cd ${{ secrets.PROJECT_PATH }}
+          echo "Executando git pull..."
+          git pull origin main
+          echo "Deploy finalizado com sucesso!"
