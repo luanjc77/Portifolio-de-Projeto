@@ -1,4 +1,4 @@
-name: Deploy to VM
+name: GCP-Deploy
 
 on:
   push:
@@ -9,17 +9,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: SSH into VM and pull changes
+    - name: Commit pushed to main branch
       uses: appleboy/ssh-action@master
       with:
-        host: ${{ secrets.SSH_HOST }}      
-        username: ${{ secrets.SSH_USER }}   
-        key: ${{ secrets.SSH_KEY }} 
+        host: ${{ secrets.HOST }}      
+        username: ${{ secrets.USER }}   
+        key: ${{ secrets.SSH }} 
         port: 22        
         script: |
-          echo "Conectado à VM!"
-          echo "Navegando para a pasta do projeto..."
-          cd ${{ secrets.PROJECT_PATH }}
-          echo "Executando git pull..."
+          echo "Conectando ao projeto!"
+          cd ${{ secrets.project }}
+          echo "Realizando o pull das últimas alterações..."
           git pull origin main
-          echo "Deploy finalizado com sucesso!"
+          echo "Ultimas alterações aplicadas com sucesso!!!"
