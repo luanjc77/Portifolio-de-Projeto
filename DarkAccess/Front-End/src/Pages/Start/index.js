@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './StartPage.module.css';
-import Narrator from '../../components/Narrator';
+import Narrador from '../../components/Narrator';
 import User from '../../components/User';
-
+  
 const playerLife = 100; 
 
 function StartPage() {
@@ -88,8 +88,10 @@ function StartPage() {
   return (
     <div className={styles.container}>
       <div className={styles.content}>
-  <User playerLife={playerLife} onClick={() => navigate('/user')} />
-        <Narrator messages={narratorMessages} className={styles.narrator} />
+        <User playerLife={playerLife} onClick={() => navigate('/user')} />
+      <div className={styles.narratorWrapper}>
+      <Narrador etapa="inicio" usuario={currentUser} />
+    </div>
         <div className={styles.pathGroup}>
           <button className={styles.pathButton} onClick={handleNavigateToHome}>
             SURFACE WEB

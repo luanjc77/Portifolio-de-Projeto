@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  xss-challenge:
+    build:
+      context: ./tech-horizon
+      dockerfile: Dockerfile
+    ports:
+      - "32784:80"
+    restart: unless-stopped

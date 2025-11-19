@@ -140,3 +140,64 @@
 
     transition: background 0.5s ease-out;
 }
+
+/* Caixa do narrador interativa */
+.narratorBox {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    background-color: rgba(0, 0, 0, 0.4);
+    border: 1px solid #00ff00;
+    border-radius: 12px;
+    padding: 1.5rem;
+    width: 100%;
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
+}
+
+.responseInput {
+    width: 100%;
+    padding: 0.8rem;
+    border-radius: 8px;
+    border: 1px solid #00ff00;
+    background: rgba(0, 0, 0, 0.6);
+    color: #00ff00;
+    font-size: 1rem;
+    outline: none;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.buttonRow {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.buttonRow button {
+    background-color: rgba(0, 0, 0, 0.6);
+    border: 1px solid #00ff00;
+    color: #00ff00;
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.buttonRow button:hover {
+    background-color: rgba(0, 255, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.hintBox {
+    margin-top: 1rem;
+    padding: 0.8rem;
+    background: rgba(0, 255, 0, 0.1);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    color: #aaffaa;
+    text-align: center;
+}

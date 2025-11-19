@@ -8,10 +8,11 @@ const bcrypt = require('bcrypt');
 const fs = require('fs');
 const path = require('path');
 const db = require('./db');
+require('dotenv').config();
 
 const app = express();
-const API_HOST = process.env.REACT_APP_API_HOST;
-const API_PORT = process.env.REACT_APP_API_PORT;
+const API_HOST = process.env.API_HOST || 'localhost';
+const API_PORT = process.env.API_PORT || 3001;
 
 // Middlewares
 app.use(cors());
@@ -22,11 +23,11 @@ app.use(express.json());
 const challengeConfigs = {
   xss: {
     folder: 'xss-challenge',
-    baseImage: 'darkaccess/xss-challenge:latest'
+    baseImage: 'xss-challenge-xss-challenge:latest'
   },
-  phishing: {
-    folder: 'lab02-phishing',
-    baseImage: 'darkaccess/lab02-phishing'
+  so: {
+    folder: 'lab02-osdb',
+    baseImage: 'darkaccess/lab02-osdb:latest'
   },
   keylogger: {
     folder: 'lab03-keylogger',
@@ -125,6 +126,91 @@ app.post('/api/auth/login', async (req, res) => {
         res.status(500).json({ success: false, message: 'Erro no servidor.' });
     }
 });
+
+// Rotas Narrador
+app.get('/api/narrador/fala/:etapa', async (req, res) => {
+  const { etapa } = req.params;
+ 
+  try {
+    const query = await db.query(
+      'SELECT * FROM falas_narrador WHERE etapa = $1 ORDER BY ordem LIMIT 1',
+      [etapa]
+    );
+    
+    if (query.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Fala não encontrada.' });
+    }
+
+    res.json({ success: true, fala: query.rows[0] });
+  } catch (err) {
+    console.error('Erro ao buscar fala:', err.message);
+    res.status(500).json({ success: false, message: 'Erro no servidor.' });
+  }
+});
+
+app.post('/api/narrador/resposta', async (req, res) => {
+  const { etapa, resposta, usuario_id } = req.body;
+
+  try {
+    const query = await db.query(
+      'SELECT * FROM falas_narrador WHERE etapa = $1 LIMIT 1',
+      [etapa]
+    );
+
+    if (query.rows.length === 0)
+      return res.status(404).json({ success: false, message: 'Etapa não encontrada.' });
+
+    const fala = query.rows[0];
+
+    if (fala.resposta_correta && fala.resposta_correta.toLowerCase() === resposta.toLowerCase()) {
+      // acerto → ganha conquista
+      if (fala.conquista_id) {
+        await db.query(
+          'INSERT INTO conquistas_usuario (usuario_id, conquista_id) VALUES ($1, $2) ON CONFLICT DO NOTHING',
+          [usuario_id, fala.conquista_id]
+        );
+      }
+      return res.json({
+        success: true,
+        correta: true,
+        mensagem: 'Resposta correta! Você ganhou uma conquista.',
+      });
+    } else {
+      // erro → perde vida
+      await db.query(
+        'UPDATE usuarios SET vidas = GREATEST(vidas - 1, 0) WHERE id = $1',
+        [usuario_id]
+      );
+      return res.json({
+        success: true,
+        correta: false,
+        mensagem: 'Resposta incorreta. Você perdeu uma vida.',
+      });
+    }
+  } catch (err) {
+    console.error('Erro ao validar resposta:', err.message);
+    res.status(500).json({ success: false, message: 'Erro no servidor.' });
+  }
+});
+//narrador dicas
+app.get('/api/narrador/dica/:etapa', async (req, res) => {
+  const { etapa } = req.params;
+  try {
+    const query = await db.query(
+      'SELECT dica FROM dicas_narrador WHERE etapa = $1 LIMIT 1',
+      [etapa]
+    );
+    if (query.rows.length === 0)
+      return res.status(404).json({ success: false, dica: 'Nenhuma dica disponível.' });
+
+    res.json({ success: true, dica: query.rows[0].dica });
+  } catch (err) {
+    console.error('Erro ao buscar dica:', err.message);
+    res.status(500).json({ success: false, dica: 'Erro ao conectar ao servidor.' });
+  }
+});
+
+
 
 // === Rota para iniciar um desafio ===
 app.post('/api/challenges/start', (req, res) => {
@@ -252,35 +338,8 @@ app.post('/api/lab/:sessionId/exec', (req, res) => {
 
 
 // === Proxy reverso para o laboratório ===
-app.use((req, res, next) => {
-  const assetMatch = req.path.match(/^\/(static|asset-manifest.json|manifest.json|favicon.ico|robots.txt)/);
-  if (assetMatch) {
-    const referer = req.get('referer') || '';
-    const m = referer.match(/\/challenge\/([a-f0-9-]+)/);
-    if (m) {
-      const sessionId = m[1];
-      const session = activeSessions[sessionId];
-      if (session) {
-        const target = `http://127.0.0.1:${session.port}`;
-        console.log(`Proxy de asset ${req.path} para sessão ${sessionId} -> ${target}`);
-        // repassa a requisição ao container (sem reescrever caminho)
-        return createProxyMiddleware({
-          target,
-          changeOrigin: true,
-          logLevel: 'warn',
-          onProxyReq(proxyReq) {
-            proxyReq.setHeader('Host', `127.0.0.1:${session.port}`);
-          },
-          onError(err, req, res) {
-            console.error('Erro no proxy de asset:', err && err.message);
-            res.status(502).send('Erro no proxy de assets do laboratório.');
-          }
-        })(req, res, next);
-      }
-    }
-  }
-  return next();
-});
+// Todos os requests para /challenge/:sessionId/* são proxiados diretamente para o container
+// O container (Nginx) cuida de reescrever URLs e servir arquivos estáticos
 
 // Proxy reverso para a rota principal do laboratório
 app.use('/challenge/:sessionId', (req, res, next) => {
@@ -330,6 +389,6 @@ setInterval(() => {
 }, 1000 * 60 * 2);
 
 // === Inicialização ===
-app.listen(PORT, () => {
-  console.log(`DarkAccess backend rodando na porta ${PORT}`);
+app.listen(API_PORT, () => {
+  console.log(`DarkAccess backend rodando na porta ${API_PORT}`);
 });

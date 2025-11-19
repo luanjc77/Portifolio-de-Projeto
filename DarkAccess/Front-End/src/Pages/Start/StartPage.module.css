@@ -5,13 +5,22 @@
     margin-top: 7rem;
     margin-bottom: 1.2rem;
 }
+
+.narratorWrapper {
+    min-height: 120px; /* reserve space so buttons don't shift when text changes */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.2rem;
+    padding: 0 1rem;
+}
 .container {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    /*background: radial-gradient(circle at 50% 50%, #000200 25%, #008102 100%);*/
-    background: linear-gradient(to bottom, #000000, black 80%);
+    background: radial-gradient(circle at 50% 50%, #000200 43%, #008102 100%);
+    /*background: linear-gradient(to bottom, #000000, rgb(192, 14, 14) 80%);*/
     color: #fff;
     font-family: 'Georgia', serif;
 }
@@ -56,7 +65,7 @@
     font-size: 1.5rem;
     font-family: inherit;
     cursor: pointer;
-    width: 200%;
+    width: 350px;
     transition: all 0.3s ease;
 }
 
