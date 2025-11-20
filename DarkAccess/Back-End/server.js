@@ -224,14 +224,22 @@ app.post('/api/challenges/start', (req, res) => {
   const sessionId = uuidv4();
   const containerName = `lab_${challengeId}_${sessionId.substring(0, 8)}`;
   const baseImage = cfg.baseImage;
+  const VM_PUBLIC_IP = process.env.VM_PUBLIC_IP || 'localhost';
 
-  console.log(`\nPreparando ambiente para o desafio: ${challengeId}`);
+  console.log(`\n[+] Preparando ambiente para o desafio: ${challengeId}`);
   console.log(`[+] Usando imagem existente: ${baseImage}`);
 
-  // Executa o container a partir da imagem já existente (sem rebuildar)
-  const runCmd = `docker run -d -P --name ${containerName} ${baseImage}`;
-  console.log(`[+] Iniciando container: ${containerName}`);
+  // ---- RODAR CONTAINER NA REDE challenge-net COM LABELS TRAEFIK ----
+  const runCmd = `docker run -d \
+    --network challenge-net \
+    --label traefik.enable=true \
+    --label traefik.http.routers.challenge-${sessionId}.rule=PathPrefix(\`/challenge/${sessionId}\`) \
+    --label traefik.http.services.challenge-${sessionId}.loadbalancer.server.port=80 \
+    --name ${containerName} \
+    ${baseImage}`;
 
+  console.log(`[+] Iniciando container: ${containerName}`);
+  
   exec(runCmd, (runError, runStdout, runStderr) => {
     if (runError) {
       console.error(`Erro ao iniciar contêiner:`, runStderr || runError.message);
@@ -240,46 +248,19 @@ app.post('/api/challenges/start', (req, res) => {
 
     const containerId = runStdout.trim();
 
-    // Inspeciona o container para pegar a porta exposta
-    const inspectCmd = `docker inspect ${containerId}`;
-    exec(inspectCmd, (inspectError, inspectStdout, inspectStderr) => {
-      if (inspectError) {
-        console.error(`Erro ao inspecionar o contêiner:`, inspectStderr || inspectError.message);
-        return res.status(500).json({ success: false, message: 'Erro ao inspecionar contêiner.' });
-      }
+    activeSessions[sessionId] = {
+      containerId,
+      containerName,
+      createdAt: Date.now(),
+    };
 
-      try {
-        const info = JSON.parse(inspectStdout)[0];
-        let publicPort = null;
-        const ports = info.NetworkSettings?.Ports;
+    const url = `http://${VM_PUBLIC_IP}/challenge/${sessionId}`;
+    console.log(`[+] Sessão ${sessionId} iniciada. URL: ${url}`);
 
-        if (ports && Object.keys(ports).length > 0) {
-          const internalPort = Object.keys(ports)[0];
-          publicPort =
-            ports[internalPort] && ports[internalPort][0] && ports[internalPort][0].HostPort;
-        }
-
-        if (!publicPort) {
-          console.error('Não foi possível obter porta pública do contêiner.');
-          exec(`docker rm -f ${containerId}`, () => {});
-          return res.status(500).json({ success: false, message: 'Falha ao mapear porta do contêiner.' });
-        }
-
-        // Registra a sessão ativa
-        activeSessions[sessionId] = {
-          containerId,
-          containerName,
-          port: publicPort,
-          createdAt: Date.now(),
-        };
-
-        const proxiedUrl = `http://${API_HOST}:${API_PORT}/challenge/${sessionId}/`;  
-        console.log(`Sessão ${sessionId} iniciada na porta ${publicPort} (container ${containerId.substring(0,12)})`);
-        return res.json({ success: true, sessionId, url: proxiedUrl });
-      } catch (err) {
-        console.error('Erro ao parsear saída do inspect:', err);
-        return res.status(500).json({ success: false, message: 'Erro ao ler informações do contêiner.' });
-      }
+    return res.json({
+      success: true,
+      sessionId,
+      url,
     });
   });
 });
@@ -341,6 +322,7 @@ app.post('/api/lab/:sessionId/exec', (req, res) => {
 // Todos os requests para /challenge/:sessionId/* são proxiados diretamente para o container
 // O container (Nginx) cuida de reescrever URLs e servir arquivos estáticos
 
+/*
 // Proxy reverso para a rota principal do laboratório
 app.use('/challenge/:sessionId', (req, res, next) => {
   const sessionId = req.params.sessionId;
@@ -373,7 +355,7 @@ app.use('/challenge/:sessionId', (req, res, next) => {
 
   proxy(req, res, next);
 });
-
+*/
 
 // === Auto-cleanup (encerra labs inativos) ===
 setInterval(() => {
