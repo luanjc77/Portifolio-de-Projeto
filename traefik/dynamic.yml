@@ -1,0 +1,6 @@
+http:
+  middlewares:
+    strip-challenge:
+      stripPrefixRegex:
+        regex:
+          - "/challenge/[A-Za-z0-9-]+"
