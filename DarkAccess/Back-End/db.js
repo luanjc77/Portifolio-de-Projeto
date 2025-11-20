@@ -1,14 +1,14 @@
 const { Pool } = require('pg');
+require('dotenv').config();
 
 const pool = new Pool({
-  user: 'pinguin',
-  host: 'localhost', 
-  database: 'darkaccess',
-  password: 'postgress_pinguin_77',
-  port: 5432,
+  user: process.env.DB_USER,
+  host: process.env.DB_HOST, 
+  database: process.env.DB_NAME,
+  password: process.env.DB_PASS,
+  port: process.env.DB_PORT || 5432,
 });
 
-// Testa a conexão para garantir que tudo está funcionando
 pool.query('SELECT NOW()', (err, res) => {
     if (err) {
         console.error('ERRO AO CONECTAR COM O POSTGRESQL:', err);
