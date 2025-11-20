@@ -49,9 +49,12 @@ services:
       - "./traefik/acme.json:/acme.json"
     networks:
       - darkaccess-net
+      - challenge-net
 
 networks:
   darkaccess-net:
+    driver: bridge
+  challenge-net:
     driver: bridge
 
 volumes:
