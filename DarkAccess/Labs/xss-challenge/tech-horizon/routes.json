@@ -1,0 +1,8 @@
+[
+  { "path": "/", "name": "Home", "exposed": true },
+  { "path": "/produtos", "name": "Produtos", "exposed": true },
+  { "path": "/parceiros", "name": "Parceiros", "exposed": true },
+  { "path": "/contato", "name": "Contato", "exposed": true },
+  { "path": "/login", "name": "Login", "exposed": true },
+  { "path": "*", "name": "NotFound", "exposed": false }
+]
