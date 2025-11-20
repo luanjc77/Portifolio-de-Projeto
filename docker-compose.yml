@@ -34,7 +34,6 @@ services:
       - db_darkaccess
     networks:
       - darkaccess-net
-
   traefik:
     image: traefik:v3.0
     command:
