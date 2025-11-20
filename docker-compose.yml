@@ -54,8 +54,10 @@ services:
 networks:
   darkaccess-net:
     driver: bridge
+
   challenge-net:
     driver: bridge
-
+    name: challenge-net
+    
 volumes:
   db_data:
