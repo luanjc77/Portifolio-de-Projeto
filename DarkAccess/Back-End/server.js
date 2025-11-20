@@ -233,8 +233,8 @@ app.post('/api/challenges/start', (req, res) => {
   const runCmd = `docker run -d \
     --network challenge-net \
     --label traefik.enable=true \
-    --label traefik.http.routers.challenge-${sessionId}.rule=PathPrefix(\`/challenge/${sessionId}\`) \
-    --label traefik.http.services.challenge-${sessionId}.loadbalancer.server.port=80 \
+    --label "traefik.http.routers.challenge-${sessionId}.rule=PathPrefix(\\\"/challenge/${sessionId}\\\")" \
+    --label "traefik.http.services.challenge-${sessionId}.loadbalancer.server.port=80" \
     --name ${containerName} \
     ${baseImage}`;
 
