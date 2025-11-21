@@ -50,6 +50,13 @@ services:
     networks:
       - darkaccess-net
       - challenge-net
+  xss_lab:
+    image: xss-challenge-xss-challenge:latest
+    container_name: xss_lab
+    ports:
+      - "8080:80"
+    networks:
+      - darkaccess-net
 
 networks:
   darkaccess-net:

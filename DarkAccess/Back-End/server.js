@@ -213,6 +213,7 @@ app.get('/api/narrador/dica/:etapa', async (req, res) => {
 
 
 // === Rota para iniciar um desafio ===
+/*
 app.post('/api/challenges/start', (req, res) => {
   const { challengeId } = req.body;
   const cfg = challengeConfigs[challengeId];
@@ -279,6 +280,16 @@ app.post('/api/challenges/start', (req, res) => {
   });
 });
 
+*/
+app.post('/api/challenges/start', (req, res) => {
+    const url = `http://${process.env.VM_PUBLIC_IP || 'localhost'}:8080`;
+    
+    return res.json({
+        success: true,
+        sessionId: "fixed",
+        url
+    });
+});
 
 // === Rota para encerrar sessão ===
 app.post('/api/challenges/stop', (req, res) => {
