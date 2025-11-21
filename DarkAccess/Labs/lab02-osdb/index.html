@@ -40,15 +40,57 @@
 </head>
 
 <body>
-    <div id="terminal">
-        <div>Conectado ao ambiente seguro da DALL·E Tech...</div>
+
+    <!-- TELA DE LOGIN -->
+    <div id="login-screen" style="padding:20px;color:#0f0;">
+        <div>DALL·E Lab02 - Terminal Seguro</div><br>
+        <div>login:</div>
+        <input id="login-user"><br><br>
+
+        <div>password:</div>
+        <input id="login-pass" type="password"><br><br>
+
+        <button onclick="login()">Login</button>
     </div>
-    <div id="input-line">
-        <span id="prompt">root@dalle-lab02:~$</span>
-        <input id="cmd" autofocus autocomplete="off" />
+
+    <!-- ÁREA DO TERMINAL -->
+    <div id="terminal-area" style="display:none;">
+        <div id="terminal">
+            <div>Conectado ao ambiente seguro da DALL·E Tech...</div>
+        </div>
+
+        <div id="input-line">
+            <span id="prompt">root@dalle-lab02:~$</span>
+            <input id="cmd" autofocus autocomplete="off" />
+        </div>
     </div>
 
     <script>
+        let session = null;
+
+        async function login() {
+            const user = document.getElementById("login-user").value;
+            const pass = document.getElementById("login-pass").value;
+
+            const res = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user, pass })
+            });
+
+            const data = await res.json();
+
+            if (!data.success) {
+                alert("Login inválido!");
+                return;
+            }
+
+            session = data.session;
+
+            document.getElementById("login-screen").style.display = "none";
+            document.getElementById("terminal-area").style.display = "";
+        }
+
         const term = document.getElementById('terminal');
         const input = document.getElementById('cmd');
 
@@ -56,14 +98,16 @@
             if (e.key === 'Enter') {
                 const command = input.value.trim();
                 if (!command) return;
+                
                 append(`\nroot@dalle-lab02:~$ ${command}`);
                 input.value = '';
 
                 const res = await fetch('/api/exec', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ command })
+                    body: JSON.stringify({ command, session })
                 });
+
                 const data = await res.json();
                 append(data.stdout || data.stderr || '[sem saída]');
                 term.scrollTop = term.scrollHeight;
@@ -74,6 +118,7 @@
             term.textContent += '\n' + text;
         }
     </script>
+
 </body>
 
 </html>
