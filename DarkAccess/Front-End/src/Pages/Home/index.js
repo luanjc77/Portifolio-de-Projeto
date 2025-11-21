@@ -136,7 +136,6 @@ function HomePage() {
       <main className={styles.challengeGrid}>
         <button className={styles.challengeButton} onClick={() => handleStartChallenge('xss')}>Lab-01</button>
         <button className={styles.challengeButton} onClick={() => handleStartChallenge('so')}>Lab-02</button>
-        <button className={styles.challengeButton} onClick={() => handleStartChallenge('ransomware')}>Ransomware</button>
       </main>
 
       {activeChallenges.length > 0 && (

@@ -57,7 +57,13 @@ services:
       - "8080:80"
     networks:
       - darkaccess-net
-
+  lab02_osdb:
+    image: darkaccess/lab02-osdb:latest
+    container_name: lab02_osdb
+    ports:
+      - "8081:80"
+    networks:
+      - darkaccess-net
 networks:
   darkaccess-net:
     driver: bridge

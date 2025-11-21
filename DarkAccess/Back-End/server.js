@@ -282,12 +282,24 @@ app.post('/api/challenges/start', (req, res) => {
 
 */
 app.post('/api/challenges/start', (req, res) => {
-    const url = `http://${process.env.VM_PUBLIC_IP || 'localhost'}:8080`;
-    
+    const { challengeId } = req.body;
+
+    const VM_PUBLIC_IP = process.env.VM_PUBLIC_IP || "localhost";
+
+    // Mapeamento Fixo
+    const urls = {
+        xss: `http://${VM_PUBLIC_IP}:8080`,
+        so: `http://${VM_PUBLIC_IP}:8081`
+    };
+
+    if (!urls[challengeId]) {
+        return res.status(400).json({ success: false, message: "Lab não encontrado." });
+    }
+
     return res.json({
         success: true,
         sessionId: "fixed",
-        url
+        url: urls[challengeId]
     });
 });
 
