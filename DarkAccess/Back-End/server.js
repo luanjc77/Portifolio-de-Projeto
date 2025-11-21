@@ -259,6 +259,14 @@ app.post('/api/challenges/start', (req, res) => {
     const url = `http://${VM_PUBLIC_IP}/challenge/${sessionId}`;
     console.log(`[+] Sessão ${sessionId} iniciada. URL: ${url}`);
 
+    setTimeout(() => {
+        return res.json({
+            success: true,
+            sessionId,
+            url,
+        });
+    }, 3000); // 3 segundos
+
     return res.json({
       success: true,
       sessionId,
