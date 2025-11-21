@@ -1,30 +1,33 @@
-### BUILD (Node)
-FROM node:18-alpine AS build
+FROM node:18-alpine
 
-RUN apk add --no-cache bash sqlite coreutils
+# instalar utilitários necessários
+RUN apk add --no-cache bash sqlite coreutils nginx
+
+# criar usuário não-root
 RUN adduser -D -h /home/labuser labuser
+
 WORKDIR /lab
 
+# copiar todos os arquivos do lab
 COPY files/ ./files/
-COPY run.sh seed_db.sql server.js index.html ./
+COPY run.sh seed_db.sql server.js index.html nginx.conf ./
 
+# instalar dependências do Node
 RUN npm install express body-parser
-RUN chmod +x /lab/run.sh && chown -R labuser:labuser /lab
-RUN sqlite3 /lab/main.sqlite < /lab/seed_db.sql && chown labuser:labuser /lab/main.sqlite
 
-### FINAL (NGINX)
-FROM nginx:stable-alpine
+# permissões
+RUN chmod +x /lab/run.sh && \
+    chown -R labuser:labuser /lab
 
+# criar banco inicial
+RUN sqlite3 /lab/main.sqlite < /lab/seed_db.sql && \
+    chown labuser:labuser /lab/main.sqlite
+
+# copiar nginx.conf para o Nginx
+RUN rm -f /etc/nginx/conf.d/default.conf
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# FRONTEND
-COPY --from=build /lab/index.html /usr/share/nginx/html/index.html
-COPY --from=build /lab/files /usr/share/nginx/html/files
+EXPOSE 80 3000
 
-# BACKEND (node)
-COPY --from=build /lab /lab
-WORKDIR /lab
-
-EXPOSE 80
-
+# iniciar Node + Nginx no mesmo container
 CMD sh -c "node server.js & nginx -g 'daemon off;'"
