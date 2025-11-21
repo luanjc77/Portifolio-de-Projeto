@@ -231,12 +231,16 @@ app.post('/api/challenges/start', (req, res) => {
 
   // ---- RODAR CONTAINER NA REDE challenge-net COM LABELS TRAEFIK ----
   const runCmd = `docker run -d \
-    --network portifolio-de-projeto_challenge-net \
+    --network challenge-net \
     --label "traefik.enable=true" \
-    --label "traefik.http.routers.challenge-${sessionId}.rule=PathPrefix(\\\`/challenge/${sessionId}\\\`)" \
+    --label "traefik.http.routers.challenge-${sessionId}.rule=PathPrefix(\\\"/challenge/${sessionId}/\\\")" \
+    --label "traefik.http.routers.challenge-${sessionId}.entrypoints=web" \
     --label "traefik.http.services.challenge-${sessionId}.loadbalancer.server.port=80" \
-    --name ${containerName} \
+    --label "traefik.http.middlewares.challenge-${sessionId}-strip.stripprefix.prefixes=/challenge/${sessionId}" \
+    --label "traefik.http.routers.challenge-${sessionId}.middlewares=challenge-${sessionId}-strip" \
+    --name lab_${challengeId}_${sessionId} \
     ${baseImage}`;
+
 
 
 
