@@ -111,8 +111,19 @@ app.post('/api/auth/login', async (req, res) => {
         const user = userQuery.rows[0];
         const isPasswordCorrect = await bcrypt.compare(password, user.password_hash);
 
-        if (!isPasswordCorrect) {
-            return res.status(401).json({ success: false, message: 'Credenciais inválidas.' });
+        if (isPasswordCorrect) {
+
+            // Verifica se ainda não tem a conquista "primeiro_acesso"
+            await db.query(`
+                INSERT INTO conquistas_usuario (usuario_id, conquista_id)
+                SELECT $1, id FROM conquistas WHERE codigo = 'primeiro_acesso'
+                ON CONFLICT DO NOTHING;
+            `, [user.id]);
+
+            // Marca o campo primeiro_acesso = true também
+            await db.query(`
+                UPDATE usuarios SET primeiro_acesso = true WHERE id = $1
+            `, [user.id]);
         }
 
         res.status(200).json({
