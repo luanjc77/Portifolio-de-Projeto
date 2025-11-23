@@ -128,87 +128,194 @@ app.post('/api/auth/login', async (req, res) => {
 });
 
 // Rotas Narrador
+// --- Narrador, Dicas, Deepweb e Conquistas ---
+// Certifique-se de ter 'db' já importado (client de postgres) no topo do server.js
+
+// GET fala do narrador considerando etapa e opcionalmente userId
 app.get('/api/narrador/fala/:etapa', async (req, res) => {
   const { etapa } = req.params;
- 
-  try {
-    const query = await db.query(
-      'SELECT * FROM falas_narrador WHERE etapa = $1 ORDER BY ordem LIMIT 1',
-      [etapa]
-    );
-    
-    if (query.rows.length === 0) {
-      return res.status(404).json({ success: false, message: 'Fala não encontrada.' });
-    }
-
-    res.json({ success: true, fala: query.rows[0] });
-  } catch (err) {
-    console.error('Erro ao buscar fala:', err.message);
-    res.status(500).json({ success: false, message: 'Erro no servidor.' });
-  }
-});
-
-app.post('/api/narrador/resposta', async (req, res) => {
-  const { etapa, resposta, usuario_id } = req.body;
+  const userId = req.query.userId || null;
 
   try {
-    const query = await db.query(
-      'SELECT * FROM falas_narrador WHERE etapa = $1 LIMIT 1',
-      [etapa]
-    );
+    // Se userId foi passado, ler info do usuário para ajustar fala
+    if (userId) {
+      const u = await db.query('SELECT id, primeiro_acesso, etapa_atual, deepweb_access FROM usuarios WHERE id = $1', [userId]);
+      if (u.rows.length > 0) {
+        const user = u.rows[0];
 
-    if (query.rows.length === 0)
-      return res.status(404).json({ success: false, message: 'Etapa não encontrada.' });
+        // Se for primeiro acesso e etapa seja 'inicio', retornamos tutorial
+        if (user.primeiro_acesso && etapa === 'inicio') {
+          const rows = await db.query('SELECT fala, ordem FROM falas_narrador WHERE chave_evento = $1 ORDER BY ordem', ['tutorial_inicio']);
+          if (rows.rows.length > 0) {
+            // retornar array concatenado como uma fala longa (ou escolher só a primeira)
+            const combined = rows.rows.map(r => r.fala).join('\n\n');
+            return res.json({ success: true, fala: { fala: combined, etapa: 'tutorial_inicio' } });
+          }
+        }
 
-    const fala = query.rows[0];
+        // Se não for primeiro acesso, buscar falas padrão de 'inicio_retorno'
+        if (!user.primeiro_acesso && etapa === 'inicio') {
+          const rows = await db.query('SELECT fala, ordem FROM falas_narrador WHERE chave_evento = $1 ORDER BY ordem', ['inicio_retorno']);
+          if (rows.rows.length > 0) {
+            const combined = rows.rows.map(r => r.fala).join('\n\n');
+            return res.json({ success: true, fala: { fala: combined, etapa: 'inicio_retorno' } });
+          }
+        }
 
-    if (fala.resposta_correta && fala.resposta_correta.toLowerCase() === resposta.toLowerCase()) {
-      // acerto → ganha conquista
-      if (fala.conquista_id) {
-        await db.query(
-          'INSERT INTO conquistas_usuario (usuario_id, conquista_id) VALUES ($1, $2) ON CONFLICT DO NOTHING',
-          [usuario_id, fala.conquista_id]
-        );
+        // Se o usuário já tem deepweb_access e pedimos uma fala relacionada
+        if (user.deepweb_access === 'S' && etapa === 'profundezas') {
+          const rows = await db.query('SELECT fala FROM falas_narrador WHERE chave_evento = $1 ORDER BY ordem', ['profundezas']);
+          if (rows.rows.length > 0) {
+            const combined = rows.rows.map(r => r.fala).join('\n\n');
+            return res.json({ success: true, fala: { fala: combined, etapa: 'profundezas' } });
+          }
+        }
       }
-      return res.json({
-        success: true,
-        correta: true,
-        mensagem: 'Resposta correta! Você ganhou uma conquista.',
-      });
-    } else {
-      // erro → perde vida
-      await db.query(
-        'UPDATE usuarios SET vidas = GREATEST(vidas - 1, 0) WHERE id = $1',
-        [usuario_id]
-      );
-      return res.json({
-        success: true,
-        correta: false,
-        mensagem: 'Resposta incorreta. Você perdeu uma vida.',
-      });
     }
+
+    // fallback: buscar falas normais por chave_evento = etapa
+    const q = await db.query('SELECT fala, resposta_correta, ordem, conquista_codigo FROM falas_narrador WHERE chave_evento = $1 ORDER BY ordem', [etapa]);
+    if (q.rows.length === 0) {
+      // fallback simples se não existir no DB
+      return res.json({ success: true, fala: { fala: 'Nenhuma fala configurada para esta etapa. Siga explorando!', etapa } });
+    }
+
+    // se existirem várias linhas, concatenamos
+    const falaText = q.rows.map(r => r.fala).join('\n\n');
+    // se a primeira linha tiver resposta_correta, informamos
+    const first = q.rows[0];
+    const responseObj = {
+      fala: falaText,
+      etapa,
+    };
+    if (first.resposta_correta) responseObj.resposta_correta = first.resposta_correta;
+    if (first.conquista_codigo) responseObj.conquista_codigo = first.conquista_codigo;
+
+    return res.json({ success: true, fala: responseObj });
+
   } catch (err) {
-    console.error('Erro ao validar resposta:', err.message);
-    res.status(500).json({ success: false, message: 'Erro no servidor.' });
+    console.error('Erro /api/narrador/fala:', err);
+    res.status(500).json({ success: false, message: 'Erro ao recuperar fala.' });
   }
 });
-//narrador dicas
+
+// GET dica (mantido / adaptado) -> também aceita userId query se quiser personalizar no futuro
 app.get('/api/narrador/dica/:etapa', async (req, res) => {
   const { etapa } = req.params;
   try {
-    const query = await db.query(
-      'SELECT dica FROM dicas_narrador WHERE etapa = $1 LIMIT 1',
-      [etapa]
-    );
-    if (query.rows.length === 0)
-      return res.status(404).json({ success: false, dica: 'Nenhuma dica disponível.' });
-
+    const query = await db.query('SELECT dica FROM dicas_narrador WHERE etapa = $1 LIMIT 1', [etapa]);
+    if (query.rows.length === 0) return res.json({ success: false, dica: 'Nenhuma dica disponível.' });
     res.json({ success: true, dica: query.rows[0].dica });
   } catch (err) {
-    console.error('Erro ao buscar dica:', err.message);
-    res.status(500).json({ success: false, dica: 'Erro ao conectar ao servidor.' });
+    console.error('Erro dica:', err);
+    res.status(500).json({ success: false, dica: 'Erro ao buscar dica.' });
   }
 });
+
+// POST /api/narrador/resposta (já existia no seu arquivo) - mantive e acrescentei lógica para conceder conquista se fala vinculada
+app.post('/api/narrador/resposta', async (req, res) => {
+  const { etapa, resposta, usuario_id } = req.body;
+  if (!etapa || !usuario_id) return res.status(400).json({ success:false, message: 'Parâmetros inválidos.' });
+
+  try {
+    // buscar fala configurada que contenha resposta_correta para a etapa
+    const q = await db.query('SELECT * FROM falas_narrador WHERE chave_evento = $1 ORDER BY ordem LIMIT 1', [etapa]);
+    if (q.rows.length === 0) return res.status(404).json({ success:false, message: 'Etapa não encontrada.' });
+
+    const fala = q.rows[0];
+
+    if (fala.resposta_correta && fala.resposta_correta.toLowerCase() === (resposta || '').toLowerCase()) {
+      // acertou → conceder conquista se houver
+      if (fala.conquista_codigo) {
+        const c = await db.query('SELECT id FROM conquistas WHERE codigo = $1 LIMIT 1', [fala.conquista_codigo]);
+        if (c.rows.length > 0) {
+          const conquistaId = c.rows[0].id;
+          await db.query('INSERT INTO conquistas_usuario (usuario_id, conquista_id) VALUES ($1,$2) ON CONFLICT DO NOTHING', [usuario_id, conquistaId]);
+        }
+      }
+      // marcar que não é mais primeiro_acesso
+      await db.query('UPDATE usuarios SET primeiro_acesso = false WHERE id = $1', [usuario_id]);
+
+      return res.json({
+        success: true,
+        correta: true,
+        mensagem: 'Resposta correta! Você ganhou uma conquista (se aplicável).'
+      });
+    } else {
+      // errar -> perder vida (se houver coluna vidas)
+      await db.query('UPDATE usuarios SET vidas = GREATEST(COALESCE(vidas,3) - 1, 0) WHERE id = $1', [usuario_id]);
+      return res.json({ success: true, correta: false, mensagem: 'Resposta incorreta. Você perdeu uma vida.' });
+    }
+  } catch (err) {
+    console.error('Erro validar resposta:', err);
+    res.status(500).json({ success:false, message: 'Erro no servidor.' });
+  }
+});
+
+// POST /api/deepweb/unlock
+// Body: { userId, password }
+app.post('/api/deepweb/unlock', async (req, res) => {
+  const { userId, password } = req.body;
+  if (!userId || !password) return res.status(400).json({ success: false, message: 'Parâmetros inválidos.' });
+
+  try {
+    const expected = process.env.DEEPWEB_PASSWORD || '123456';
+    if (password !== expected) return res.json({ success: false, message: 'Senha incorreta.' });
+
+    // Atualiza usuário
+    await db.query('UPDATE usuarios SET deepweb_access = $1 WHERE id = $2', ['S', userId]);
+
+    // concede conquista 'profundezas'
+    const c = await db.query('SELECT id FROM conquistas WHERE codigo = $1 LIMIT 1', ['profundezas']);
+    if (c.rows.length) {
+      const conquistaId = c.rows[0].id;
+      await db.query('INSERT INTO conquistas_usuario (usuario_id, conquista_id) VALUES ($1,$2) ON CONFLICT DO NOTHING', [userId, conquistaId]);
+    }
+
+    // retornar narrador/fala de desbloqueio
+    const rows = await db.query('SELECT fala FROM falas_narrador WHERE chave_evento = $1 ORDER BY ordem', ['profundezas']);
+    const falaCombined = rows.rows.map(r => r.fala).join('\n\n') || 'Você desbloqueou as Profundezas. Muito cuidado.';
+
+    res.json({ success: true, message: 'Acesso liberado.', narrador_fala: falaCombined });
+  } catch (err) {
+    console.error('Erro deepweb unlock:', err);
+    res.status(500).json({ success:false, message: 'Erro no servidor.' });
+  }
+});
+
+// GET /api/usuario/:id/conquistas  -> lista conquistas do usuario
+app.get('/api/usuario/:id/conquistas', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const q = await db.query(`
+      SELECT c.codigo, c.nome
+      FROM conquistas_usuario cu
+      JOIN conquistas c ON c.id = cu.conquista_id
+      WHERE cu.usuario_id = $1
+    `, [id]);
+    res.json({ success: true, conquistas: q.rows });
+  } catch (err) {
+    console.error('Erro ao buscar conquistas:', err);
+    res.status(500).json({ success:false, message: 'Erro no servidor.' });
+  }
+});
+
+// POST /api/usuario/:id/conquistas  -> body { codigo } - administra conquista manualmente
+app.post('/api/usuario/:id/conquistas', async (req, res) => {
+  const { id } = req.params;
+  const { codigo } = req.body;
+  if (!codigo) return res.status(400).json({ success:false, message: 'codigo obrigatório' });
+  try {
+    const c = await db.query('SELECT id FROM conquistas WHERE codigo = $1 LIMIT 1', [codigo]);
+    if (c.rows.length === 0) return res.status(404).json({ success:false, message: 'conquista não encontrada' });
+    await db.query('INSERT INTO conquistas_usuario (usuario_id, conquista_id) VALUES ($1,$2) ON CONFLICT DO NOTHING', [id, c.rows[0].id]);
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Erro conceder conquista:', err);
+    res.status(500).json({ success:false, message: 'Erro no servidor.' });
+  }
+});
+
 
 
 

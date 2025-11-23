@@ -1,101 +1,109 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './StartPage.module.css';
 import Narrador from '../../components/Narrator';
 import User from '../../components/User';
-  
-const playerLife = 100; 
+
+const playerLife = 100;
 
 function StartPage() {
   const navigate = useNavigate();
-  const [currentUser, setCurrentUser] = React.useState(null);
-  const [password, setPassword] = React.useState('');
-  const [isDeepWebUnlocked, setIsDeepWebUnlocked] = React.useState(false);
-  const [showError, setShowError] = React.useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [password, setPassword] = useState('');
+  const [isDeepWebUnlocked, setIsDeepWebUnlocked] = useState(false);
+  const [showError, setShowError] = useState(false);
+  const [narratorTrigger, setNarratorTrigger] = useState(0);
 
   useEffect(() => {
     const user = localStorage.getItem('user');
     if (user) {
-      setCurrentUser(JSON.parse(user));
+      const parsed = JSON.parse(user);
+      setCurrentUser(parsed);
+      if (parsed.deepweb_access === 'S') {
+        setIsDeepWebUnlocked(true);
+      }
     }
-    // Verificar se a Deep Web já foi desbloqueada anteriormente
+
     const deepWebUnlocked = localStorage.getItem('deepWebUnlocked');
     if (deepWebUnlocked === 'true') {
       setIsDeepWebUnlocked(true);
     }
   }, []);
 
-  const testPassword = "123456";
+  // --- Unlock Profundezas via BACKEND ---
+  async function unlockDeepWeb(passwordValue) {
+    try {
+      const API_HOST = process.env.REACT_APP_API_HOST || window.location.hostname;
+      const API_PORT = process.env.REACT_APP_API_PORT || '3001';
+      const base = process.env.REACT_APP_API_BASE || `http://${API_HOST}:${API_PORT}`;
 
-  async function liberarDeepWebAccess(userId) {
-    try {//ajustar isso que ainda não está funcionando
-      const API_HOST = process.env.REACT_APP_API_HOST;
-      const API_PORT = process.env.REACT_APP_API_PORT;
-      const response = await fetch(`https://${API_HOST}:${API_PORT}/api/user/${userId}/deepweb-access`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      const response = await fetch(`${base}/api/deepweb/unlock`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: currentUser?.id,
+          password: passwordValue
+        })
       });
+
       const data = await response.json();
+
       if (data.success) {
-        // Atualiza o estado/localStorage do usuário
-        if (currentUser) {
-          const updatedUser = { ...currentUser, deepweb_access: 'S' };
-          setCurrentUser(updatedUser);
-          localStorage.setItem('user', JSON.stringify(updatedUser));
-        }
+        setIsDeepWebUnlocked(true);
+        setShowError(false);
+
+        const updatedUser = { ...currentUser, deepweb_access: 'S' };
+        setCurrentUser(updatedUser);
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        localStorage.setItem('deepWebUnlocked', 'true');
+
+        alert(data.narrador_fala);
+        setNarratorTrigger(narratorTrigger + 1);
+      } else {
+        setShowError(true);
       }
     } catch (error) {
-      console.error('Erro ao liberar Deep Web:', error);
+      console.error('Erro ao desbloquear Deep Web:', error);
     }
   }
 
-  const handlePasswordChange = async (e) => {
+  // Campo da senha
+  function handlePasswordChange(e) {
     const value = e.target.value;
     setPassword(value);
-    if (value === testPassword) {
-      setIsDeepWebUnlocked(true);
-      setShowError(false);
-      localStorage.setItem('deepWebUnlocked', 'true');
-      if (currentUser && currentUser.deepweb_access !== 'S') {
-        await liberarDeepWebAccess(currentUser.id);
-      }
+    if (value.length >= 3) {
+      unlockDeepWeb(value);
     } else {
-      setIsDeepWebUnlocked(false);
-      setShowError(value.length > 0);
+      setShowError(false);
     }
-  };
+  }
 
   const handleNavigateToDeepWeb = () => {
-    if (isDeepWebUnlocked) {
-      navigate('/deep-web');
-    }
+    if (isDeepWebUnlocked) navigate('/deep-web');
   };
 
   const handleNavigateToHome = () => {
     navigate('/home');
   };
 
-  const narratorMessages = currentUser ? [
-    `Olá, explorador ${currentUser.username}.`,
-    "Vejo que você tem curiosidade...",
-    "Existem segredos escondidos nesta rede.",
-    "Você tem o que é preciso para encontrá-los?",
-    "Comece sua jornada abaixo."
-  ] : [];
-
   return (
     <div className={styles.container}>
       <div className={styles.content}>
         <User playerLife={playerLife} onClick={() => navigate('/user')} />
-      <div className={styles.narratorWrapper}>
-      <Narrador etapa="inicio" usuario={currentUser} />
-    </div>
+
+        <div className={styles.narratorWrapper}>
+          <Narrador 
+            etapa="inicio" 
+            usuario={currentUser}
+            repeatTrigger={narratorTrigger}
+          />
+        </div>
+
         <div className={styles.pathGroup}>
           <button className={styles.pathButton} onClick={handleNavigateToHome}>
-            SURFACE WEB
+            SUPERFÍCIE
           </button>
+
           <div className={styles.deepWebSection}>
             <input
               type="password"
@@ -104,15 +112,17 @@ function StartPage() {
               onChange={handlePasswordChange}
               className={styles.passwordInput}
             />
+
             {showError && (
               <p className={styles.errorMessage}>Senha incorreta. Tente novamente.</p>
             )}
-            <button 
+
+            <button
               className={`${styles.pathButton} ${!isDeepWebUnlocked ? styles.locked : styles.unlocked}`}
               onClick={handleNavigateToDeepWeb}
               disabled={!isDeepWebUnlocked}
             >
-              DEEP WEB
+              PROFUNDEZAS
             </button>
           </div>
         </div>

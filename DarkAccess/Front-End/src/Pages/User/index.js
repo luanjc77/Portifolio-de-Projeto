@@ -7,33 +7,47 @@ function UserPage() {
   const [editingPassword, setEditingPassword] = useState(false);
   const [form, setForm] = useState({
     username: '',
-    email: '',
-    cardNumber: '',
-    cvv: '',
-    expiry: '',
+    email: ''
   });
   const [avatar, setAvatar] = useState(null);
   const [playerLife, setPlayerLife] = useState(100);
+  const [conquistas, setConquistas] = useState([]);
   const fileInputRef = useRef(null);
 
   useEffect(() => {
     const stored = localStorage.getItem('user');
     if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        setUser(parsed);
-        setForm(prev => ({
-          ...prev,
-          username: parsed.username || '',
-          email: parsed.email || '',
-        }));
-        if (parsed.avatar) setAvatar(parsed.avatar);
-        if (parsed.playerLife) setPlayerLife(parsed.playerLife);
-      } catch (e) {
-        // ignore
-      }
+      const parsed = JSON.parse(stored);
+      setUser(parsed);
+
+      setForm({
+        username: parsed.username || '',
+        email: parsed.email || ''
+      });
+
+      if (parsed.avatar) setAvatar(parsed.avatar);
+      if (parsed.playerLife) setPlayerLife(parsed.playerLife);
+
+      loadConquistas(parsed.id);
     }
   }, []);
+
+  async function loadConquistas(id) {
+    try {
+      const API_HOST = process.env.REACT_APP_API_HOST || window.location.hostname;
+      const API_PORT = process.env.REACT_APP_API_PORT || '3001';
+      const base = process.env.REACT_APP_API_BASE || `http://${API_HOST}:${API_PORT}`;
+
+      const res = await fetch(`${base}/api/usuario/${id}/conquistas`);
+      const data = await res.json();
+
+      if (data.success) {
+        setConquistas(data.conquistas);
+      }
+    } catch (error) {
+      console.error("Erro ao carregar conquistas:", error);
+    }
+  }
 
   const onFileChange = async (e) => {
     const file = e.target.files && e.target.files[0];
@@ -81,9 +95,13 @@ function UserPage() {
         <div className={styles.achievements}>
           <h3>Conquistas / Acessos</h3>
           <div className={styles.achievementsGrid}>
-            <div className={styles.badge}>Em breve</div>
-            <div className={styles.badge}>Em breve</div>
-            <div className={styles.badge}>Em breve</div>
+            {conquistas.length === 0 && <div className={styles.badge}>Nenhuma conquista ainda</div>}
+
+            {conquistas.map((c, index) => (
+              <div key={index} className={styles.badge}>
+                {c.nome}
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -107,23 +125,6 @@ function UserPage() {
           {editingPassword && (
             <input placeholder="Nova senha" type="password" className={styles.input} />
           )}
-        </div>
-
-        <h3>Pagamento</h3>
-        <label className={styles.label}>
-          Número do cartão
-          <input name="cardNumber" value={form.cardNumber} onChange={handleChange} className={styles.input} placeholder="1234 5678 9012 3456" />
-        </label>
-
-        <div className={styles.row}>
-          <label className={styles.labelSmall}>
-            CVV
-            <input name="cvv" value={form.cvv} onChange={handleChange} className={styles.input} placeholder="123" />
-          </label>
-          <label className={styles.labelSmall}>
-            Validade
-            <input name="expiry" value={form.expiry} onChange={handleChange} className={styles.input} placeholder="MM/AA" />
-          </label>
         </div>
 
         <div className={styles.actions}>
