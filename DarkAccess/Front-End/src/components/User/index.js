@@ -2,22 +2,21 @@ import React from 'react';
 import { FaUserCircle } from 'react-icons/fa';
 import styles from './User.module.css';
 
-function User({ playerLife = 100, onClick }) {
+export default function User({ life, onClick }) {
   return (
-    <div
-      className={styles.playerLifeCircle}
-      style={{ '--life-percentage': `${playerLife}%` }}
-      onClick={onClick}
-      role={onClick ? 'button' : undefined}
-      tabIndex={onClick ? 0 : -1}
-      onKeyDown={(e) => {
-        if (onClick && (e.key === 'Enter' || e.key === ' ')) onClick();
-      }}
-    >
-      <div className={styles.lifeBar}></div>
-      <FaUserCircle className={styles.icon} />
+    <div className={styles.wrapper} onClick={onClick}>
+      
+      {/* CÍRCULO DINÂMICO */}
+      <div 
+        className={styles.lifeCircle}
+        style={{ '--life': `${life}%` }}
+      ></div>
+
+      {/* AVATAR */}
+      <div className={styles.avatar}>
+        <FaUserCircle />
+      </div>
+
     </div>
   );
 }
-
-export default User;

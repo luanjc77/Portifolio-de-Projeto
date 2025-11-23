@@ -1,51 +1,70 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './StartPage.module.css';
+
 import Narrador from '../../components/Narrator';
 import User from '../../components/User';
+import NarratorControls from '../../components/NarratorControls';
 
-const playerLife = 100;
 
 function StartPage() {
   const navigate = useNavigate();
-  const [currentUser, setCurrentUser] = React.useState(null);
+
+  const [currentUser, setCurrentUser] = useState(null);
+  const [skipSignal, setSkipSignal] = useState(0);
+  const [repeatTrigger, setRepeatTrigger] = useState(0);
 
   useEffect(() => {
     const user = localStorage.getItem('user');
-    if (user) {
-      setCurrentUser(JSON.parse(user));
-    }
+    if (user) setCurrentUser(JSON.parse(user));
   }, []);
 
-  const handleNavigateToHome = () => navigate('/home');
-  const handleNavigateToDeepWebAccess = () => navigate('/darkaccess');
+  const handleSkip = () => setSkipSignal((p) => p + 1);
+  const handleRepeat = () => setRepeatTrigger((p) => p + 1);
 
   return (
     <div className={styles.container}>
       <div className={styles.content}>
 
-        {/* Avatar do usuário */}
-        <User playerLife={playerLife} onClick={() => navigate('/user')} />
+        {/* Avatar + Botões do narrador */}
+        <div className={styles.topRight}>
 
-        {/* NARRADOR */}
-        <div className={styles.narratorWrapper}>
-          <Narrador etapa="inicio" usuario={currentUser} />
+            {/* Botões do narrador à esquerda */}
+            <NarratorControls
+                onSkip={handleSkip}
+                onRepeat={handleRepeat}
+                etapa="inicio_novo"
+            />
+
+            {/* Avatar do usuário à direita */}
+            <User life={currentUser?.vida || 100} onClick={() => navigate('/user')} />
+
         </div>
 
-        {/* BOTÕES LADO A LADO */}
+
+        {/* Texto do narrador */}
+        <div className={styles.narratorWrapper}>
+          <Narrador
+            etapa="inicio_novo"
+            usuario={currentUser}
+            skipSignal={skipSignal}
+            repeatTrigger={repeatTrigger}
+          />
+        </div>
+
+        {/* Botões principais */}
         <div className={styles.buttonRow}>
-          <button className={styles.pathButton} onClick={handleNavigateToHome}>
+          <button className={styles.pathButton} onClick={() => navigate('/home')}>
             SUPERFÍCIE
           </button>
 
           <button
             className={`${styles.pathButton} ${styles.unlocked}`}
-            onClick={handleNavigateToDeepWebAccess}
+            onClick={() => navigate('/darkaccess')}
           >
             PROFUNDEZAS
           </button>
         </div>
-
       </div>
     </div>
   );

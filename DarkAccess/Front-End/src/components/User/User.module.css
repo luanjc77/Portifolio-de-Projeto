@@ -1,55 +1,61 @@
-.playerLifeCircle {
+.wrapper {
     position: absolute;
     top: 20px;
     right: 20px;
+
+    width: 70px;
+    height: 70px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    cursor: pointer;
+    z-index: 500;
+}
+
+/* BORDA DE VIDA */
+.lifeCircle {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+
+    border-radius: 50%;
+
+    /* VIDA CONTROLADA POR CSS */
+    background: conic-gradient(
+        #00ff00 var(--life),
+        #222 0deg
+    );
+
+    padding: 5px; /* Espessura da borda */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    /* Cria um buraco para o avatar */
+    -webkit-mask: radial-gradient(circle 33px at center, transparent 40px, black 41px);
+            mask: radial-gradient(circle 33px at center, transparent 40px, black 41px);
+
+    transition: background 0.3s ease;
+}
+
+/* AVATAR INTERNO */
+.avatar {
     width: 60px;
     height: 60px;
+
+    background: #000;
     border-radius: 50%;
-    background-color: #333;
+
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: visible;
-    box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
-    z-index: 100;
+
+    z-index: 2;
 }
 
-.playerLifeCircle[role="button"] {
-    cursor: pointer;
-}
-
-.playerLifeCircle:focus {
-    outline: 2px solid rgba(0,255,0,0.2);
-    outline-offset: 4px;
-}
-
-.playerLifeCircle:hover .lifeBar {
-    filter: brightness(1.15);
-}
-
-.lifeBar {
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
-    background: conic-gradient(#ff0000 var(--life-percentage, 100%), #333 0%);
-    z-index: 1;
-    transition: background 0.5s ease-out;
-    pointer-events: none;
-}
-
-.playerLifeCircle .icon {
-    position: relative;
-    font-size: 1.8rem;
+.avatar svg {
+    width: 40px;
+    height: 40px;
     color: #00ff00;
-    z-index: 3;
-    background: #333;
-    border-radius: 50%;
-    width: 42px;
-    height: 42px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }

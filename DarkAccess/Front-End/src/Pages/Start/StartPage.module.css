@@ -54,3 +54,30 @@
   border-color: #00ff00;
   color: #00ff00;
 }
+
+.skipAndUser {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+/* Container que segura User + NarratorControls */
+.topRight {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;   /* espaço entre botões do narrador e o User */
+}
+
+/* Botões do narrador */
+.narratorControls {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}

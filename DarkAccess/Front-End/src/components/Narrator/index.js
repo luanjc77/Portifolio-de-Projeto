@@ -1,27 +1,43 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 
-export default function Narrador({ etapa, usuario, messages = [], repeatTrigger = 0, onFalaReady }) {
+export default function Narrador({
+  etapa,
+  usuario,
+  messages = [],
+  repeatTrigger = 0,
+  skipSignal = 0,
+  onFalaReady = null
+}) {
   const [falaObj, setFalaObj] = useState(null);
   const [typed, setTyped] = useState('');
+
   const [resposta, setResposta] = useState('');
   const [feedback, setFeedback] = useState('');
+  const [dica, setDica] = useState('');
   const [loading, setLoading] = useState(false);
-  const [dica, setDica] = useState(null);
+
+  const typingTimer = useRef(null);
 
   const getApiBase = () => {
     const API_HOST = process.env.REACT_APP_API_HOST || window.location.hostname;
-    const API_PORT = process.env.REACT_APP_API_PORT || (window.location.port ? window.location.port : '3001');
-    return process.env.REACT_APP_API_BASE || `http://${API_HOST}:${API_PORT}`;
+    const API_PORT = process.env.REACT_APP_API_PORT || window.location.port || '3001';
+    return `http://${API_HOST}:${API_PORT}`;
   };
 
+  // ------------------------------------------------------------
+  // 🔹 CARREGAR A FALA DO NARRADOR
+  // ------------------------------------------------------------
   useEffect(() => {
-    // if messages prop provided (override) -> show those
-    if (messages && Array.isArray(messages) && messages.length > 0) {
-      const built = { fala: messages.join('\n\n'), etapa };
-      setFalaObj(built);
-      startTyping(built.fala);
-      if (typeof onFalaReady === 'function') onFalaReady(built);
+    // Caso HomePage envie "messages"
+    if (messages.length > 0) {
+      const msg = messages.join("\n\n");
+      const falaPack = { fala: msg, etapa: etapa || 'default' };
+
+      setFalaObj(falaPack);
+      startTyping(msg);
+
+      if (onFalaReady) onFalaReady(falaPack);
       return;
     }
 
@@ -29,98 +45,140 @@ export default function Narrador({ etapa, usuario, messages = [], repeatTrigger 
 
     const fetchFala = async () => {
       setLoading(true);
+
       try {
         const base = getApiBase();
-        // pass userId if we have usuario
-        const userIdPart = usuario && usuario.id ? `?userId=${usuario.id}` : '';
-        const res = await axios.get(`${base}/api/narrador/fala/${encodeURIComponent(etapa)}${userIdPart}`);
-        if (res.data && res.data.success && res.data.fala) {
+        const qs = usuario?.id ? `?userId=${usuario.id}` : '';
+
+        const res = await axios.get(`${base}/api/narrador/fala/${encodeURIComponent(etapa)}${qs}`);
+
+        if (res.data?.success && res.data.fala) {
           setFalaObj(res.data.fala);
           startTyping(res.data.fala.fala || '');
-          if (typeof onFalaReady === 'function') onFalaReady(res.data.fala);
+
+          if (onFalaReady) onFalaReady(res.data.fala);
         } else {
-          setFalaObj({ fala: 'Nada a dizer no momento.' });
-          startTyping('Nada a dizer no momento.');
+          const fallback = { fala: 'Nada a dizer no momento.' };
+          setFalaObj(fallback);
+          startTyping(fallback.fala);
         }
+
       } catch (err) {
-        console.error('Erro ao buscar fala:', err);
-        setFalaObj({ fala: 'Erro ao carregar narrador.' });
-        startTyping('Erro ao carregar narrador.');
-      } finally {
-        setLoading(false);
+        console.error('Erro ao carregar fala:', err);
+        const errorMsg = { fala: 'Erro ao carregar narrador.' };
+        setFalaObj(errorMsg);
+        startTyping(errorMsg.fala);
       }
+
+      setLoading(false);
     };
 
     fetchFala();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [etapa, usuario]);
 
-  // repeatTrigger: re-type current fala
+
+  // ------------------------------------------------------------
+  // 🔹 REPETIR FALA
+  // ------------------------------------------------------------
   useEffect(() => {
-    if (!falaObj || !falaObj.fala) return;
-    startTyping(falaObj.fala);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (falaObj?.fala) startTyping(falaObj.fala);
   }, [repeatTrigger]);
 
-  function startTyping(full) {
+
+  // ------------------------------------------------------------
+  // 🔹 SKIP — completar fala sem animação
+  // ------------------------------------------------------------
+  useEffect(() => {
+    if (falaObj?.fala) {
+      setTyped(falaObj.fala);
+      stopTyping();
+    }
+  }, [skipSignal, falaObj]);
+
+
+  // ------------------------------------------------------------
+  // 🔹 ANIMAÇÃO DE DIGITAÇÃO
+  // ------------------------------------------------------------
+  function startTyping(fullText) {
+    stopTyping();
     setTyped('');
+
     let i = 0;
-    const speed = 18;
-    const timer = setInterval(() => {
-      i += 1;
-      setTyped(full.slice(0, i));
-      if (i >= full.length) clearInterval(timer);
-    }, speed);
-    return () => clearInterval(timer);
+    typingTimer.current = setInterval(() => {
+      i++;
+      setTyped(fullText.slice(0, i));
+
+      if (i >= fullText.length) stopTyping();
+    }, 40);
   }
 
+  function stopTyping() {
+    if (typingTimer.current) {
+      clearInterval(typingTimer.current);
+      typingTimer.current = null;
+    }
+  }
+
+
+  // ------------------------------------------------------------
+  // 🔹 PEDIR DICA
+  // ------------------------------------------------------------
   async function pedirDica() {
     if (!etapa) return;
+
     try {
       const base = getApiBase();
-      const userIdPart = usuario && usuario.id ? `?userId=${usuario.id}` : '';
-      const res = await axios.get(`${base}/api/narrador/dica/${encodeURIComponent(etapa)}${userIdPart}`);
-      if (res.data && res.data.success && res.data.dica) setDica(res.data.dica);
-      else setDica('Nenhuma dica disponível.');
+      const qs = usuario?.id ? `?userId=${usuario.id}` : '';
+
+      const res = await axios.get(`${base}/api/narrador/dica/${encodeURIComponent(etapa)}${qs}`);
+      setDica(res.data?.dica || "Nenhuma dica disponível.");
     } catch (err) {
-      console.error('Erro dica:', err);
-      setDica('Erro ao buscar dica.');
+      console.error(err);
+      setDica("Erro ao buscar dica.");
     }
   }
 
+
+  // ------------------------------------------------------------
+  // 🔹 ENVIAR RESPOSTA
+  // ------------------------------------------------------------
   async function enviarResposta() {
-    if (!etapa || !usuario || !usuario.id) {
-      setFeedback('Você precisa estar logado para responder.');
+    if (!usuario?.id) {
+      setFeedback("Você precisa estar logado.");
       return;
     }
+
     try {
       const base = getApiBase();
+
       const res = await axios.post(`${base}/api/narrador/resposta`, {
         etapa,
         resposta,
         usuario_id: usuario.id
       });
-      if (res.data && res.data.success) {
-        setFeedback(res.data.mensagem || 'Resposta enviada.');
-        // se correta e há conquista/aviso, podemos informar
-      } else {
-        setFeedback(res.data.message || 'Erro ao enviar resposta.');
-      }
+
+      setFeedback(res.data?.mensagem || "Resposta enviada!");
+
     } catch (err) {
-      console.error('Erro enviar resposta:', err);
-      setFeedback('Erro ao enviar resposta.');
+      console.error(err);
+      setFeedback("Erro ao enviar resposta.");
     }
   }
 
-  if (!falaObj && loading) return <div>Carregando narrador...</div>;
+
+  // ------------------------------------------------------------
+  // 🔹 RENDERIZAÇÃO
+  // ------------------------------------------------------------
+  if (loading && !falaObj) return <p>Carregando narrador...</p>;
 
   return (
     <div className="narrador">
+
       <div className="narrador-text">
-        <p>{typed || (falaObj && falaObj.fala) || '...'}</p>
+        <p>{typed}</p>
       </div>
 
-      {falaObj && falaObj.resposta_correta && (
+      {falaObj?.resposta_correta && (
         <div className="narrador-resposta">
           <input
             value={resposta}
@@ -128,12 +186,13 @@ export default function Narrador({ etapa, usuario, messages = [], repeatTrigger 
             placeholder="Digite sua resposta..."
           />
           <button onClick={enviarResposta}>Responder</button>
-          <button onClick={pedirDica} style={{ marginLeft: 8 }}>Pedir dica</button>
+          <button onClick={pedirDica}>Dica</button>
         </div>
       )}
 
       {dica && <div className="narrador-dica"><small>Dica: {dica}</small></div>}
       {feedback && <div className="narrador-feedback"><small>{feedback}</small></div>}
+
     </div>
   );
 }
