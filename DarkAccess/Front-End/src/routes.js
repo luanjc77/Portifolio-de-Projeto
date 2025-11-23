@@ -6,6 +6,7 @@ import RegisterPage from "./Pages/Register";
 import LoginPage from "./Pages/Login";
 import UserPage from "./Pages/User";
 import DeepWebPage from "Pages/DeepWeb";
+import DarkAccess from "Pages/DarkAccess";
 
 function AppRoutes() {
   return (
@@ -16,6 +17,8 @@ function AppRoutes() {
           <Route path="/register" element={<RegisterPage />}></Route>
           <Route path="/inicio" element={<StartPage />}></Route>
           <Route path="/deep-web" element={<DeepWebPage />}></Route>
+          <Route path="/darkaccess" element={<DarkAccess />} />
+
       <Route path="/home" element={<HomePage />}></Route>
       <Route path="/user" element={<UserPage />}></Route>
       </Routes>

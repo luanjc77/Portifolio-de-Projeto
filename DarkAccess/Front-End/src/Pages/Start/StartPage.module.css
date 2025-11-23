@@ -1,216 +1,56 @@
-.narrator {
-    font-size: 2.1rem;
-    font-weight: 500;
-    color: #00ff00;
-    margin-top: 7rem;
-    margin-bottom: 1.2rem;
-}
-
-.narratorWrapper {
-    min-height: 120px; /* reserve space so buttons don't shift when text changes */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 1.2rem;
-    padding: 0 1rem;
-}
 .container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background: radial-gradient(circle at 50% 50%, #000200 43%, #008102 100%);
-    /*background: linear-gradient(to bottom, #000000, rgb(192, 14, 14) 80%);*/
-    color: #fff;
-    font-family: 'Georgia', serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: radial-gradient(circle at 50% 50%, #000200 43%, #008102 100%);
+  color: #fff;
+  font-family: 'Georgia', serif;
 }
+
 .content {
-    text-align: center;
-    max-width: 800px;
-}
-.title {
-    font-size: 3rem;
-    font-weight: bold;
-    margin-bottom: 0.5rem;
-    color: #fff;
-    text-shadow: 0 2px 8px #000, 0 0 1px #fff;
+  text-align: center;
+  max-width: 900px;
 }
 
-.subtitle {
-    font-size: 2.2rem;
-    font-weight: 500;
-    margin-bottom: 2.5rem;
-    color: #eaeaea;
-    text-shadow: 0 2px 8px #000, 0 0 1px #fff;
-}
-.description {
-    font-size: 1.1rem;
-    color: #aaa;
-    line-height: 1.6;
-    margin-bottom: 3rem;
+/* NARRADOR */
+.narratorWrapper {
+  margin-top: 40px;
+  margin-bottom: 60px;
+  padding: 0 1rem;
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.pathGroup {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2rem;
+
+.buttonRow {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
+  margin-top: 30px;
 }
 
 .pathButton {
-    background-color: transparent;
-    border: 2px solid #00ff00;
-    color: #00ff00;
-    padding: 1.5rem;
-    font-size: 1.5rem;
-    font-family: inherit;
-    cursor: pointer;
-    width: 350px;
-    transition: all 0.3s ease;
+  background-color: transparent;
+  border: 2px solid #00ff00;
+  color: #00ff00;
+  padding: 1.5rem;
+  font-size: 1.5rem;
+  cursor: pointer;
+  width: 300px;
+  transition: 0.3s;
 }
 
-.pathButton:hover:not(.locked) {
-    background-color: #00ff00;
-    color: #000;
-    box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
-}
-
-.deepWebSection {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-    width: 80%;
-}
-
-.passwordInput {
-    background-color: #000;
-    border: 2px solid #00ff00;
-    color: #00ff00;
-    padding: 0.8rem;
-    font-size: 1rem;
-    font-family: inherit;
-    width: 100%;
-    margin-top: 1rem;
-}
-
-.passwordInput:focus {
-    outline: none;
-    border-color: #00ff00;
-    box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
-}
-
-.locked {
-    opacity: 0.5;
-    cursor: not-allowed;
-    border-color: #333 !important;
-    color: #333 !important;
+.pathButton:hover {
+  background-color: #00ff00;
+  color: #000;
+  box-shadow: 0 0 15px rgba(0, 255, 0, 0.4);
 }
 
 .unlocked {
-    border-color: #00ff00;
-    color: #00ff00;
-    box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
-}
-
-.errorMessage {
-    color: #ff0000;
-    font-size: 0.9rem;
-    margin-top: 0.5rem;
-    text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
-}
-.buttonGroup {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2.5rem;
-    margin-top: 2.5rem;
-}
-
-.startButton {
-    background-color: transparent;
-    color: #222;
-    border: none;
-    border-radius: 2.5rem;
-    padding: 1.5rem 0;
-    width: 350px;
-    font-size: 1.3rem;
-    font-weight: bold;
-    letter-spacing: 1px;
-    cursor: pointer;
-    margin-bottom: 0.5rem;
-    box-shadow: 0 2px 16px 0 rgba(0,0,0,0.12);
-    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
-    border: 2px solid #00ff00;
-    color: #00ff00;
-    
-}
-.startButton:hover {
-    background: #f0f0f0;
-    color: #2a2a8a;
-    box-shadow: 0 4px 24px 0 rgba(42,42,138,0.18);
-}
-.locked {
-    color: #555;
-    border-color: #333;
-    cursor: not-allowed;
-}
-
-.deepWebSection {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-    width: 80%;
-}
-
-.passwordInput {
-    background-color: #222;
-    border: 2px solid #444;
-    color: #00ff00;
-    padding: 0.8rem;
-    font-size: 1rem;
-    font-family: inherit;
-    width: 100%;
-    margin-top: 1rem;
-}
-
-.passwordInput:focus {
-    outline: none;
-    border-color: #00ff00;
-    box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
-}
-
-.unlockButton {
-    background-color: #333;
-    border: 1px solid #00ff00;
-    color: #00ff00;
-    padding: 0.5rem 1rem;
-    font-size: 1rem;
-    font-family: inherit;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.unlockButton:hover {
-    background-color: #004400;
-    box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
-}
-.locked:hover {
-    color: #555;
-    border-color: #333;
-    box-shadow: none;
-}
-
-.unlocked {
-    border-color: #00ff00 !important;
-    color: #00ff00 !important;
-    box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
-}
-
-.errorMessage {
-    color: #ff0000;
-    font-size: 0.9rem;
-    margin-top: 0.5rem;
-    text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+  border-color: #00ff00;
+  color: #00ff00;
 }

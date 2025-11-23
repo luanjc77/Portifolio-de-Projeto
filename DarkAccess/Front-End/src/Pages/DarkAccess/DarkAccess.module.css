@@ -1,0 +1,60 @@
+/* DarkAccess.module.css */
+.container {
+  min-height: 100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background: #000;
+  color: #0f0;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.box {
+  width: 720px;
+  max-width: 95%;
+  background: #020202;
+  border: 1px solid #0f0;
+  padding: 28px;
+  box-shadow: 0 8px 30px rgba(0,255,0,0.05);
+  border-radius: 6px;
+}
+
+h2 { color: #dfffcf; margin:0 0 8px 0; text-align:center; }
+.lead { color: #9fe99f; margin-bottom: 18px; text-align:center; }
+
+.form label { display:block; margin-bottom:14px; font-size:0.95rem; color:#bfffbf; }
+.form input {
+  width:100%;
+  padding:10px 12px;
+  background:#0b0b0b;
+  color:#dfffcf;
+  border:1px solid #234823;
+  border-radius:4px;
+  margin-top:6px;
+  box-sizing:border-box;
+}
+
+.row {
+  display:flex;
+  gap:12px;
+  margin-top:18px;
+  justify-content:center;
+  align-items:center;
+}
+
+.row button {
+  padding:10px 18px;
+  background:#002200;
+  border:1px solid #00ff00;
+  color:#dfffcf;
+  cursor:pointer;
+  border-radius:4px;
+}
+
+.cancel {
+  background: transparent;
+  border:1px solid #444;
+}
+
+.error { color:#ff6b6b; margin-top:12px; text-align:center; }
+.success { color:#8fffb0; margin-top:12px; text-align:center; }

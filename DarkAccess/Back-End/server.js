@@ -138,9 +138,91 @@ app.post('/api/auth/login', async (req, res) => {
     }
 });
 
+// POST /api/deepweb/access
+// body: { username, password, ip, userId }
+app.post('/api/deepweb/access', async (req, res) => {
+  try {
+    const { username, password, ip, userId } = req.body;
+
+    // validação básica
+    if (!username || !password || !ip) {
+      return res.status(400).json({ success: false, message: 'Campos ausentes.' });
+    }
+
+    const vpnUser = process.env.VPN_USER;
+    const vpnPass = process.env.VPN_PASS;
+    const vpnIp   = process.env.VPN_IP;
+
+    if (!vpnUser || !vpnPass || !vpnIp) {
+      console.error('VPN env vars not set.');
+      return res.status(500).json({ success: false, message: 'Serviço de validação indisponível.' });
+    }
+
+    if (username !== vpnUser || password !== vpnPass || ip !== vpnIp) {
+      return res.status(401).json({ success: false, message: 'Credenciais inválidas.' });
+    }
+
+    // Encontrar usuário no banco
+    let usr;
+    if (userId) {
+      const q = await db.query('SELECT * FROM usuarios WHERE id = $1 LIMIT 1', [userId]);
+      if (q.rows.length === 0) {
+        return res.status(404).json({ success: false, message: 'Usuário não encontrado.' });
+      }
+      usr = q.rows[0];
+    } else {
+      const q = await db.query('SELECT * FROM usuarios WHERE username = $1 LIMIT 1', [username]);
+      if (q.rows.length === 0) {
+        return res.status(404).json({ success: false, message: 'Usuário não encontrado.' });
+      }
+      usr = q.rows[0];
+    }
+
+    const userIdDb = usr.id;
+
+    // 1) Atualiza flag do usuário
+    const upd = await db.query(
+      "UPDATE usuarios SET deepweb_access = 'S' WHERE id = $1 RETURNING *",
+      [userIdDb]
+    );
+
+    //Validação e atualização da conquista "profundezas" do usuário
+    await db.query(
+      `INSERT INTO conquistas (codigo, nome)
+       VALUES ($1, $2)
+       ON CONFLICT (codigo) DO NOTHING`,
+      ['profundezas', 'Acesso às Profundezas']
+    );
+
+    await db.query(
+      `INSERT INTO conquistas_usuario (usuario_id, conquista_id)
+       SELECT $1, c.id FROM conquistas c WHERE c.codigo = $2
+       ON CONFLICT DO NOTHING`,
+      [userIdDb, 'profundezas']
+    );
+
+    const userRes = await db.query('SELECT * FROM usuarios WHERE id = $1 LIMIT 1', [userIdDb]);
+
+    const conquistasRes = await db.query(
+      `SELECT c.codigo, c.nome
+       FROM conquistas_usuario cu
+       JOIN conquistas c ON cu.conquista_id = c.id
+       WHERE cu.usuario_id = $1`,
+      [userIdDb]
+    );
+
+    const userObj = userRes.rows[0];
+    userObj.conquistas = conquistasRes.rows;
+
+    return res.json({ success: true, message: 'Acesso às profundezas liberado.', user: userObj });
+
+  } catch (err) {
+    console.error('Erro em /api/deepweb/access:', err && err.message);
+    return res.status(500).json({ success: false, message: 'Erro no servidor.' });
+  }
+});
+
 // Rotas Narrador
-// --- Narrador, Dicas, Deepweb e Conquistas ---
-// Certifique-se de ter 'db' já importado (client de postgres) no topo do server.js
 
 // GET fala do narrador considerando etapa e opcionalmente userId
 app.get('/api/narrador/fala/:etapa', async (req, res) => {
