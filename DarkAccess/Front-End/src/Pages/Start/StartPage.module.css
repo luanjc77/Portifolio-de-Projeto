@@ -64,16 +64,18 @@
   gap: 20px;
 }
 /* Container que segura User + NarratorControls */
-.topRight {
+.topLeft {
     position: absolute;
     top: 20px;
-    right: 20px;
+    left: 20px;
 
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 20px;   /* espaço entre botões do narrador e o User */
+    gap: 20px;
 }
+
+
 
 /* Botões do narrador */
 .narratorControls {

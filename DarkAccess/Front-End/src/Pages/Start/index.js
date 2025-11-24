@@ -25,22 +25,16 @@ function StartPage() {
   return (
     <div className={styles.container}>
       <div className={styles.content}>
-
         {/* Avatar + Botões do narrador */}
-        <div className={styles.topRight}>
-
-            {/* Botões do narrador à esquerda */}
-            <NarratorControls
-                onSkip={handleSkip}
-                onRepeat={handleRepeat}
-                etapa="inicio_novo"
-            />
-
-            {/* Avatar do usuário à direita */}
-            <User life={currentUser?.vida || 100} onClick={() => navigate('/user')} />
-
+        <div className={styles.topLeft}>
+          <NarratorControls
+              onSkip={handleSkip}
+              onRepeat={handleRepeat}
+              etapa="inicio_novo"
+          />
         </div>
-
+        
+          <User life={currentUser?.vida || 100} onClick={() => navigate('/user')} />
 
         {/* Texto do narrador */}
         <div className={styles.narratorWrapper}>
