@@ -1,203 +1,72 @@
-.homeContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 2rem;
-    padding-top: 15%; 
-    box-sizing: border-box;
-    color: white;
-    text-align: center;
+.page {
     min-height: 100vh;
-}
-.header h1 {
-    font-size: 3rem;
-    margin-bottom: 0.5rem;
-    font-family: 'Courier New', Courier, monospace;
-}
-.header h2 {
-    font-size: 1.2rem;
-    font-weight: normal;
-    margin-bottom: 3rem;
-}
-.challengeGrid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1.5rem;
     width: 100%;
-    max-width: 800px;
-}
-.challengeButton {
-    background-color: rgba(0, 0, 0, 0.4);
-    border: 1px solid #00ff00; 
+    background: linear-gradient(to bottom, #1a6e01, black 80%);
     color: white;
-    padding: 1rem;
-    font-size: 1rem;
-    font-weight: bold;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.2s;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.challengeButton:hover {
-    background-color: rgba(0, 255, 0, 0.2);
-    transform: translateY(-3px);
-}
-@media (max-width: 768px) {
-    .challengeGrid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
 
-.activeChallenges {
-    margin-top: 4rem;
-    width: 100%;
-    max-width: 600px;
-}
-.activeChallenges h3 {
-    font-size: 1.5rem;
-    border-bottom: 1px solid #00ff00;
-    padding-bottom: 0.5rem;
-    margin-bottom: 1rem;
-}
-.activeChallenges ul {
-    list-style: none;
-    padding: 0;
-}
-.activeChallenges li {
-    background-color: rgba(0, 0, 0, 0.2);
-    padding: 1rem;
-    border-radius: 5px;
-    margin-bottom: 1rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 1rem;
-}
-.activeChallenges li button {
-    background-color: transparent;
-    border: 1px solid #FF4136;
-    color: #FF4136;
-    padding: 0.5rem 1rem;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-.activeChallenges li button:hover {
-    background-color: #FF4136;
-    color: white;
-}
-
-.playerLifeCircle {
-    position: absolute; 
-    top: 20px; 
-    right: 20px;
-    width: 60px; 
-    height: 60px;
-    border-radius: 50%; 
-    background-color: #333; 
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden; 
-    box-shadow: 0 0 10px rgba(0, 255, 0, 0.5); 
-    z-index: 100; 
-}
-
-.playerLifeCircle::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 50px; 
-    height: 50px;
-    border-radius: 50%;
-    background-color: #1a1a1a; 
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 2; 
-}
-
-.playerLifeCircle .icon {
-    position: relative;
-    font-size: 2rem; 
-    color: #00ff00; 
-    z-index: 3; 
-}
-
-.lifeBar {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    background: conic-gradient(#ff0000 var(--life-percentage, 100%), #333 0%); 
-
-    transition: background 0.5s ease-out;
-}
-
-/* Caixa do narrador interativa */
-.narratorBox {
-    margin-top: 2rem;
-    margin-bottom: 2rem;
-    background-color: rgba(0, 0, 0, 0.4);
-    border: 1px solid #00ff00;
-    border-radius: 12px;
-    padding: 1.5rem;
-    width: 100%;
-    max-width: 600px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
+    justify-content: center; /* CENTRALIZA TUDO */
+
+    padding-top: 0; /* REMOVER o empurrão pra baixo */
+    gap: 20px; /* espaço bonito entre os itens */
 }
 
-.responseInput {
+
+/* ===== USER (já posicionado no componente) ===== */
+.topRight {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+/* ===== NARRADOR ===== */
+.narratorSection {
     width: 100%;
-    padding: 0.8rem;
-    border-radius: 8px;
+    max-width: 700px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* ===== INPUT ===== */
+.responseInput {
+    width: 500px;
+    max-width: 90%;
+    padding: 12px;
     border: 1px solid #00ff00;
     background: rgba(0, 0, 0, 0.6);
     color: #00ff00;
-    font-size: 1rem;
-    outline: none;
-    margin-bottom: 1rem;
-    text-align: center;
-}
-
-.buttonRow {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-}
-
-.buttonRow button {
-    background-color: rgba(0, 0, 0, 0.6);
-    border: 1px solid #00ff00;
-    color: #00ff00;
-    padding: 0.6rem 1rem;
     border-radius: 8px;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+/* ===== DICA ===== */
+.hintBox {
+    color: #99ff99;
+    margin-top: 10px;
+    font-size: 0.9rem;
+}
+
+/* ===== BOTÕES LABS ===== */
+.labs {
+    margin-top: 60px;
+    display: flex;
+    gap: 40px;
+}
+
+.labs button {
+    background: transparent;
+    border: 2px solid #00ff00;
+    color: #00ff00;
+    padding: 15px 40px;
+    font-size: 1.2rem;
     cursor: pointer;
-    font-weight: bold;
     transition: 0.3s;
 }
 
-.buttonRow button:hover {
-    background-color: rgba(0, 255, 0, 0.1);
-    transform: translateY(-2px);
-}
-
-.hintBox {
-    margin-top: 1rem;
-    padding: 0.8rem;
-    background: rgba(0, 255, 0, 0.1);
-    border-radius: 6px;
-    font-size: 0.9rem;
-    color: #aaffaa;
-    text-align: center;
+.labs button:hover {
+    background: #00ff00;
+    color: black;
 }

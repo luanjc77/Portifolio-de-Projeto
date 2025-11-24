@@ -1,169 +1,116 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import styles from "./HomePage.module.css";
-import Narrator from "../../components/Narrator";
+
+import Narrador from "../../components/Narrator";
 import User from "../../components/User";
 import NarratorControls from "../../components/NarratorControls";
-import { useNavigate } from 'react-router-dom';
+
+import { useNavigate } from "react-router-dom";
 
 function HomePage() {
-  const API_HOST = process.env.REACT_APP_API_HOST;
-  const API_PORT = process.env.REACT_APP_API_PORT;
-  const API_URL = `http://${API_HOST}:${API_PORT}`;
 
-  const [activeChallenges, setActiveChallenges] = useState([]);
+  const navigate = useNavigate();
+  const API_URL = `http://${process.env.REACT_APP_API_HOST}:${process.env.REACT_APP_API_PORT}`;
+
   const [playerLife, setPlayerLife] = useState(100);
-
-  const [hint, setHint] = useState("");
-  const [userResponse, setUserResponse] = useState("");
+  const [currentUser, setCurrentUser] = useState(null);
 
   const [currentFala, setCurrentFala] = useState(null);
-  const [lastMessage] = useState("Olá, explorador. Prepare-se para desvendar os segredos da rede DALL·E...");
   const [repeatTrigger, setRepeatTrigger] = useState(0);
+  const [skipSignal, setSkipSignal] = useState(0);
 
-  const lastMessageRef = useRef(lastMessage);
-  const navigate = useNavigate();
+  const [userResponse, setUserResponse] = useState("");
+  const [hint, setHint] = useState("");
 
-  // ========== BOTÕES DO NARRADOR ==========
+  // ================== CARREGA USER ==================
+  useEffect(() => {
+    const u = localStorage.getItem("user");
+    if (u) {
+      const json = JSON.parse(u);
+      setCurrentUser(json);
+      setPlayerLife(json.vida ?? 100);
+    }
+  }, []);
 
-  const handleRepeat = () => {
-    setHint("");
-    setRepeatTrigger(t => t + 1);
-  };
+  // ================== BOTÕES DO NARRADOR ==================
+
+  const handleSkip = () => setSkipSignal(s => s + 1);
+  const handleRepeat = () => setRepeatTrigger(r => r + 1);
 
   const handleHint = async () => {
-    try {
-      if (!currentFala || !currentFala.etapa) {
-        setHint('Nenhuma dica disponível agora.');
-        return;
-      }
-      const res = await fetch(`${API_URL}/api/narrador/dica/${currentFala.etapa}`);
-      const data = await res.json();
-      setHint(data?.dica || 'Nenhuma dica disponível...');
-    } catch (err) {
-      setHint('Erro ao buscar dica.');
-    }
+    if (!currentFala?.etapa) return setHint("Nenhuma dica disponível.");
+
+    const res = await fetch(`${API_URL}/api/narrador/dica/${currentFala.etapa}`);
+    const data = await res.json();
+
+    setHint(data?.dica || "Nenhuma dica disponível.");
   };
 
-  const handleSendResponse = async () => {
+  const handleSend = async () => {
     if (!userResponse.trim()) return;
 
-    try {
-      const payload = {
-        etapa: currentFala?.etapa || 'inicio',
-        resposta: userResponse,
-        usuario_id: null,
-      };
+    const payload = {
+      etapa: currentFala?.etapa,
+      resposta: userResponse,
+      usuario_id: currentUser?.id || null
+    };
 
-      const res = await fetch(`${API_URL}/api/narrador/resposta`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
+    const res = await fetch(`${API_URL}/api/narrador/resposta`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
 
-      const data = await res.json();
-      alert(data?.mensagem || 'Resposta enviada!');
-    } catch (err) {
-      alert('Erro ao enviar resposta.');
-    }
+    const data = await res.json();
+    alert(data?.mensagem || "Resposta enviada.");
 
     setUserResponse("");
   };
 
-  // ========== DESAFIOS ==========
-
-  const handleStartChallenge = async (challengeId) => {
-    try {
-      const response = await fetch(`${API_URL}/api/challenges/start`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ challengeId }),
-      });
-
-      const data = await response.json();
-      if (data.success && data.sessionId) {
-        const proxyUrl = `${API_URL}/challenge/${data.sessionId}`;
-        window.open(proxyUrl, "_blank", "noopener,noreferrer");
-
-        setActiveChallenges(prev => [...prev, { id: data.sessionId, name: challengeId }]);
-      } else {
-        alert("Erro ao iniciar ambiente.");
-      }
-    } catch {
-      alert("Erro ao conectar ao servidor.");
-    }
-  };
-
-  const handleStopChallenge = async (sessionId) => {
-    try {
-      const response = await fetch(`${API_URL}/api/challenges/stop`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sessionId }),
-      });
-
-      const data = await response.json();
-      if (data.success) {
-        setActiveChallenges(prev => prev.filter(c => c.id !== sessionId));
-      } else {
-        alert("Erro ao encerrar ambiente.");
-      }
-    } catch {
-      alert("Erro ao conectar ao servidor.");
-    }
-  };
-
   return (
-    <div className={styles.homeContainer}>
+    <div className={styles.page}>
 
-      {/* NARRADOR */}
-      <Narrator
-        messages={[lastMessageRef.current]}
-        repeatTrigger={repeatTrigger}
-        onFalaReady={f => setCurrentFala(f)}
+      {/* ===== ÍCONE DO USUÁRIO ===== */}
+      <div className={styles.topRight}>
+        <User playerLife={playerLife} onClick={() => navigate("/user")} />
+      </div>
+
+      {/* ===== CAIXA DO NARRADOR ===== */}
+      <div className={styles.narratorSection}>
+        <Narrador
+          etapa="inicio"
+          usuario={currentUser}
+          repeatTrigger={repeatTrigger}
+          skipSignal={skipSignal}
+          onFalaReady={setCurrentFala}
+        />
+      </div>
+
+      {/* ===== INPUT DE RESPOSTA ===== */}
+      <input
+        className={styles.responseInput}
+        type="text"
+        placeholder="Digite sua resposta..."
+        value={userResponse}
+        onChange={(e) => setUserResponse(e.target.value)}
       />
 
-      {/* AVATAR */}
-      <User playerLife={playerLife} onClick={() => navigate('/user')} />
-
-      {/* CONTROLES DO NARRADOR */}
+      {/* ===== CONTROLES DO NARRADOR ===== */}
       <NarratorControls
-        showInput
-        responseValue={userResponse}
-        onChangeResponse={setUserResponse}
-        onSend={handleSendResponse}
+        onSkip={handleSkip}
         onRepeat={handleRepeat}
         onHint={handleHint}
-        onSkip={() => setRepeatTrigger(t => t + 1)}
+        onSend={handleSend}
       />
 
-      {/* DICA */}
       {hint && <p className={styles.hintBox}>💡 {hint}</p>}
 
-      {/* BOTÕES DOS LABS */}
-      <main className={styles.challengeGrid}>
-        <button className={styles.challengeButton} onClick={() => handleStartChallenge('xss')}>
-          Lab-01
-        </button>
+      {/* ===== BOTÕES DOS LABS ===== */}
+      <div className={styles.labs}>
+        <button onClick={() => navigate("/lab1")}>Lab-01</button>
+        <button onClick={() => navigate("/lab2")}>Lab-02</button>
+      </div>
 
-        <button className={styles.challengeButton} onClick={() => handleStartChallenge('so')}>
-          Lab-02
-        </button>
-      </main>
-
-      {/* SESSÕES ATIVAS */}
-      {activeChallenges.length > 0 && (
-        <section className={styles.activeChallenges}>
-          <h3>Ambientes Ativos</h3>
-          <ul>
-            {activeChallenges.map(challenge => (
-              <li key={challenge.id}>
-                <span>{challenge.name} — {challenge.id.substring(0, 8)}</span>
-                <button onClick={() => handleStopChallenge(challenge.id)}>Encerrar</button>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
     </div>
   );
 }
