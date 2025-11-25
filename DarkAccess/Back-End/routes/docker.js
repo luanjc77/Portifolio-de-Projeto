@@ -18,7 +18,7 @@ const USE_TRAEFIK = process.env.USE_TRAEFIK === "true";
 // Configuração dos labs
 const LAB_CONFIGS = {
   lab01: {
-    image: "xss-challenge-xss-challenge-latest",
+    image: "xss-challenge-xss-challenge",
     basePort: 9000,
     name: "xss-lab",
     exposedPort: 80,
