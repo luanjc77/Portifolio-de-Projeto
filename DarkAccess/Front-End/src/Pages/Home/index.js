@@ -12,8 +12,8 @@ function HomePage() {
   const navigate = useNavigate();
   const API_URL = `http://${process.env.REACT_APP_API_HOST}:${process.env.REACT_APP_API_PORT}`;
 
-  const [playerLife, setPlayerLife] = useState(100);
   const [currentUser, setCurrentUser] = useState(null);
+  const [playerLife, setPlayerLife] = useState(100);
 
   const [currentFala, setCurrentFala] = useState(null);
   const [repeatTrigger, setRepeatTrigger] = useState(0);
@@ -22,7 +22,13 @@ function HomePage() {
   const [userResponse, setUserResponse] = useState("");
   const [hint, setHint] = useState("");
 
-  // ================== CARREGA USER ==================
+  const [etapa, setEtapa] = useState(null);
+  const [lab1Liberado, setLab1Liberado] = useState(false);
+  const [lab2Liberado, setLab2Liberado] = useState(false);
+
+  // ===================================================
+  // 1) CARREGA USUÁRIO NA MONTAGEM DA HOME
+  // ===================================================
   useEffect(() => {
     const u = localStorage.getItem("user");
     if (u) {
@@ -32,8 +38,53 @@ function HomePage() {
     }
   }, []);
 
-  // ================== BOTÕES DO NARRADOR ==================
+  // ===================================================
+  // 2) BUSCA CONQUISTAS DO USUÁRIO PARA LIBERAR LABS
+  // ===================================================
+  useEffect(() => {
+    if (!currentUser) return;
 
+    const loadConquistas = async () => {
+      const res = await fetch(`${API_URL}/api/usuario/${currentUser.id}/conquistas`);
+      const data = await res.json();
+
+      const conquistas = data.conquistas || [];
+
+      if (conquistas.some(c => c.codigo === "lab01_concluido")) {
+        setLab1Liberado(true);
+      }
+
+      if (conquistas.some(c => c.codigo === "lab02_concluido")) {
+        setLab2Liberado(true);
+      }
+    };
+
+    loadConquistas();
+  }, [currentUser]);
+
+  // ===================================================
+  // 3) DEFINE ETAPA INICIAL
+  // ===================================================
+  useEffect(() => {
+    if (!currentUser) return;
+
+    // primeira vez na superfície?
+    if (currentUser.visto_surface !== "S") {
+      setEtapa("explicacao_surface_deep_dark");
+
+      // marca que o usuário passou pela explicação
+      fetch(`${API_URL}/api/usuario/${currentUser.id}/marcar_surface`, { method: "POST" });
+    } 
+    else {
+      setEtapa("inicio_surface");
+    }
+
+  }, [currentUser]);
+
+
+  // ===================================================
+  // BOTÕES DO NARRADOR
+  // ===================================================
   const handleSkip = () => setSkipSignal(s => s + 1);
   const handleRepeat = () => setRepeatTrigger(r => r + 1);
 
@@ -52,7 +103,7 @@ function HomePage() {
     const payload = {
       etapa: currentFala?.etapa,
       resposta: userResponse,
-      usuario_id: currentUser?.id || null
+      usuario_id: currentUser?.id
     };
 
     const res = await fetch(`${API_URL}/api/narrador/resposta`, {
@@ -75,18 +126,20 @@ function HomePage() {
         <User playerLife={playerLife} onClick={() => navigate("/user")} />
       </div>
 
-      {/* ===== CAIXA DO NARRADOR ===== */}
+      {/* ===== NARRADOR ===== */}
       <div className={styles.narratorSection}>
-        <Narrador
-          etapa="inicio"
-          usuario={currentUser}
-          repeatTrigger={repeatTrigger}
-          skipSignal={skipSignal}
-          onFalaReady={setCurrentFala}
-        />
+        {etapa && (
+          <Narrador
+            etapa={etapa}
+            usuario={currentUser}
+            repeatTrigger={repeatTrigger}
+            skipSignal={skipSignal}
+            onFalaReady={setCurrentFala}
+          />
+        )}
       </div>
 
-      {/* ===== INPUT DE RESPOSTA ===== */}
+      {/* ===== INPUT DO USUÁRIO ===== */}
       <input
         className={styles.responseInput}
         type="text"
@@ -95,7 +148,7 @@ function HomePage() {
         onChange={(e) => setUserResponse(e.target.value)}
       />
 
-      {/* ===== CONTROLES DO NARRADOR ===== */}
+      {/* ===== CONTROLES ===== */}
       <NarratorControls
         onSkip={handleSkip}
         onRepeat={handleRepeat}
@@ -107,8 +160,23 @@ function HomePage() {
 
       {/* ===== BOTÕES DOS LABS ===== */}
       <div className={styles.labs}>
-        <button onClick={() => navigate("/lab1")}>Lab-01</button>
-        <button onClick={() => navigate("/lab2")}>Lab-02</button>
+
+        <button
+          onClick={() => setEtapa("lab01_intro")}
+          disabled={!lab1Liberado}
+          className={!lab1Liberado ? styles.locked : ""}
+        >
+          Lab-01
+        </button>
+
+        <button
+          onClick={() => setEtapa("lab02_intro")}
+          disabled={!lab2Liberado}
+          className={!lab2Liberado ? styles.locked : ""}
+        >
+          Lab-02
+        </button>
+
       </div>
 
     </div>

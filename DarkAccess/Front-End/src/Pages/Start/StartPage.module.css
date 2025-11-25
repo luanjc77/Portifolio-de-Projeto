@@ -75,6 +75,10 @@
     gap: 20px;
 }
 
+.locked {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
 
 
 /* Botões do narrador */
@@ -83,3 +87,9 @@
     flex-direction: row;
     gap: 10px;
 }
+
+.locked {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+

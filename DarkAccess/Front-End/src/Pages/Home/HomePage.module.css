@@ -70,3 +70,9 @@
     background: #00ff00;
     color: black;
 }
+
+.locked {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
