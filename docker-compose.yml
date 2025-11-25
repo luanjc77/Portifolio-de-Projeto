@@ -18,12 +18,11 @@ services:
     container_name: darkaccess-backend
     ports:
       - "3001:3001"
-      - "9000-9099:9000-9099"  # Portas para Lab01
-      - "10000-10099:10000-10099"  # Portas para Lab02
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /usr/bin/docker:/usr/bin/docker
       - ./DarkAccess/Back-End:/app
+    network_mode: host  # Permite criar containers com portas diretas no host
     environment:
       DB_HOST: db_darkaccess
       DB_USER: pinguin
@@ -37,8 +36,6 @@ services:
       USE_TRAEFIK: "false"
     depends_on:
       - db_darkaccess
-    networks:
-      - darkaccess-net
 
   traefik:
     image: traefik:v3.0
