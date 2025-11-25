@@ -4,6 +4,47 @@ const bcrypt = require("bcrypt");
 const db = require("../db");
 
 /*
+ * GET /api/auth/user/:id
+ * Retorna informações completas do usuário incluindo conquistas
+ */
+router.get("/user/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const userQuery = await db.query(
+      `SELECT id, username, email, primeiro_acesso, etapa_atual, vidas, deepweb_access, created_at
+       FROM usuarios WHERE id = $1`,
+      [id]
+    );
+
+    if (!userQuery.rows.length)
+      return res.status(404).json({ success: false, message: "Usuário não encontrado." });
+
+    const user = userQuery.rows[0];
+
+    // Buscar conquistas do usuário
+    const conquistasQuery = await db.query(
+      `SELECT c.id, c.nome, c.codigo, c.descricao, c.icone
+       FROM conquistas c
+       INNER JOIN conquistas_usuario cu ON c.id = cu.conquista_id
+       WHERE cu.usuario_id = $1`,
+      [id]
+    );
+
+    user.conquistas = conquistasQuery.rows;
+
+    res.json({
+      success: true,
+      user
+    });
+
+  } catch (err) {
+    console.error("Erro ao buscar usuário:", err);
+    res.status(500).json({ success: false, message: "Erro no servidor." });
+  }
+});
+
+/*
  *  POST /api/auth/register
  */
 router.post("/register", async (req, res) => {
@@ -16,9 +57,9 @@ router.post("/register", async (req, res) => {
     const hash = await bcrypt.hash(password, 10);
 
     const insert = await db.query(
-      `INSERT INTO usuarios (username, email, password_hash, primeiro_acesso)
-       VALUES ($1, $2, $3, true)
-       RETURNING id, username`,
+      `INSERT INTO usuarios (username, email, password_hash, primeiro_acesso, etapa_atual)
+       VALUES ($1, $2, $3, true, 'inicio_primeiro_acesso')
+       RETURNING id, username, primeiro_acesso, etapa_atual`,
       [username, email, hash]
     );
 
@@ -56,10 +97,24 @@ router.post("/login", async (req, res) => {
 
     if (!correct) return res.status(401).json({ success: false, message: "Senha incorreta." });
 
+    // Atualizar etapa se for retorno de usuário
+    if (!user.primeiro_acesso && user.etapa_atual === 'inicio_primeiro_acesso') {
+      await db.query(
+        `UPDATE usuarios SET etapa_atual = 'inicio_pos_primeiro_acesso' WHERE id = $1`,
+        [user.id]
+      );
+      user.etapa_atual = 'inicio_pos_primeiro_acesso';
+    }
+
     res.json({
       success: true,
       message: "Login efetuado!",
-      user: { id: user.id, username: user.username }
+      user: { 
+        id: user.id, 
+        username: user.username,
+        primeiro_acesso: user.primeiro_acesso,
+        etapa_atual: user.etapa_atual
+      }
     });
 
   } catch (err) {

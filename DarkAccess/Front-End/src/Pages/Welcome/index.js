@@ -7,9 +7,8 @@ import axios from 'axios';
 
 function WelcomePage() {
   const navigate = useNavigate();
-  const [mensagem, setMensagem] = useState('Boas-vindas ao mundo, viajante... Identifique-se para acessar os portais da rede DALL·E.');
-  const API_HOST = process.env.REACT_APP_API_HOST;
-  const API_PORT = process.env.REACT_APP_API_PORT;
+  const [mensagem, setMensagem] = useState('Boas-vindas ao mundo, viajante... Identifique-se para acessar as redes da Arpheus.');
+ 
   useEffect(() => {
     // Busca a fala inicial do narrador
     const API_HOST2 = process.env.REACT_APP_API_HOST || window.location.hostname;

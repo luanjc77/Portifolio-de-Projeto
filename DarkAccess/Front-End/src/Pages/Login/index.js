@@ -23,8 +23,16 @@ function LoginPage() {
       const data = await response.json();
 
       if (data.success) {
-        //alert('Login bem-sucedido!');
-        localStorage.setItem('user', JSON.stringify(data.user));
+        // Buscar dados completos do usuário
+        const userResponse = await fetch(`${API_URL}/api/auth/user/${data.user.id}`);
+        const userData = await userResponse.json();
+        
+        if (userData.success) {
+          localStorage.setItem('user', JSON.stringify(userData.user));
+        } else {
+          localStorage.setItem('user', JSON.stringify(data.user));
+        }
+        
         navigate('/inicio');
       } else {
         alert(`Erro no login: ${data.message}`);

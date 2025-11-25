@@ -5,6 +5,7 @@ import styles from './StartPage.module.css';
 import Narrador from '../../components/Narrator';
 import User from '../../components/User';
 import NarratorControls from '../../components/NarratorControls';
+import { atualizarEtapa } from '../../utils/progressao';
 
 function StartPage() {
   const navigate = useNavigate();
@@ -23,12 +24,21 @@ function StartPage() {
       const u = JSON.parse(user);
       setCurrentUser(u);
 
-      if (u.primeiro_acesso === true) {
+      // Usar etapa_atual se disponível
+      if (u.etapa_atual) {
+        setEtapa(u.etapa_atual);
+      } else if (u.primeiro_acesso === true) {
         setEtapa("inicio_primeiro_acesso");
-        setBotoesBloqueados(true);
       } else {
         setEtapa("inicio_pos_primeiro_acesso");
+      }
+
+      // Desbloquear botões após primeira fala
+      if (!u.primeiro_acesso || u.etapa_atual !== 'inicio_primeiro_acesso') {
         setBotoesBloqueados(false);
+      } else {
+        // Desbloquear após 10 segundos (tempo da fala inicial)
+        setTimeout(() => setBotoesBloqueados(false), 10000);
       }
     }
   }, []);
@@ -70,7 +80,17 @@ function StartPage() {
           <button
             disabled={botoesBloqueados}
             className={`${styles.pathButton} ${botoesBloqueados ? styles.locked : ""}`}
-            onClick={() => navigate('/home')}
+            onClick={async () => {
+              // Avançar para explicacao_surface_deep_dark se for primeiro acesso
+              if (currentUser?.primeiro_acesso && currentUser?.etapa_atual === 'inicio_primeiro_acesso') {
+                await atualizarEtapa(currentUser.id, 'explicacao_surface_deep_dark');
+                
+                // Atualizar localStorage
+                const updatedUser = {...currentUser, etapa_atual: 'explicacao_surface_deep_dark', primeiro_acesso: false};
+                localStorage.setItem('user', JSON.stringify(updatedUser));
+              }
+              navigate('/home');
+            }}
           >
             SUPERFÍCIE
           </button>

@@ -24,8 +24,10 @@ function RegisterPage() {
       const data = await response.json();
 
       if (data.success) {
+        // Salvar usuário no localStorage com dados completos
+        localStorage.setItem('user', JSON.stringify(data.user));
         alert('Usuário cadastrado com sucesso!');
-        navigate('/login');
+        navigate('/inicio');
       } else {
         alert(`Erro no cadastro: ${data.message}`);
       }

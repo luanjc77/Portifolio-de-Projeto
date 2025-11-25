@@ -1,26 +1,30 @@
-.narratorBox {
-    position: absolute;
-    top: 15%;
-    left: 0;
-    right: 0;
-    font-size: 1.5rem;
-    font-weight: bold;
-    text-shadow: 0 0 8px #00ff00;
-    width: 100%;
-    padding: 1rem 0;
-    text-align: center;
-    font-family: 'Courier New', Courier, monospace;
-    color: #00FF00;
-    height: 40px; 
+.box {
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid #00ff00;
+  border-radius: 10px;
+  padding: 1.4rem;
+  width: 100%;
+  max-width: 650px;
+  min-height: 140px;
+  box-shadow: 0 0 12px rgba(0, 255, 0, 0.25);
+  margin: 0 auto;
 }
+
+.text {
+  color: #d0ffd0;
+  font-size: 1.08rem;
+  font-family: 'Courier New', monospace;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
 .cursor {
-    animation: blink 1s step-end infinite;
+  display: inline-block;
+  width: 12px;
+  animation: blink 0.7s infinite alternate;
 }
+
 @keyframes blink {
-    from, to {
-        color: transparent;
-    }
-    50% {
-        color: #00FF00;
-    }
+  from { opacity: 1; }
+  to { opacity: 0; }
 }

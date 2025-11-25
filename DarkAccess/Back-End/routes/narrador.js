@@ -11,51 +11,21 @@ router.get("/fala/:etapa", async (req, res) => {
   const userId = req.query.userId;
 
   try {
-    let user = null;
+    // Sempre usa a etapa enviada (não busca do banco)
+    // O frontend já envia a etapa_atual correta
+    const chaveEvento = etapa;
 
-    if (userId) {
-      const q = await db.query(`
-        SELECT id, primeiro_acesso, etapa_atual, deepweb_access
-        FROM usuarios WHERE id = $1
-      `, [userId]);
-
-      if (q.rows.length) user = q.rows[0];
-    }
-
-    // 1. Primeira vez do usuário → tutorial
-    if (user?.primeiro_acesso && etapa === "inicio") {
-      const q = await db.query(`
-        SELECT fala FROM falas_narrador
-        WHERE chave_evento = 'inicio_primeiro_acesso'
-        ORDER BY ordem
-      `);
-
-      const fala = q.rows.map(f => f.fala).join("\n\n");
-      return res.json({ success: true, fala: { etapa, fala } });
-    }
-
-    // 2. Retorno
-    if (!user?.primeiro_acesso && etapa === "inicio") {
-      const q = await db.query(`
-        SELECT fala FROM falas_narrador
-        WHERE chave_evento = 'inicio_pos_primeiro_acesso'
-        ORDER BY ordem
-      `);
-      const fala = q.rows.map(f => f.fala).join("\n\n");
-      return res.json({ success: true, fala: { etapa, fala } });
-    }
-
-    // 3. Fala normal por chave_evento
+    // Buscar fala por chave_evento
     const q = await db.query(`
       SELECT fala, resposta_correta FROM falas_narrador
       WHERE chave_evento = $1
       ORDER BY ordem
-    `, [etapa]);
+    `, [chaveEvento]);
 
     if (!q.rows.length) {
       return res.json({
         success: true,
-        fala: { etapa, fala: "Nenhuma fala configurada para esta etapa." }
+        fala: { etapa: chaveEvento, fala: "Nenhuma fala configurada para esta etapa." }
       });
     }
 
@@ -64,7 +34,7 @@ router.get("/fala/:etapa", async (req, res) => {
     res.json({
       success: true,
       fala: {
-        etapa,
+        etapa: chaveEvento,
         fala,
         resposta_correta: q.rows[0].resposta_correta || null
       }
@@ -162,6 +132,31 @@ router.get("/dica/:etapa", async (req, res) => {
   } catch (err) {
     console.error("Erro GET dica:", err);
     res.status(500).json({ success: false, dica: "Erro no servidor." });
+  }
+});
+
+/*
+ * PUT /api/narrador/etapa
+ * Atualiza a etapa_atual do usuário
+ */
+router.put("/etapa", async (req, res) => {
+  const { usuario_id, nova_etapa } = req.body;
+
+  if (!usuario_id || !nova_etapa)
+    return res.status(400).json({ success: false, message: "Parâmetros inválidos" });
+
+  try {
+    await db.query(`
+      UPDATE usuarios
+      SET etapa_atual = $1, primeiro_acesso = false
+      WHERE id = $2
+    `, [nova_etapa, usuario_id]);
+
+    res.json({ success: true, message: "Etapa atualizada com sucesso." });
+
+  } catch (err) {
+    console.error("Erro ao atualizar etapa:", err);
+    res.status(500).json({ success: false, message: "Erro no servidor." });
   }
 });
 
