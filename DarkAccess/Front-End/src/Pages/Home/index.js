@@ -33,29 +33,25 @@ function HomePage() {
     const u = localStorage.getItem("user");
     if (u) {
       const json = JSON.parse(u);
-      console.log("📦 User do localStorage:", json);
       
       // Buscar dados completos do usuário
       fetch(`${API_URL}/api/auth/user/${json.id}`)
         .then(res => res.json())
         .then(data => {
           if (data.success) {
-            console.log("✅ User do backend:", data.user);
             setCurrentUser(data.user);
             setPlayerLife(data.user.vidas ?? 3);
             
             // SEMPRE usa etapa_atual do banco
             const etapa = data.user.etapa_atual || 'inicio_primeiro_acesso';
-            console.log("🎯 Etapa definida:", etapa);
             setCurrentEtapa(etapa);
           }
         })
         .catch(err => {
-          console.error("❌ Erro ao carregar usuário:", err);
+          console.error("Erro ao carregar usuário:", err);
           setCurrentUser(json);
           setPlayerLife(json.vida ?? 100);
           const etapa = json.etapa_atual || 'inicio_primeiro_acesso';
-          console.log("🎯 Etapa definida (fallback):", etapa);
           setCurrentEtapa(etapa);
         });
     }
@@ -63,6 +59,18 @@ function HomePage() {
 
   const handleSkip = () => setSkipSignal((s) => s + 1);
   const handleRepeat = () => setRepeatTrigger((r) => r + 1);
+  
+  const handleNext = async () => {
+    if (!currentUser?.id) return;
+    
+    const novaEtapa = await avancarEtapa(currentUser);
+    if (novaEtapa) {
+      const userAtualizado = {...currentUser, etapa_atual: novaEtapa, primeiro_acesso: false};
+      setCurrentUser(userAtualizado);
+      setCurrentEtapa(novaEtapa);
+      localStorage.setItem('user', JSON.stringify(userAtualizado));
+    }
+  };
 
   const handleHint = async () => {
     if (!currentFala?.etapa) return setHint("Nenhuma dica disponível.");
@@ -107,41 +115,8 @@ function HomePage() {
     }
   };
 
-  // Avançar automaticamente para etapas sem pergunta após a fala terminar
-  useEffect(() => {
-    if (!currentFala?.etapa || !currentUser?.id) return;
-    
-    console.log("🔍 Verificando avanço automático para:", currentFala.etapa);
-    
-    // Etapas que devem avançar automaticamente (sem pergunta)
-    const etapasSemPergunta = [
-      'explicacao_surface_deep_dark',
-      'lab01_intro',
-      'lab02_intro',
-      'antes_acesso_profundezas',
-      'phishing_armadilha_aurora'
-    ];
-
-    // Só avança se NÃO tiver resposta_correta (não é pergunta)
-    if (etapasSemPergunta.includes(currentFala.etapa) && !currentFala.resposta_correta) {
-      console.log("⏳ Aguardando 3 segundos para avançar...");
-      // Aguardar 3 segundos após a fala terminar
-      const timer = setTimeout(async () => {
-        console.log("🚀 Avançando etapa automaticamente...");
-        const novaEtapa = await avancarEtapa(currentUser);
-        if (novaEtapa) {
-          console.log("✅ Nova etapa:", novaEtapa);
-          const userAtualizado = {...currentUser, etapa_atual: novaEtapa, primeiro_acesso: false};
-          setCurrentUser(userAtualizado);
-          setCurrentEtapa(novaEtapa);
-          localStorage.setItem('user', JSON.stringify(userAtualizado));
-        }
-      }, 3000);
-
-      return () => clearTimeout(timer);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentFala]);
+  // Determinar se deve mostrar botão "Próximo" ou campo de resposta
+  const mostrarBotaoProximo = currentFala && !currentFala.resposta_correta;
 
   return (
     <div className={styles.page}>
@@ -163,21 +138,24 @@ function HomePage() {
         )}
       </div>
 
-      {/* ===== INPUT DE RESPOSTA ===== */}
-      <input
-        className={styles.responseInput}
-        type="text"
-        placeholder="Digite sua resposta..."
-        value={userResponse}
-        onChange={(e) => setUserResponse(e.target.value)}
-      />
+      {/* ===== INPUT DE RESPOSTA (só aparece se for pergunta) ===== */}
+      {!mostrarBotaoProximo && (
+        <input
+          className={styles.responseInput}
+          type="text"
+          placeholder="Digite sua resposta..."
+          value={userResponse}
+          onChange={(e) => setUserResponse(e.target.value)}
+        />
+      )}
 
       {/* ===== CONTROLES DO NARRADOR ===== */}
       <NarratorControls
         onSkip={handleSkip}
         onRepeat={handleRepeat}
         onHint={handleHint}
-        onSend={handleSend}
+        onSend={mostrarBotaoProximo ? handleNext : handleSend}
+        showNext={mostrarBotaoProximo}
       />
 
       {hint && <p className={styles.hintBox}>💡 {hint}</p>}
@@ -186,10 +164,34 @@ function HomePage() {
       <div className={styles.labs}>
         {/* LAB01 — sempre liberado */}
         <button onClick={async () => {
+          // Atualizar etapa primeiro
           const sucesso = await atualizarEtapa(currentUser.id, "lab01_intro");
           if (sucesso) {
             setCurrentEtapa("lab01_intro");
             setCurrentUser({...currentUser, etapa_atual: "lab01_intro"});
+          }
+          
+          // Iniciar container do lab
+          try {
+            const response = await fetch(`${API_URL}/api/docker/start-lab`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                usuario_id: currentUser.id,
+                lab_id: "lab01"
+              })
+            });
+            
+            const data = await response.json();
+            if (data.success) {
+              // Abrir lab em nova aba
+              window.open(data.url, "_blank");
+            } else {
+              alert("Erro ao iniciar Lab01: " + data.message);
+            }
+          } catch (err) {
+            console.error("Erro ao iniciar lab:", err);
+            alert("Erro ao conectar com o servidor");
           }
         }}>Lab-01</button>
 
@@ -198,10 +200,34 @@ function HomePage() {
           disabled={!hasLab01Conquista}
           className={!hasLab01Conquista ? styles.locked : ""}
           onClick={async () => {
+            // Atualizar etapa primeiro
             const sucesso = await atualizarEtapa(currentUser.id, "lab02_intro");
             if (sucesso) {
               setCurrentEtapa("lab02_intro");
               setCurrentUser({...currentUser, etapa_atual: "lab02_intro"});
+            }
+            
+            // Iniciar container do lab
+            try {
+              const response = await fetch(`${API_URL}/api/docker/start-lab`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  usuario_id: currentUser.id,
+                  lab_id: "lab02"
+                })
+              });
+              
+              const data = await response.json();
+              if (data.success) {
+                // Abrir lab em nova aba
+                window.open(data.url, "_blank");
+              } else {
+                alert("Erro ao iniciar Lab02: " + data.message);
+              }
+            } catch (err) {
+              console.error("Erro ao iniciar lab:", err);
+              alert("Erro ao conectar com o servidor");
             }
           }}
         >

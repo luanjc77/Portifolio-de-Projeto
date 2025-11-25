@@ -22,8 +22,6 @@ export async function atualizarEtapa(usuario_id, nova_etapa) {
   const API_PORT = process.env.REACT_APP_API_PORT;
   const API_URL = `http://${API_HOST}:${API_PORT}`;
 
-  console.log(`📝 Atualizando etapa: ${usuario_id} -> ${nova_etapa}`);
-
   try {
     const response = await fetch(`${API_URL}/api/narrador/etapa`, {
       method: "PUT",
@@ -32,10 +30,9 @@ export async function atualizarEtapa(usuario_id, nova_etapa) {
     });
 
     const data = await response.json();
-    console.log("✅ Resposta da atualização:", data);
     return data.success;
   } catch (error) {
-    console.error("❌ Erro ao atualizar etapa:", error);
+    console.error("Erro ao atualizar etapa:", error);
     return false;
   }
 }
@@ -47,30 +44,24 @@ export async function atualizarEtapa(usuario_id, nova_etapa) {
  */
 export async function avancarEtapa(usuario) {
   if (!usuario?.id || !usuario?.etapa_atual) {
-    console.log("⚠️ Não pode avançar: usuário ou etapa_atual não encontrado");
     return null;
   }
 
-  console.log(`➡️ Avançando de: ${usuario.etapa_atual}`);
   const proximaEtapa = progressaoMap[usuario.etapa_atual];
   
   if (!proximaEtapa) {
-    console.log("⚠️ Não há próxima etapa no mapa");
     return null;
   }
 
-  console.log(`➡️ Para: ${proximaEtapa}`);
   const sucesso = await atualizarEtapa(usuario.id, proximaEtapa);
   
   if (sucesso) {
     // Atualizar localStorage
     const userAtualizado = { ...usuario, etapa_atual: proximaEtapa, primeiro_acesso: false };
     localStorage.setItem('user', JSON.stringify(userAtualizado));
-    console.log("✅ Etapa avançada com sucesso!");
     return proximaEtapa;
   }
 
-  console.log("❌ Falha ao avançar etapa");
   return null;
 }
 

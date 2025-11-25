@@ -11,23 +11,18 @@ router.get("/user/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
-    console.log(`🔍 Buscando usuário ID: ${id}`);
-    
     const userQuery = await db.query(
       `SELECT id, username, email, primeiro_acesso, etapa_atual, deepweb_access
        FROM usuarios WHERE id = $1`,
       [id]
     );
 
-    console.log(`📊 Query executada, rows encontrados: ${userQuery.rows.length}`);
-
     if (!userQuery.rows.length)
       return res.status(404).json({ success: false, message: "Usuário não encontrado." });
 
     const user = userQuery.rows[0];
-    console.log(`✅ Usuário encontrado:`, user);
 
-    // Buscar conquistas do usuário (LEFT JOIN para não dar erro se não tiver conquistas)
+    // Buscar conquistas do usuário
     try {
       const conquistasQuery = await db.query(
         `SELECT c.id, c.nome, c.codigo, c.descricao, c.icone
@@ -38,7 +33,6 @@ router.get("/user/:id", async (req, res) => {
       );
       user.conquistas = conquistasQuery.rows;
     } catch (conquistaErr) {
-      console.log("Aviso: Erro ao buscar conquistas, continuando sem elas:", conquistaErr.message);
       user.conquistas = [];
     }
 

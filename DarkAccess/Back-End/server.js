@@ -20,6 +20,7 @@ app.use("/api/narrador", require("./routes/narrador"));
 app.use("/api/deepweb", require("./routes/deepweb"));
 app.use("/api/labs", require("./routes/labs"));
 app.use("/api/conquistas", require("./routes/conquistas"));
+app.use("/api/docker", require("./routes/docker"));
 
 app.listen(API_PORT, () => {
   console.log(`DarkAccess backend rodando na porta ${API_PORT}`);

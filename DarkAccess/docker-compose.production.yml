@@ -1,0 +1,86 @@
+version: '3.8'
+
+services:
+  traefik:
+    image: traefik:v2.10
+    container_name: traefik-proxy
+    command:
+      # Docker provider
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      
+      # Entrypoints
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      
+      # SSL automático
+      - "--certificatesresolvers.letsencrypt.acme.email=seu-email@example.com"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+      
+      # Redirect HTTP -> HTTPS
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      
+      # Dashboard (opcional)
+      - "--api.dashboard=true"
+    ports:
+      - "80:80"    # HTTP  - ÚNICA PORTA NECESSÁRIA NO FIREWALL
+      - "443:443"  # HTTPS - ÚNICA PORTA NECESSÁRIA NO FIREWALL
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./letsencrypt:/letsencrypt
+    networks:
+      - labs-network
+    restart: unless-stopped
+
+  backend:
+    build: ./Back-End
+    container_name: darkaccess-backend
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=Host(`api.seusite.com`)"
+      - "traefik.http.routers.backend.entrypoints=websecure"
+      - "traefik.http.routers.backend.tls.certresolver=letsencrypt"
+      - "traefik.http.services.backend.loadbalancer.server.port=3001"
+    networks:
+      - labs-network
+    restart: unless-stopped
+
+  frontend:
+    build: ./Front-End
+    container_name: darkaccess-frontend
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`seusite.com`) || Host(`www.seusite.com`)"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.routers.frontend.tls.certresolver=letsencrypt"
+      - "traefik.http.services.frontend.loadbalancer.server.port=80"
+    networks:
+      - labs-network
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:15
+    container_name: darkaccess-db
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - labs-network
+    restart: unless-stopped
+
+networks:
+  labs-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

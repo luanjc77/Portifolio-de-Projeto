@@ -1,7 +1,16 @@
 import React from "react";
 import styles from "./NarratorControls.module.css";
 
-export default function NarratorControls({onSkip, onRepeat, onHint, onSend, showInput = false, responseValue = "", onChangeResponse,}) {
+export default function NarratorControls({
+  onSkip, 
+  onRepeat, 
+  onHint, 
+  onSend, 
+  showInput = false, 
+  responseValue = "", 
+  onChangeResponse,
+  showNext = false
+}) {
   return (
     <div className={styles.controlsWrapper}>
       
@@ -29,7 +38,7 @@ export default function NarratorControls({onSkip, onRepeat, onHint, onSend, show
           </button>
         )}
 
-        {onHint && (
+        {onHint && !showNext && (
           <button onClick={onHint} className={styles.btn}>
             Dica
           </button>
@@ -37,7 +46,7 @@ export default function NarratorControls({onSkip, onRepeat, onHint, onSend, show
 
         {onSend && (
           <button onClick={onSend} className={styles.btnPrimary}>
-            Enviar
+            {showNext ? "Próximo" : "Enviar"}
           </button>
         )}
       </div>

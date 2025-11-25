@@ -18,6 +18,8 @@ services:
     container_name: darkaccess-backend
     ports:
       - "3001:3001"
+      - "9000-9099:9000-9099"  # Portas para Lab01
+      - "10000-10099:10000-10099"  # Portas para Lab02
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /usr/bin/docker:/usr/bin/docker
@@ -30,6 +32,9 @@ services:
       DB_PORT: 5432
       API_HOST: 34.132.60.57
       API_PORT: 3001
+      NODE_ENV: production
+      DOMAIN: 34.132.60.57
+      USE_TRAEFIK: "false"
     depends_on:
       - db_darkaccess
     networks:
@@ -52,36 +57,9 @@ services:
       - darkaccess-net
       - challenge-net
 
-  xss_lab:
-    image: xss-challenge-xss-challenge:latest
-    container_name: xss_lab
-    ports:
-      - "8080:80"
-    networks:
-      - darkaccess-net
-
-  lab02-app:
-    build: ./DarkAccess/Labs/lab02-osdb
-    image: lab02-osdb
-    container_name: lab02-app
-    expose:
-      - "3000"
-    networks:
-      - darkaccess-net
-
-  lab02-nginx:
-    image: nginx:stable-alpine
-    container_name: lab02-nginx
-    ports:
-      - "8081:80"
-    volumes:
-      - ./DarkAccess/Labs/lab02-osdb/nginx.conf:/etc/nginx/conf.d/default.conf
-      - ./DarkAccess/Labs/lab02-osdb/index.html:/usr/share/nginx/html/index.html
-      - ./DarkAccess/Labs/lab02-osdb/files:/usr/share/nginx/html/files
-    depends_on:
-      - lab02-app
-    networks:
-      - darkaccess-net
+  # REMOVIDOS: xss_lab e lab02 fixos
+  # Agora os labs serão criados DINAMICAMENTE pelo backend
+  # Um container isolado por usuário, conforme necessário
 
 networks:
   darkaccess-net:
