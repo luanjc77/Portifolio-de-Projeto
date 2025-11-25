@@ -11,27 +11,39 @@ router.get("/user/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
+    console.log(`🔍 Buscando usuário ID: ${id}`);
+    
     const userQuery = await db.query(
-      `SELECT id, username, email, primeiro_acesso, etapa_atual, vidas, deepweb_access, created_at
+      `SELECT id, username, email, primeiro_acesso, etapa_atual, deepweb_access
        FROM usuarios WHERE id = $1`,
       [id]
     );
+
+    console.log(`📊 Query executada, rows encontrados: ${userQuery.rows.length}`);
 
     if (!userQuery.rows.length)
       return res.status(404).json({ success: false, message: "Usuário não encontrado." });
 
     const user = userQuery.rows[0];
+    console.log(`✅ Usuário encontrado:`, user);
 
-    // Buscar conquistas do usuário
-    const conquistasQuery = await db.query(
-      `SELECT c.id, c.nome, c.codigo, c.descricao, c.icone
-       FROM conquistas c
-       INNER JOIN conquistas_usuario cu ON c.id = cu.conquista_id
-       WHERE cu.usuario_id = $1`,
-      [id]
-    );
+    // Buscar conquistas do usuário (LEFT JOIN para não dar erro se não tiver conquistas)
+    try {
+      const conquistasQuery = await db.query(
+        `SELECT c.id, c.nome, c.codigo, c.descricao, c.icone
+         FROM conquistas c
+         INNER JOIN conquistas_usuario cu ON c.id = cu.conquista_id
+         WHERE cu.usuario_id = $1`,
+        [id]
+      );
+      user.conquistas = conquistasQuery.rows;
+    } catch (conquistaErr) {
+      console.log("Aviso: Erro ao buscar conquistas, continuando sem elas:", conquistaErr.message);
+      user.conquistas = [];
+    }
 
-    user.conquistas = conquistasQuery.rows;
+    // Garantir valores padrão
+    user.vidas = user.vidas || 3;
 
     res.json({
       success: true,
@@ -40,7 +52,8 @@ router.get("/user/:id", async (req, res) => {
 
   } catch (err) {
     console.error("Erro ao buscar usuário:", err);
-    res.status(500).json({ success: false, message: "Erro no servidor." });
+    console.error("Stack:", err.stack);
+    res.status(500).json({ success: false, message: "Erro no servidor: " + err.message });
   }
 });
 
@@ -59,7 +72,7 @@ router.post("/register", async (req, res) => {
     const insert = await db.query(
       `INSERT INTO usuarios (username, email, password_hash, primeiro_acesso, etapa_atual)
        VALUES ($1, $2, $3, true, 'inicio_primeiro_acesso')
-       RETURNING id, username, primeiro_acesso, etapa_atual`,
+       RETURNING id, username, primeiro_acesso, etapa_atual`, //ajustar depois
       [username, email, hash]
     );
 

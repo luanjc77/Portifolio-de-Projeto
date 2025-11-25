@@ -140,7 +140,8 @@ function HomePage() {
 
       return () => clearTimeout(timer);
     }
-  }, [currentFala, currentUser, avancarEtapa]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentFala]);
 
   return (
     <div className={styles.page}>

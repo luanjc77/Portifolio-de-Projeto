@@ -8,6 +8,12 @@ const API_PORT = process.env.API_PORT || 3001;
 app.use(cors());
 app.use(express.json());
 
+// Log de requisições
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.path}`);
+  next();
+});
+
 // Rotas externas
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/narrador", require("./routes/narrador"));
