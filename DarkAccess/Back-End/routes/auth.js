@@ -25,7 +25,7 @@ router.get("/user/:id", async (req, res) => {
     // Buscar conquistas do usuário
     try {
       const conquistasQuery = await db.query(
-        `SELECT c.id, c.nome, c.codigo, c.descricao, c.icone
+        `SELECT c.id, c.nome, c.codigo
          FROM conquistas c
          INNER JOIN conquistas_usuario cu ON c.id = cu.conquista_id
          WHERE cu.usuario_id = $1
