@@ -17,16 +17,16 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 220 15% 10%;
 
-    --primary: 210 100% 50%;
+    --primary: 142 76% 36%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 190 95% 45%;
+    --secondary: 160 84% 39%;
     --secondary-foreground: 0 0% 100%;
 
     --muted: 220 20% 96%;
     --muted-foreground: 220 10% 45%;
 
-    --accent: 190 95% 45%;
+    --accent: 160 84% 39%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
@@ -34,14 +34,14 @@ All colors MUST be HSL.
 
     --border: 220 20% 90%;
     --input: 220 20% 90%;
-    --ring: 210 100% 50%;
+    --ring: 142 76% 36%;
 
     --radius: 0.75rem;
 
-    --gradient-hero: linear-gradient(135deg, hsl(210 100% 50% / 0.1) 0%, hsl(190 95% 45% / 0.1) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(142 76% 36% / 0.1) 0%, hsl(160 84% 39% / 0.1) 100%);
     --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(220 25% 98%) 100%);
     --shadow-card: 0 4px 20px -2px hsl(220 15% 10% / 0.08);
-    --shadow-hover: 0 8px 30px -4px hsl(210 100% 50% / 0.15);
+    --shadow-hover: 0 8px 30px -4px hsl(142 76% 36% / 0.15);
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -63,16 +63,16 @@ All colors MUST be HSL.
     --popover: 220 18% 12%;
     --popover-foreground: 220 15% 95%;
 
-    --primary: 210 100% 55%;
+    --primary: 142 76% 45%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 190 95% 50%;
+    --secondary: 160 84% 45%;
     --secondary-foreground: 0 0% 100%;
 
     --muted: 220 15% 18%;
     --muted-foreground: 220 10% 60%;
 
-    --accent: 190 95% 50%;
+    --accent: 160 84% 45%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 62.8% 50%;
@@ -80,12 +80,12 @@ All colors MUST be HSL.
 
     --border: 220 15% 20%;
     --input: 220 15% 20%;
-    --ring: 210 100% 55%;
+    --ring: 142 76% 45%;
 
-    --gradient-hero: linear-gradient(135deg, hsl(210 100% 55% / 0.15) 0%, hsl(190 95% 50% / 0.15) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(142 76% 45% / 0.15) 0%, hsl(160 84% 45% / 0.15) 100%);
     --gradient-card: linear-gradient(180deg, hsl(220 18% 12%) 0%, hsl(220 20% 8%) 100%);
     --shadow-card: 0 4px 20px -2px hsl(0 0% 0% / 0.3);
-    --shadow-hover: 0 8px 30px -4px hsl(210 100% 55% / 0.25);
+    --shadow-hover: 0 8px 30px -4px hsl(142 76% 45% / 0.25);
 
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
@@ -105,6 +105,7 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Helvetica Neue', sans-serif;
   }
 }
 
