@@ -71,11 +71,19 @@ router.post("/resposta", async (req, res) => {
     // CORRETA
     if (fala.resposta_correta?.toLowerCase() === resposta.toLowerCase()) {
 
+      // Mapear etapa → código de conquista
+      const conquistasPorEtapa = {
+        'lab01_pergunta1': 'lab01_concluido',
+        'lab02_pergunta1': 'lab02_concluido'
+      };
+
+      const conquistaCodigo = conquistasPorEtapa[etapa] || fala.conquista_codigo;
+
       // Dar conquista
-      if (fala.conquista_codigo) {
+      if (conquistaCodigo) {
         const c = await db.query(`
           SELECT id FROM conquistas WHERE codigo = $1
-        `, [fala.conquista_codigo]);
+        `, [conquistaCodigo]);
 
         if (c.rows.length) {
           await db.query(`
@@ -83,6 +91,10 @@ router.post("/resposta", async (req, res) => {
             VALUES ($1, $2)
             ON CONFLICT DO NOTHING
           `, [usuario_id, c.rows[0].id]);
+          
+          console.log(`✅ Conquista ${conquistaCodigo} dada ao usuário ${usuario_id}`);
+        } else {
+          console.log(`⚠️ Conquista ${conquistaCodigo} não encontrada no banco`);
         }
       }
 
