@@ -23,20 +23,27 @@ router.get("/user/:id", async (req, res) => {
     const user = userQuery.rows[0];
 
     // Buscar conquistas do usuário
+    console.log(`🔍 Buscando conquistas para usuário ${id}...`);
+    
     try {
       const conquistasQuery = await db.query(
         `SELECT c.id, c.nome, c.codigo
          FROM conquistas c
          INNER JOIN conquistas_usuario cu ON c.id = cu.conquista_id
          WHERE cu.usuario_id = $1
-         ORDER BY cu.id DESC`,
+         ORDER BY c.id DESC`,
         [id]
       );
+      
+      console.log(`✅ Query executada com sucesso!`);
+      console.log(`🏆 Total de conquistas encontradas: ${conquistasQuery.rows.length}`);
+      console.log(`📋 Conquistas retornadas:`, conquistasQuery.rows);
+      
       user.conquistas = conquistasQuery.rows;
-      console.log(`🏆 Conquistas do usuário ${id}:`, conquistasQuery.rows.length);
-      console.log(`📋 Conquistas:`, conquistasQuery.rows.map(c => c.codigo));
+      
     } catch (conquistaErr) {
-      console.error(`❌ Erro ao buscar conquistas:`, conquistaErr);
+      console.error(`❌ ERRO ao buscar conquistas para usuário ${id}:`, conquistaErr.message);
+      console.error(`Stack:`, conquistaErr.stack);
       user.conquistas = [];
     }
 
