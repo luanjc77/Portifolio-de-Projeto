@@ -183,26 +183,49 @@ router.post("/start-lab", async (req, res) => {
   try {
     // Verificar se usuário já tem container ativo para este lab
     const existingKey = `${usuario_id}-${lab_id}`;
-    if (activeContainers.has(existingKey)) {
-      const existing = activeContainers.get(existingKey);
-      
-      // Verificar se container ainda está rodando
-      const isRunning = await checkContainerRunning(existing.containerName);
+    
+    // Primeiro, buscar no banco se existe algum container registrado
+    const dbCheck = await db.query(
+      `SELECT container_name, porta FROM labs_ativos 
+       WHERE usuario_id = $1 AND lab_id = $2`,
+      [usuario_id, lab_id]
+    );
+    
+    if (dbCheck.rows.length > 0) {
+      const dbContainer = dbCheck.rows[0];
+      const isRunning = await checkContainerRunning(dbContainer.container_name);
       
       if (isRunning) {
-        // Gerar URL correta baseado no modo
+        // Container existe e está rodando - reusar
         const url = USE_TRAEFIK 
           ? `https://${DOMAIN}/labs/user${usuario_id}/${lab_id}`
-          : `http://${DOMAIN}:${existing.port}`;
+          : `http://${DOMAIN}:${dbContainer.porta}`;
 
+        console.log(`♻️ Reusando container existente: ${dbContainer.container_name}`);
+        
         return res.json({
           success: true,
           url,
-          port: existing.port,
+          port: dbContainer.porta,
           message: "Container já ativo"
         });
       } else {
-        // Container morreu, remover do mapa
+        // Container morreu - limpar registro
+        console.log(`🧹 Limpando registro órfão: ${dbContainer.container_name}`);
+        await db.query(
+          `DELETE FROM labs_ativos WHERE usuario_id = $1 AND lab_id = $2`,
+          [usuario_id, lab_id]
+        );
+        activeContainers.delete(existingKey);
+      }
+    }
+    
+    // Verificar memória também
+    if (activeContainers.has(existingKey)) {
+      const existing = activeContainers.get(existingKey);
+      const isRunning = await checkContainerRunning(existing.containerName);
+      
+      if (!isRunning) {
         activeContainers.delete(existingKey);
       }
     }
