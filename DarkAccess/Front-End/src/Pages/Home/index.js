@@ -24,9 +24,11 @@ function HomePage() {
 
   const [currentEtapa, setCurrentEtapa] = useState(null);
 
-  const hasLab01Conquista = currentUser?.conquistas?.some(
-    (c) => c.codigo === "lab01_concluido"
-  );
+  // TODO: Reativar quando sistema de conquistas estiver funcionando
+  // const hasLab01Conquista = currentUser?.conquistas?.some(
+  //   (c) => c.codigo === "lab01_concluido"
+  // );
+  const hasLab01Conquista = true; // Temporário: Lab02 sempre liberado
 
   // Carregar usuário completo do backend
   useEffect(() => {
@@ -195,10 +197,8 @@ function HomePage() {
           }
         }}>Lab-01</button>
 
-        {/* LAB02 — bloqueia se usuário não terminou Lab01 */}
+        {/* LAB02 — temporariamente liberado */}
         <button
-          disabled={!hasLab01Conquista}
-          className={!hasLab01Conquista ? styles.locked : ""}
           onClick={async () => {
             // Atualizar etapa primeiro
             const sucesso = await atualizarEtapa(currentUser.id, "lab02_intro");

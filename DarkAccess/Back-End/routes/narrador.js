@@ -71,13 +71,18 @@ router.post("/resposta", async (req, res) => {
     // CORRETA
     if (fala.resposta_correta?.toLowerCase() === resposta.toLowerCase()) {
 
-      // Mapear etapa → código de conquista
+      // Mapear etapa → código de conquista e próxima etapa
       const conquistasPorEtapa = {
         'lab01_pergunta1': 'lab01_concluido',
         'lab02_pergunta1': 'lab02_concluido'
       };
 
+      const proximaEtapaPorLab = {
+        'lab02_pergunta1': 'antes_acesso_profundezas'
+      };
+
       const conquistaCodigo = conquistasPorEtapa[etapa] || fala.conquista_codigo;
+      const proximaEtapa = proximaEtapaPorLab[etapa];
 
       // Dar conquista
       if (conquistaCodigo) {
@@ -98,10 +103,22 @@ router.post("/resposta", async (req, res) => {
         }
       }
 
+      // Atualizar etapa do usuário se definida
+      if (proximaEtapa) {
+        await db.query(`
+          UPDATE usuarios
+          SET etapa_atual = $1
+          WHERE id = $2
+        `, [proximaEtapa, usuario_id]);
+        
+        console.log(`✅ Etapa atualizada para ${proximaEtapa} - usuário ${usuario_id}`);
+      }
+
       return res.json({
         success: true,
         correta: true,
-        mensagem: "Resposta correta!"
+        mensagem: "Resposta correta!",
+        nova_etapa: proximaEtapa || null
       });
     }
 
