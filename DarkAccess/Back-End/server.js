@@ -2,16 +2,33 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 
+// Importar métricas do Prometheus
+const { register, metricsMiddleware } = require("./metrics");
+
 const app = express();
 const API_PORT = process.env.API_PORT || 3001;
 
 app.use(cors());
 app.use(express.json());
 
+// Middleware de métricas (antes das rotas)
+app.use(metricsMiddleware);
+
 // Log de requisições
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.path}`);
   next();
+});
+
+// Rota de métricas para o Prometheus/Alloy
+app.get('/metrics', async (req, res) => {
+  res.set('Content-Type', register.contentType);
+  res.end(await register.metrics());
+});
+
+// Health check
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', service: 'darkaccess-backend', timestamp: new Date().toISOString() });
 });
 
 // Rotas externas
