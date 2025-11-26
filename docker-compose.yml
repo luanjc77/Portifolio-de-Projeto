@@ -38,6 +38,20 @@ services:
     networks:
       - darkaccess-net
 
+  darkaccess-frontend:
+    build: ./DarkAccess/Front-End
+    container_name: darkaccess-frontend
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`34.132.60.57`) || Host(`localhost`)"
+      - "traefik.http.routers.frontend.entrypoints=web"
+      - "traefik.http.services.frontend.loadbalancer.server.port=80"
+      - "traefik.http.routers.frontend.priority=1"
+    depends_on:
+      - darkaccess-backend
+    networks:
+      - darkaccess-net
+
   traefik:
     image: traefik:v3.0
     command:
