@@ -18,34 +18,62 @@ function UserPage() {
     const stored = localStorage.getItem('user');
     if (stored) {
       const parsed = JSON.parse(stored);
-      setUser(parsed);
-
-      setForm({
-        username: parsed.username || '',
-        email: parsed.email || ''
-      });
-
-      if (parsed.avatar) setAvatar(parsed.avatar);
-      if (parsed.playerLife) setPlayerLife(parsed.playerLife);
-
-      loadConquistas(parsed.id);
+      
+      loadUserData(parsed.id);
     }
   }, []);
 
-  async function loadConquistas(id) {
+  async function loadUserData(id) {
     try {
       const API_HOST = process.env.REACT_APP_API_HOST || window.location.hostname;
       const API_PORT = process.env.REACT_APP_API_PORT || '3001';
       const base = process.env.REACT_APP_API_BASE || `http://${API_HOST}:${API_PORT}`;
 
-      const res = await fetch(`${base}/api/usuario/${id}/conquistas`);
+      const res = await fetch(`${base}/api/auth/user/${id}`);
       const data = await res.json();
 
       if (data.success) {
-        setConquistas(data.conquistas);
+        const userData = data.user;
+        
+        console.log('✅ Dados do usuário recebidos:', userData);
+        console.log('🏆 Conquistas recebidas:', userData.conquistas);
+        
+        setUser(userData);
+        setForm({
+          username: userData.username || '',
+          email: userData.email || ''
+        });
+        
+        if (userData.avatar) setAvatar(userData.avatar);
+        setPlayerLife(userData.vidas || 3);
+        
+        // Carregar conquistas
+        if (userData.conquistas && userData.conquistas.length > 0) {
+          console.log('📝 Setando conquistas:', userData.conquistas);
+          setConquistas(userData.conquistas);
+        } else {
+          console.log('⚠️ Nenhuma conquista encontrada');
+          setConquistas([]);
+        }
+        
+        // Atualizar localStorage com dados frescos
+        localStorage.setItem('user', JSON.stringify(userData));
       }
     } catch (error) {
-      console.error("Erro ao carregar conquistas:", error);
+      console.error("Erro ao carregar dados do usuário:", error);
+      
+      // Fallback: usar dados do localStorage
+      const stored = localStorage.getItem('user');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        setUser(parsed);
+        setForm({
+          username: parsed.username || '',
+          email: parsed.email || ''
+        });
+        if (parsed.avatar) setAvatar(parsed.avatar);
+        setPlayerLife(parsed.vidas || 3);
+      }
     }
   }
 

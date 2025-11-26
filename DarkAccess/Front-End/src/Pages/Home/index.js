@@ -103,17 +103,19 @@ function HomePage() {
 
     setUserResponse("");
     
-    // Se acertou, atualizar progresso
+    // Se acertou, redirecionar para Start
     if (data.correta) {
-      const novaEtapa = await avancarEtapa(currentUser);
-      if (novaEtapa) {
-        const userAtualizado = {...currentUser, etapa_atual: novaEtapa, primeiro_acesso: false};
+      // Se o backend retornou nova_etapa, usar ela
+      if (data.nova_etapa) {
+        const userAtualizado = {...currentUser, etapa_atual: data.nova_etapa, primeiro_acesso: false};
         setCurrentUser(userAtualizado);
-        setCurrentEtapa(novaEtapa);
-        
-        // Atualizar localStorage
         localStorage.setItem('user', JSON.stringify(userAtualizado));
       }
+      
+      // Pequeno delay para mostrar a mensagem antes de redirecionar
+      setTimeout(() => {
+        navigate('/inicio');
+      }, 1000);
     }
   };
 

@@ -9,6 +9,7 @@ import { atualizarEtapa } from '../../utils/progressao';
 
 function StartPage() {
   const navigate = useNavigate();
+  const API_URL = `http://${process.env.REACT_APP_API_HOST}:${process.env.REACT_APP_API_PORT}`;
 
   const [currentUser, setCurrentUser] = useState(null);
 
@@ -22,26 +23,49 @@ function StartPage() {
     const user = localStorage.getItem('user');
     if (user) {
       const u = JSON.parse(user);
-      setCurrentUser(u);
-
-      // Usar etapa_atual se disponível
-      if (u.etapa_atual) {
-        setEtapa(u.etapa_atual);
-      } else if (u.primeiro_acesso === true) {
-        setEtapa("inicio_primeiro_acesso");
-      } else {
-        setEtapa("inicio_pos_primeiro_acesso");
-      }
-
-      // Desbloquear botões após primeira fala
-      if (!u.primeiro_acesso || u.etapa_atual !== 'inicio_primeiro_acesso') {
-        setBotoesBloqueados(false);
-      } else {
-        // Desbloquear após 10 segundos (tempo da fala inicial)
-        setTimeout(() => setBotoesBloqueados(false), 10000);
-      }
+      
+      // Buscar dados atualizados do backend
+      fetch(`${API_URL}/api/auth/user/${u.id}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            const userAtualizado = data.user;
+            setCurrentUser(userAtualizado);
+            
+            // Atualizar localStorage com dados do servidor
+            localStorage.setItem('user', JSON.stringify(userAtualizado));
+            
+            // Determinar etapa correta
+            let etapaCorreta;
+            if (userAtualizado.etapa_atual) {
+              etapaCorreta = userAtualizado.etapa_atual;
+            } else if (userAtualizado.primeiro_acesso === true) {
+              etapaCorreta = "inicio_primeiro_acesso";
+            } else {
+              etapaCorreta = "inicio_pos_primeiro_acesso";
+            }
+            
+            setEtapa(etapaCorreta);
+            
+            // Desbloquear botões se não for primeiro acesso
+            if (!userAtualizado.primeiro_acesso || etapaCorreta !== 'inicio_primeiro_acesso') {
+              setBotoesBloqueados(false);
+            } else {
+              // Desbloquear após 10 segundos (tempo da fala inicial)
+              setTimeout(() => setBotoesBloqueados(false), 10000);
+            }
+          }
+        })
+        .catch(err => {
+          console.error("Erro ao carregar usuário:", err);
+          // Fallback para dados locais
+          setCurrentUser(u);
+          const etapaLocal = u.etapa_atual || (u.primeiro_acesso ? "inicio_primeiro_acesso" : "inicio_pos_primeiro_acesso");
+          setEtapa(etapaLocal);
+          setBotoesBloqueados(false);
+        });
     }
-  }, []);
+  }, [API_URL]);
 
   const handleSkip = () => setSkipSignal(p => p + 1);
   const handleRepeat = () => setRepeatTrigger(p => p + 1);

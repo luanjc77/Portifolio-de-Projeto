@@ -12,7 +12,7 @@ router.get("/user/:id", async (req, res) => {
 
   try {
     const userQuery = await db.query(
-      `SELECT id, username, email, primeiro_acesso, etapa_atual, deepweb_access
+      `SELECT id, username, email, primeiro_acesso, etapa_atual, deepweb_access, vidas
        FROM usuarios WHERE id = $1`,
       [id]
     );
@@ -28,11 +28,13 @@ router.get("/user/:id", async (req, res) => {
         `SELECT c.id, c.nome, c.codigo, c.descricao, c.icone
          FROM conquistas c
          INNER JOIN conquistas_usuario cu ON c.id = cu.conquista_id
-         WHERE cu.usuario_id = $1`,
+         WHERE cu.usuario_id = $1
+         ORDER BY cu.id DESC`,
         [id]
       );
       user.conquistas = conquistasQuery.rows;
       console.log(`🏆 Conquistas do usuário ${id}:`, conquistasQuery.rows.length);
+      console.log(`📋 Conquistas:`, conquistasQuery.rows.map(c => c.codigo));
     } catch (conquistaErr) {
       console.error(`❌ Erro ao buscar conquistas:`, conquistaErr);
       user.conquistas = [];
