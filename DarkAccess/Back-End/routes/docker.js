@@ -22,7 +22,8 @@ const LAB_CONFIGS = {
     basePort: 9000,
     name: "xss-lab",
     exposedPort: 80,
-    path: "./Labs/xss-challenge"
+    path: "./Labs/xss-challenge",
+    fixedPort: 9001  // Porta fixa para o lab01 (container verde)
   },
   lab02: {
     image: "lab02-osdb",
@@ -239,8 +240,15 @@ router.post("/start-lab", async (req, res) => {
       url = `https://${DOMAIN}/labs/user${usuario_id}/${lab_id}`;
     } else {
       // Desenvolvimento ou teste GCP: porta direta
-      port = await findAvailablePort(config.basePort);
-      url = `http://${DOMAIN}:${port}`;
+      // Se o lab tem porta fixa definida, usar ela
+      if (config.fixedPort) {
+        port = config.fixedPort;
+        url = `http://${DOMAIN}:${port}`;
+        console.log(`🔒 Usando porta fixa ${port} para ${lab_id}`);
+      } else {
+        port = await findAvailablePort(config.basePort);
+        url = `http://${DOMAIN}:${port}`;
+      }
     }
 
     // Criar container
