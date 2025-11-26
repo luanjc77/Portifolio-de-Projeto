@@ -106,7 +106,10 @@ function createContainer(labId, userId, port, config) {
     } else {
       // Modo desenvolvimento ou teste GCP: mapear porta diretamente
       console.log(`💻 Mapeando porta ${port} diretamente`);
-      args.push("-p", `${port}:${config.exposedPort}`);
+      // Usar network_mode host para acessar portas do host diretamente
+      args.push("--network", "host");
+      // Com host network, não precisa -p porque usa portas do host diretamente
+      // Mas precisamos fazer bind explícito na aplicação
     }
 
     args.push(config.image);
