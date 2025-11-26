@@ -28,7 +28,7 @@ const LAB_CONFIGS = {
     image: "lab02-osdb",
     basePort: 10000,
     name: "osdb-lab",
-    exposedPort: 80,
+    exposedPort: 3000,  // Lab02 roda na porta 3000 (Node.js)
     path: "./Labs/lab02-osdb"
   }
 };

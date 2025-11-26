@@ -32,7 +32,9 @@ router.get("/user/:id", async (req, res) => {
         [id]
       );
       user.conquistas = conquistasQuery.rows;
+      console.log(`🏆 Conquistas do usuário ${id}:`, conquistasQuery.rows.length);
     } catch (conquistaErr) {
+      console.error(`❌ Erro ao buscar conquistas:`, conquistaErr);
       user.conquistas = [];
     }
 
