@@ -22,9 +22,6 @@ O **DarkAccess** é uma plataforma educacional desenvolvida como projeto acadêm
 - **Progressão Gamificada:** Sistema de etapas, conquistas e vidas
 - **Acessibilidade:** 100% via navegador web, sem necessidade de instalações complexas
 
-![Tela de Boas-Vindas do DarkAccess](https://github.com/user-attachments/assets/e09b297c-da1e-4780-92dc-25ce2c941843)
-![Tela de Início de Jornada](https://github.com/user-attachments/assets/8efb9b88-14d9-4c8a-9d0f-00debf6da446)
-
 ---
 
 ## Funcionalidades Principais
