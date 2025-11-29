@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Lab02 - Terminal Virtual</title>
+    <title>Lab02 - Senha Fraca</title>
     <style>
         body {
             background: #000;
@@ -43,7 +43,7 @@
 
     <!-- TELA DE LOGIN -->
     <div id="login-screen" style="padding:20px;color:#0f0;">
-        <div>DALL·E Lab02 - Terminal Seguro</div><br>
+        <div>A senha é a mais óbvia de todas</div><br>
         <div>login:</div>
         <input id="login-user"><br><br>
 
@@ -56,11 +56,11 @@
     <!-- ÁREA DO TERMINAL -->
     <div id="terminal-area" style="display:none;">
         <div id="terminal">
-            <div>Conectado ao ambiente seguro da DALL·E Tech...</div>
+            <div>Conectado ao ambiente seguro Tech...</div>
         </div>
 
         <div id="input-line">
-            <span id="prompt">root@dalle-lab02:~$</span>
+            <span id="prompt">root@admin-lab02:~$</span>
             <input id="cmd" autofocus autocomplete="off" />
         </div>
     </div>
@@ -99,7 +99,7 @@
                 const command = input.value.trim();
                 if (!command) return;
                 
-                append(`\nroot@dalle-lab02:~$ ${command}`);
+                append(`\nroot@admin-lab02:~$ ${command}`);
                 input.value = '';
 
                 const res = await fetch('/api/exec', {
