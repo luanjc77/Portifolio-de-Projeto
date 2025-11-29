@@ -3,9 +3,9 @@ services:
     image: costaluan/db_darkaccess
     container_name: db_darkaccess
     environment:
-      POSTGRES_USER: pinguin
-      POSTGRES_PASSWORD: postgress_pinguin_77
-      POSTGRES_DB: darkaccess
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - db_data:/var/lib/postgresql/data
     networks:
@@ -23,16 +23,16 @@ services:
       - /usr/bin/docker:/usr/bin/docker
       - ./DarkAccess/Back-End:/app
     environment:
-      DB_HOST: db_darkaccess
-      DB_USER: pinguin
-      DB_PASS: postgress_pinguin_77
-      DB_NAME: darkaccess
-      DB_PORT: 5432
-      API_HOST: 34.132.60.57
-      API_PORT: 3001
-      NODE_ENV: production
-      DOMAIN: 34.132.60.57
-      USE_TRAEFIK: "false"
+      DB_HOST: ${DB_HOST}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+      DB_NAME: ${DB_NAME}
+      DB_PORT: ${DB_PORT}
+      API_HOST: ${API_HOST}
+      API_PORT: ${API_PORT}
+      NODE_ENV: ${NODE_ENV}
+      DOMAIN: ${DOMAIN}
+      USE_TRAEFIK: ${USE_TRAEFIK}
     depends_on:
       - db_darkaccess
     networks:
