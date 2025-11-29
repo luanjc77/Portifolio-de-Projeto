@@ -35,11 +35,13 @@ function Narrator({
         .trim();
 
       console.log(`📖 Fala recebida (${falaLimpa.length} chars):`, falaLimpa.substring(0, 50));
-      console.log(`🔤 Primeira letra: "${falaLimpa[0]}"`);
+      console.log(`🔤 Primeira letra: "${falaLimpa[0]}" (código: ${falaLimpa.charCodeAt(0)})`);
+      console.log(`🔤 Última letra: "${falaLimpa[falaLimpa.length - 1]}"`);
 
       setFullText(falaLimpa);
       setText("");
       indexRef.current = 0; // Garantir que começa do zero
+      console.log(`✅ IndexRef resetado para: ${indexRef.current}`);
       setWriting(true);
 
       onFalaReady?.({
@@ -77,13 +79,19 @@ function Narrator({
         return;
       }
 
+      // Verifica ANTES de adicionar o caractere
       if (indexRef.current >= fullText.length) {
         setWriting(false);
         clearInterval(interval);
         return;
       }
 
-      setText((old) => old + fullText[indexRef.current]);
+      // Pega o caractere atual e verifica se existe
+      const currentChar = fullText[indexRef.current];
+      if (currentChar !== undefined) {
+        setText((old) => old + currentChar);
+      }
+      
       indexRef.current++;
     }, 22); 
 
