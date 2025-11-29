@@ -121,25 +121,38 @@ router.post("/resposta", async (req, res) => {
         console.log(`✅ Etapa atualizada para ${proximaEtapa} - usuário ${usuario_id}`);
       }
 
+      // Buscar vidas atuais do usuário
+      const vidasQuery = await db.query(`
+        SELECT vidas FROM usuarios WHERE id = $1
+      `, [usuario_id]);
+      
+      const vidasAtuais = vidasQuery.rows[0]?.vidas || 100;
+
       return res.json({
         success: true,
         correta: true,
         mensagem: "Resposta correta!",
-        nova_etapa: proximaEtapa || null
+        nova_etapa: proximaEtapa || null,
+        vidas: vidasAtuais
       });
     }
 
-    // ERRADA → perde vida
-    await db.query(`
+    // ERRADA → perde 10 de vida
+    const updateVida = await db.query(`
       UPDATE usuarios
-      SET vidas = GREATEST(COALESCE(vidas, 3) - 1, 0)
+      SET vidas = GREATEST(COALESCE(vidas, 100) - 10, 0)
       WHERE id = $1
+      RETURNING vidas
     `, [usuario_id]);
+
+    const vidasRestantes = updateVida.rows[0]?.vidas || 0;
+    console.log(`❌ Resposta errada! Usuário ${usuario_id} perdeu 10 de vida. Vidas restantes: ${vidasRestantes}`);
 
     return res.json({
       success: true,
       correta: false,
-      mensagem: "Resposta incorreta. Você perdeu uma vida."
+      mensagem: "Resposta incorreta. Você perdeu 10 de vida.",
+      vidas: vidasRestantes
     });
 
   } catch (err) {
