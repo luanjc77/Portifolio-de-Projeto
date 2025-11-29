@@ -91,6 +91,7 @@ function StartPage() {
         {/* Narrador */}
         <div className={styles.narratorWrapper}>
           <Narrador
+            telaAtual="start"
             etapa={etapa}
             usuario={currentUser}
             skipSignal={skipSignal}

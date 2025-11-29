@@ -5,24 +5,47 @@ const db = require("../db");
 /*
  * GET /api/narrador/fala/:etapa
  * Retorna a fala correta baseada na etapa e progresso do usuário
+ * Query params: userId, tela (opcional)
  */
 router.get("/fala/:etapa", async (req, res) => {
   const { etapa } = req.params;
   const userId = req.query.userId;
+  const telaAtual = req.query.tela; // Nova validação de tela
 
   try {
     // Sempre usa a etapa enviada (não busca do banco)
     // O frontend já envia a etapa_atual correta
     const chaveEvento = etapa;
 
-    // Buscar fala por chave_evento
-    const q = await db.query(`
-      SELECT fala, resposta_correta FROM falas_narrador
+    // Buscar fala por chave_evento, com validação opcional de tela
+    let query = `
+      SELECT fala, resposta_correta, tela_permitida 
+      FROM falas_narrador
       WHERE chave_evento = $1
-      ORDER BY ordem
-    `, [chaveEvento]);
+    `;
+    
+    const params = [chaveEvento];
+
+    // Se tela foi informada, validar
+    if (telaAtual) {
+      query += ` AND (tela_permitida IS NULL OR tela_permitida = $2)`;
+      params.push(telaAtual);
+    }
+
+    query += ` ORDER BY ordem`;
+
+    const q = await db.query(query, params);
 
     if (!q.rows.length) {
+      if (telaAtual) {
+        console.log(`⚠️ Nenhuma fala encontrada para etapa "${chaveEvento}" na tela "${telaAtual}"`);
+        return res.json({
+          success: false,
+          message: `Esta fala não está disponível na tela atual (${telaAtual})`,
+          fala: { etapa: chaveEvento, fala: "" }
+        });
+      }
+      
       return res.json({
         success: true,
         fala: { etapa: chaveEvento, fala: "Nenhuma fala configurada para esta etapa." }
@@ -36,7 +59,8 @@ router.get("/fala/:etapa", async (req, res) => {
       .join("\n\n")
       .trim(); // Remove espaços extras no início/fim
 
-    console.log(`📖 Fala carregada para ${chaveEvento}:`, fala.substring(0, 50) + '...');
+    const telaPermitida = q.rows[0].tela_permitida;
+    console.log(`📖 Fala carregada para ${chaveEvento} (tela: ${telaPermitida || 'todas'}):`, fala.substring(0, 50) + '...');
 
     res.json({
       success: true,
@@ -166,6 +190,7 @@ router.post("/resposta", async (req, res) => {
  */
 router.get("/dica/:etapa", async (req, res) => {
   const { etapa } = req.params;
+  const { usuario_id } = req.query;
 
   try {
     const q = await db.query(`
@@ -175,6 +200,15 @@ router.get("/dica/:etapa", async (req, res) => {
 
     if (!q.rows.length)
       return res.json({ success: false, dica: "Nenhuma dica disponível." });
+
+    // Incrementar dicas_usadas se usuario_id foi fornecido
+    if (usuario_id) {
+      await db.query(`
+        UPDATE usuarios 
+        SET dicas_usadas = COALESCE(dicas_usadas, 0) + 1
+        WHERE id = $1
+      `, [usuario_id]);
+    }
 
     res.json({ success: true, dica: q.rows[0].dica });
 

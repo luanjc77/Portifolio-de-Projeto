@@ -77,7 +77,7 @@ function HomePage() {
   const handleHint = async () => {
     if (!currentFala?.etapa) return setHint("Nenhuma dica disponível.");
 
-    const res = await fetch(`${API_URL}/api/narrador/dica/${currentFala.etapa}`);
+    const res = await fetch(`${API_URL}/api/narrador/dica/${currentFala.etapa}?usuario_id=${currentUser?.id}`);
     const data = await res.json();
 
     setHint(data?.dica || "Nenhuma dica disponível.");
@@ -138,6 +138,7 @@ function HomePage() {
             repeatTrigger={repeatTrigger}
             skipSignal={skipSignal}
             onFalaReady={setCurrentFala}
+            telaAtual="home"
           />
         )}
       </div>

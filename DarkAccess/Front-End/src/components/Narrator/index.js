@@ -7,6 +7,7 @@ function Narrator({
   skipSignal,
   repeatTrigger,
   onFalaReady,
+  telaAtual, // Nova prop para validação de tela
 }) {
   const API_URL = `http://${process.env.REACT_APP_API_HOST}:${process.env.REACT_APP_API_PORT}`;
 
@@ -21,12 +22,30 @@ function Narrator({
 
   const loadFala = async (etp) => {
     try {
-      const url = `${API_URL}/api/narrador/fala/${etp}${
-        usuario ? `?userId=${usuario.id}` : ""
-      }`;
+      // Construir URL com parâmetros
+      let url = `${API_URL}/api/narrador/fala/${etp}`;
+      const params = [];
+      
+      if (usuario?.id) params.push(`userId=${usuario.id}`);
+      if (telaAtual) params.push(`tela=${telaAtual}`);
+      
+      if (params.length > 0) {
+        url += `?${params.join('&')}`;
+      }
+
+      console.log(`🌐 Buscando fala: ${url}`);
 
       const res = await fetch(url);
       const data = await res.json();
+
+      // Validar se fala está disponível para esta tela
+      if (!data.success) {
+        console.warn(`⚠️ ${data.message}`);
+        setFullText("");
+        setText("");
+        setWriting(false);
+        return;
+      }
 
       const falaRecebida = data?.fala?.fala ?? "";
       const falaLimpa = falaRecebida
