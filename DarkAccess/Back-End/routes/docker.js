@@ -34,16 +34,46 @@ const LAB_CONFIGS = {
 };
 
 /**
- * Encontra uma porta disponível
+ * Encontra uma porta disponível baseada no banco de dados
  */
 async function findAvailablePort(basePort) {
-  const maxAttempts = 100;
-  for (let i = 0; i < maxAttempts; i++) {
-    const port = basePort + i;
-    const isAvailable = await checkPortAvailable(port);
-    if (isAvailable) return port;
+  try {
+    // Buscar a maior porta em uso no banco para este lab
+    const result = await db.query(
+      `SELECT MAX(porta) as max_porta FROM labs_ativos WHERE porta >= $1 AND porta < $2`,
+      [basePort, basePort + 1000]
+    );
+    
+    let startPort = basePort;
+    
+    if (result.rows[0].max_porta) {
+      // Se existe porta registrada, começar da próxima
+      startPort = result.rows[0].max_porta + 1;
+      console.log(`🔍 Última porta usada: ${result.rows[0].max_porta}, tentando ${startPort}`);
+    } else {
+      console.log(`🔍 Nenhuma porta registrada, usando base: ${startPort}`);
+    }
+    
+    // Tentar até 100 portas a partir da última usada
+    const maxAttempts = 100;
+    for (let i = 0; i < maxAttempts; i++) {
+      const port = startPort + i;
+      const isAvailable = await checkPortAvailable(port);
+      
+      if (isAvailable) {
+        console.log(`✅ Porta ${port} disponível`);
+        return port;
+      } else {
+        console.log(`❌ Porta ${port} em uso, tentando próxima...`);
+      }
+    }
+    
+    throw new Error("Nenhuma porta disponível após 100 tentativas");
+  } catch (err) {
+    console.error("Erro ao buscar porta disponível:", err);
+    // Fallback: tentar a partir da basePort
+    return basePort;
   }
-  throw new Error("Nenhuma porta disponível");
 }
 
 /**
@@ -114,20 +144,30 @@ function createContainer(labId, userId, port, config) {
     const docker = spawn("docker", args);
 
     let containerId = "";
+    let errorOutput = "";
+    
     docker.stdout.on("data", (data) => {
       containerId += data.toString().trim();
     });
 
     docker.stderr.on("data", (data) => {
-      console.error(`Erro Docker: ${data}`);
+      const errorMsg = data.toString();
+      errorOutput += errorMsg;
+      console.error(`Erro Docker: ${errorMsg}`);
     });
 
     docker.on("close", (code) => {
       if (code === 0 && containerId) {
         console.log(`✅ Container criado: ${containerId.substring(0, 12)}`);
-        resolve({ containerId, containerName });
+        resolve({ containerId, containerName, port });
       } else {
-        reject(new Error(`Falha ao criar container. Code: ${code}`));
+        // Verificar se o erro é de porta ocupada
+        if (errorOutput.includes("port is already allocated") || 
+            errorOutput.includes("address already in use")) {
+          reject(new Error(`PORT_IN_USE:${port}`));
+        } else {
+          reject(new Error(`Falha ao criar container. Code: ${code}. Error: ${errorOutput}`));
+        }
       }
     });
 
@@ -233,23 +273,56 @@ router.post("/start-lab", async (req, res) => {
     // Encontrar porta disponível e gerar URL
     let port = null;
     let url = "";
-
+    let containerId, containerName;
+    
     if (USE_TRAEFIK) {
       // Produção com Traefik: URL via paths
       url = `https://${DOMAIN}/labs/user${usuario_id}/${lab_id}`;
+      
+      // Criar container sem porta específica
+      const result = await createContainer(lab_id, usuario_id, null, config);
+      containerId = result.containerId;
+      containerName = result.containerName;
     } else {
       // Desenvolvimento ou teste GCP: porta direta
-      port = await findAvailablePort(config.basePort);
-      url = `http://${DOMAIN}:${port}`;
+      // Tentar até 10 vezes se a porta estiver ocupada
+      const maxRetries = 10;
+      let lastError = null;
+      
+      for (let attempt = 0; attempt < maxRetries; attempt++) {
+        try {
+          port = await findAvailablePort(config.basePort + attempt);
+          console.log(`🎯 Tentativa ${attempt + 1}: Tentando porta ${port}`);
+          
+          const result = await createContainer(lab_id, usuario_id, port, config);
+          containerId = result.containerId;
+          containerName = result.containerName;
+          
+          // Sucesso! Sair do loop
+          url = `http://${DOMAIN}:${port}`;
+          console.log(`✅ Container criado com sucesso na porta ${port}`);
+          break;
+          
+        } catch (err) {
+          lastError = err;
+          
+          // Se for erro de porta ocupada, tentar próxima
+          if (err.message.startsWith("PORT_IN_USE:")) {
+            const busyPort = err.message.split(":")[1];
+            console.log(`⚠️ Porta ${busyPort} ocupada, tentando próxima...`);
+            continue;
+          } else {
+            // Outro tipo de erro, lançar exceção
+            throw err;
+          }
+        }
+      }
+      
+      // Se saiu do loop sem sucesso
+      if (!containerId) {
+        throw new Error(`Não foi possível alocar porta após ${maxRetries} tentativas. Último erro: ${lastError?.message}`);
+      }
     }
-
-    // Criar container
-    const { containerId, containerName } = await createContainer(
-      lab_id,
-      usuario_id,
-      port,
-      config
-    );
 
     // Registrar container ativo
     const containerInfo = {
