@@ -141,4 +141,47 @@ router.post("/login", async (req, res) => {
   }
 });
 
+/*
+ * GET /api/auth/ranking
+ * Retorna ranking geral dos usuários baseado em vidas e uso de dicas
+ */
+router.get("/ranking", async (req, res) => {
+  try {
+    // Query com fallback caso coluna usou_dica não exista
+    const rankingQuery = await db.query(`
+      SELECT 
+        u.id,
+        u.username,
+        u.vidas,
+        COUNT(DISTINCT cu.conquista_id) as total_conquistas,
+        0 as dicas_usadas
+      FROM usuarios u
+      LEFT JOIN conquistas_usuario cu ON u.id = cu.usuario_id
+      GROUP BY u.id, u.username, u.vidas
+      ORDER BY 
+        u.vidas DESC,
+        total_conquistas DESC
+      LIMIT 100
+    `);
+
+    const ranking = rankingQuery.rows.map((row, index) => ({
+      posicao: index + 1,
+      id: row.id,
+      username: row.username,
+      vidas: row.vidas || 100,
+      conquistas: parseInt(row.total_conquistas) || 0,
+      dicas_usadas: parseInt(row.dicas_usadas) || 0
+    }));
+
+    res.json({
+      success: true,
+      ranking
+    });
+
+  } catch (err) {
+    console.error("Erro ao buscar ranking:", err);
+    res.status(500).json({ success: false, message: "Erro no servidor." });
+  }
+});
+
 module.exports = router;

@@ -145,10 +145,159 @@
   cursor: pointer;
 }
 
+/* Ranking Section */
+.rankingSection {
+  margin-top: 40px;
+  padding: 24px;
+  background: #0b0b0c;
+  border-radius: 12px;
+  border: 1px solid rgba(57, 255, 20, 0.1);
+}
+
+.rankingSection h2 {
+  margin-bottom: 8px;
+  color: #39ff14;
+  font-size: 24px;
+}
+
+.rankingDescription {
+  color: #888;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.rankingGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rankingHeader {
+  display: grid;
+  grid-template-columns: 80px 1fr 120px 100px 120px;
+  gap: 16px;
+  padding: 12px 16px;
+  background: #151517;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 14px;
+  color: #39ff14;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.rankingRow {
+  display: grid;
+  grid-template-columns: 80px 1fr 120px 100px 120px;
+  gap: 16px;
+  padding: 16px;
+  background: #1a1a1c;
+  border-radius: 8px;
+  align-items: center;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.rankingRow:hover {
+  background: #222224;
+  border-color: rgba(57, 255, 20, 0.2);
+  transform: translateX(4px);
+}
+
+.currentUser {
+  background: rgba(57, 255, 20, 0.05);
+  border: 1px solid rgba(57, 255, 20, 0.3);
+}
+
+.currentUser:hover {
+  background: rgba(57, 255, 20, 0.08);
+  border-color: rgba(57, 255, 20, 0.4);
+}
+
+.position {
+  font-size: 18px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.medal1, .medal2, .medal3 {
+  font-size: 28px;
+}
+
+.username {
+  font-weight: 600;
+  color: #e6e6e6;
+}
+
+.youTag {
+  color: #39ff14;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.vida {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.vidaBar {
+  flex: 1;
+  height: 8px;
+  background: #2a2a2c;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.vidaFill {
+  height: 100%;
+  background: linear-gradient(90deg, #ff4444 0%, #ffaa00 50%, #39ff14 100%);
+  transition: width 0.3s ease;
+}
+
+.conquistas {
+  text-align: center;
+  font-weight: 600;
+  color: #ffaa00;
+}
+
+.dicas {
+  text-align: center;
+}
+
+.dicasUsadas {
+  color: #ff6666;
+  font-weight: 600;
+}
+
+.semDicas {
+  color: #39ff14;
+  font-weight: 600;
+}
+
+.rankingEmpty {
+  padding: 32px;
+  text-align: center;
+  color: #666;
+  font-style: italic;
+}
+
 @media (max-width: 720px) {
   .topSection {
     flex-direction: column;
     gap: 16px;
   }
   .avatarRing { --size: 140px; }
+  
+  .rankingHeader, .rankingRow {
+    grid-template-columns: 60px 1fr 80px;
+    gap: 8px;
+    font-size: 12px;
+    padding: 12px;
+  }
+  
+  .conquistas, .dicas {
+    display: none;
+  }
 }

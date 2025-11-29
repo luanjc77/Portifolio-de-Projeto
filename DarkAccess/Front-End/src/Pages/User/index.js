@@ -12,6 +12,7 @@ function UserPage() {
   const [avatar, setAvatar] = useState(null);
   const [playerLife, setPlayerLife] = useState(100);
   const [conquistas, setConquistas] = useState([]);
+  const [ranking, setRanking] = useState([]);
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -20,8 +21,27 @@ function UserPage() {
       const parsed = JSON.parse(stored);
       
       loadUserData(parsed.id);
+      loadRanking();
     }
   }, []);
+
+  async function loadRanking() {
+    try {
+      const API_HOST = process.env.REACT_APP_API_HOST || window.location.hostname;
+      const API_PORT = process.env.REACT_APP_API_PORT || '3001';
+      const base = process.env.REACT_APP_API_BASE || `http://${API_HOST}:${API_PORT}`;
+
+      const res = await fetch(`${base}/api/auth/ranking`);
+      const data = await res.json();
+
+      if (data.success) {
+        console.log('🏆 Ranking carregado:', data.ranking);
+        setRanking(data.ranking);
+      }
+    } catch (error) {
+      console.error("Erro ao carregar ranking:", error);
+    }
+  }
 
   async function loadUserData(id) {
     try {
@@ -159,6 +179,68 @@ function UserPage() {
           <button type="submit" className={styles.saveButton}>Salvar</button>
         </div>
       </form>
+
+      {/* Ranking Geral */}
+      <div className={styles.rankingSection}>
+        <h2>🏆 Ranking Geral</h2>
+        <p className={styles.rankingDescription}>
+          Baseado na quantidade de vida restante e desempenho nos laboratórios
+        </p>
+        
+        <div className={styles.rankingGrid}>
+          <div className={styles.rankingHeader}>
+            <div>Posição</div>
+            <div>Usuário</div>
+            <div>Vida</div>
+            <div>Conquistas</div>
+            <div>Dicas Usadas</div>
+          </div>
+
+          {ranking.length === 0 && (
+            <div className={styles.rankingEmpty}>Carregando ranking...</div>
+          )}
+
+          {ranking.map((player) => (
+            <div 
+              key={player.id} 
+              className={`${styles.rankingRow} ${player.id === user?.id ? styles.currentUser : ''}`}
+            >
+              <div className={styles.position}>
+                {player.posicao <= 3 ? (
+                  <span className={styles[`medal${player.posicao}`]}>
+                    {player.posicao === 1 && '🥇'}
+                    {player.posicao === 2 && '🥈'}
+                    {player.posicao === 3 && '🥉'}
+                  </span>
+                ) : (
+                  <span>#{player.posicao}</span>
+                )}
+              </div>
+              <div className={styles.username}>
+                {player.username}
+                {player.id === user?.id && <span className={styles.youTag}> (Você)</span>}
+              </div>
+              <div className={styles.vida}>
+                <div className={styles.vidaBar}>
+                  <div 
+                    className={styles.vidaFill} 
+                    style={{ width: `${player.vidas}%` }}
+                  />
+                </div>
+                <span>{player.vidas}%</span>
+              </div>
+              <div className={styles.conquistas}>{player.conquistas}</div>
+              <div className={styles.dicas}>
+                {player.dicas_usadas > 0 ? (
+                  <span className={styles.dicasUsadas}>{player.dicas_usadas}</span>
+                ) : (
+                  <span className={styles.semDicas}>0</span>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
