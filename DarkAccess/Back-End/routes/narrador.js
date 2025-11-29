@@ -29,7 +29,14 @@ router.get("/fala/:etapa", async (req, res) => {
       });
     }
 
-    const fala = q.rows.map(f => f.fala).join("\n\n");
+    // Filtrar valores null/undefined e concatenar falas
+    const fala = q.rows
+      .map(f => f.fala)
+      .filter(f => f != null && f !== undefined && f !== 'null' && f.trim() !== '')
+      .join("\n\n")
+      .trim(); // Remove espaços extras no início/fim
+
+    console.log(`📖 Fala carregada para ${chaveEvento}:`, fala.substring(0, 50) + '...');
 
     res.json({
       success: true,

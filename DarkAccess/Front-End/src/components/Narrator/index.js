@@ -29,12 +29,17 @@ function Narrator({
       const data = await res.json();
 
       const falaRecebida = data?.fala?.fala ?? "";
-      const falaLimpa = falaRecebida.replace(/undefined/gi, "");
+      const falaLimpa = falaRecebida
+        .replace(/undefined/gi, "")
+        .replace(/null/gi, "")
+        .trim();
+
+      console.log(`📖 Fala recebida (${falaLimpa.length} chars):`, falaLimpa.substring(0, 50));
+      console.log(`🔤 Primeira letra: "${falaLimpa[0]}"`);
 
       setFullText(falaLimpa);
-
       setText("");
-      indexRef.current = 0;
+      indexRef.current = 0; // Garantir que começa do zero
       setWriting(true);
 
       onFalaReady?.({
