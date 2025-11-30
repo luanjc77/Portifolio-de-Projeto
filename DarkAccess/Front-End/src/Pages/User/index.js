@@ -4,7 +4,6 @@ import styles from './User.module.css';
 
 function UserPage() {
   const [user, setUser] = useState(null);
-  const [editingPassword, setEditingPassword] = useState(false);
   const [form, setForm] = useState({
     username: '',
     email: ''
@@ -109,19 +108,6 @@ function UserPage() {
 
   const triggerFile = () => fileInputRef.current && fileInputRef.current.click();
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm(f => ({ ...f, [name]: value }));
-  };
-
-  const handleSave = (e) => {
-    e.preventDefault();
-    const updated = { ...(user || {}), ...form, avatar, playerLife };
-    localStorage.setItem('user', JSON.stringify(updated));
-    setUser(updated);
-    alert('Informações salvas localmente.');
-  };
-
   return (
     <div className={styles.container}>
       <div className={styles.topSection}>
@@ -154,31 +140,20 @@ function UserPage() {
         </div>
       </div>
 
-      <form className={styles.form} onSubmit={handleSave}>
+      <div className={styles.infoSection}>
         <h2>Informações do Usuário</h2>
-        <label className={styles.label}>
-          Nome de usuário
-          <input name="username" value={form.username} onChange={handleChange} className={styles.input} />
-        </label>
+        <div className={styles.infoGrid}>
+          <div className={styles.infoItem}>
+            <span className={styles.infoLabel}>Nome de usuário:</span>
+            <span className={styles.infoValue}>{form.username}</span>
+          </div>
 
-        <label className={styles.label}>
-          Email
-          <input name="email" type="email" value={form.email} onChange={handleChange} className={styles.input} />
-        </label>
-
-        <div className={styles.passwordRow}>
-          <button type="button" className={styles.passwordToggle} onClick={() => setEditingPassword(p => !p)}>
-            {editingPassword ? 'Cancelar redefinição' : 'Redefinir senha'}
-          </button>
-          {editingPassword && (
-            <input placeholder="Nova senha" type="password" className={styles.input} />
-          )}
+          <div className={styles.infoItem}>
+            <span className={styles.infoLabel}>Email:</span>
+            <span className={styles.infoValue}>{form.email}</span>
+          </div>
         </div>
-
-        <div className={styles.actions}>
-          <button type="submit" className={styles.saveButton}>Salvar</button>
-        </div>
-      </form>
+      </div>
 
       {/* Ranking Geral */}
       <div className={styles.rankingSection}>

@@ -84,65 +84,45 @@
   color: #cfcfcf;
 }
 
-.form {
-  margin-top: 12px;
+.infoSection {
+  margin-top: 24px;
+  padding: 20px;
+  background: rgba(255,255,255,0.02);
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+.infoSection h2 {
+  margin-bottom: 16px;
+  color: #39ff14;
+  font-size: 1.3rem;
+}
+
+.infoGrid {
   display: grid;
-  gap: 12px;
+  gap: 16px;
 }
 
-.label {
+.infoItem {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.labelSmall {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.input {
-  padding: 10px 12px;
-  border-radius: 8px;
-  border: 1px solid rgba(255,255,255,0.06);
-  background: #0b0b0c;
-  color: #e6e6e6;
-}
-
-.passwordRow {
-  display: flex;
-  gap: 12px;
+  justify-content: space-between;
   align-items: center;
+  padding: 12px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.05);
 }
 
-.passwordToggle {
-  background: #222;
+.infoLabel {
+  color: #9e9e9e;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.infoValue {
   color: #e6e6e6;
-  border: 1px solid rgba(255,255,255,0.04);
-  padding: 8px 12px;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.row {
-  display: flex;
-  gap: 12px;
-}
-
-.actions {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.saveButton {
-  background: #39ff14;
-  color: #000;
-  border: none;
-  padding: 10px 16px;
-  border-radius: 8px;
-  font-weight: 700;
-  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
 }
 
 /* Ranking Section */
