@@ -116,11 +116,14 @@ function HomePage() {
         setCurrentUser(userAtualizado);
         localStorage.setItem('user', JSON.stringify(userAtualizado));
         
-        // Atualizar etapa atual para carregar novas falas do narrador
-        setCurrentEtapa(data.nova_etapa);
-        
-        // Não redirecionar - manter na mesma tela
-        // O narrador carregará automaticamente as falas da nova etapa
+        // Se completou lab02_pergunta1, redirecionar para /inicio
+        if (currentFala?.etapa === 'lab02_pergunta1') {
+          navigate('/inicio');
+        } else {
+          // Atualizar etapa atual para carregar novas falas do narrador
+          setCurrentEtapa(data.nova_etapa);
+          // Permanecer na mesma tela
+        }
       }
     } else {
       // Se errou, atualizar vida

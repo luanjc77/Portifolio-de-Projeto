@@ -124,17 +124,7 @@ function StartPage() {
           <button
             disabled={botoesBloqueados}
             className={`${styles.pathButton} ${botoesBloqueados ? styles.locked : ""}`}
-            onClick={async () => {
-              // Avançar para explicacao_surface_deep_dark se for primeiro acesso
-              if (currentUser?.primeiro_acesso && currentUser?.etapa_atual === 'inicio_primeiro_acesso') {
-                await atualizarEtapa(currentUser.id, 'explicacao_surface_deep_dark');
-                
-                // Atualizar localStorage
-                const updatedUser = {...currentUser, etapa_atual: 'explicacao_surface_deep_dark', primeiro_acesso: false};
-                localStorage.setItem('user', JSON.stringify(updatedUser));
-              }
-              navigate('/home');
-            }}
+            onClick={() => navigate('/home')}
           >
             SUPERFÍCIE
           </button>

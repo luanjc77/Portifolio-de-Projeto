@@ -1,11 +1,11 @@
 // Mapeamento de progressão das etapas do narrador
 export const progressaoMap = {
-  'inicio_primeiro_acesso': 'lab01_intro',
+  'inicio_primeiro_acesso': 'explicacao_surface_deep_dark',
+  'explicacao_surface_deep_dark': 'lab01_intro',
   'lab01_intro': 'lab01_pergunta1',
   'lab01_pergunta1': 'lab02_intro',
   'lab02_intro': 'lab02_pergunta1',
-  'lab02_pergunta1': 'explicacao_surface_deep_dark',
-  'explicacao_surface_deep_dark': 'antes_acesso_profundezas',
+  'lab02_pergunta1': 'antes_acesso_profundezas',
   'antes_acesso_profundezas': 'phishing_armadilha_aurora',
 };
 
@@ -78,11 +78,11 @@ export function podeAcessarEtapa(usuario, etapaDesejada) {
   const ordemEtapas = [
     'inicio_primeiro_acesso',
     'inicio_pos_primeiro_acesso',
+    'explicacao_surface_deep_dark',
     'lab01_intro',
     'lab01_pergunta1',
     'lab02_intro',
     'lab02_pergunta1',
-    'explicacao_surface_deep_dark',
     'antes_acesso_profundezas',
     'phishing_armadilha_aurora',
   ];

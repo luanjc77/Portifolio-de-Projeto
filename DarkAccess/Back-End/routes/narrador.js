@@ -110,7 +110,7 @@ router.post("/resposta", async (req, res) => {
 
       const proximaEtapaPorLab = {
         'lab01_pergunta1': 'lab02_intro',
-        'lab02_pergunta1': 'explicacao_surface_deep_dark'
+        'lab02_pergunta1': 'antes_acesso_profundezas'
       };
 
       const conquistaCodigo = conquistasPorEtapa[etapa] || fala.conquista_codigo;
