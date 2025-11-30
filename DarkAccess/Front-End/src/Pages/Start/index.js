@@ -5,7 +5,7 @@ import styles from './StartPage.module.css';
 import Narrador from '../../components/Narrator';
 import User from '../../components/User';
 import NarratorControls from '../../components/NarratorControls';
-import { atualizarEtapa } from '../../utils/progressao';
+import { atualizarEtapa, avancarEtapa } from '../../utils/progressao';
 
 function StartPage() {
   const navigate = useNavigate();
@@ -18,6 +18,10 @@ function StartPage() {
 
   const [etapa, setEtapa] = useState("inicio_primeiro_acesso");
   const [botoesBloqueados, setBotoesBloqueados] = useState(true);
+  const [currentFala, setCurrentFala] = useState(null);
+  
+  // Determinar se deve mostrar botão "Próximo"
+  const mostrarBotaoProximo = currentFala && !currentFala.resposta_correta;
 
   useEffect(() => {
     const user = localStorage.getItem('user');
@@ -69,6 +73,18 @@ function StartPage() {
 
   const handleSkip = () => setSkipSignal(p => p + 1);
   const handleRepeat = () => setRepeatTrigger(p => p + 1);
+  
+  const handleNext = async () => {
+    if (!currentUser?.id) return;
+    
+    const novaEtapa = await avancarEtapa(currentUser);
+    if (novaEtapa) {
+      const userAtualizado = {...currentUser, etapa_atual: novaEtapa, primeiro_acesso: false};
+      setCurrentUser(userAtualizado);
+      setEtapa(novaEtapa);
+      localStorage.setItem('user', JSON.stringify(userAtualizado));
+    }
+  };
 
   return (
     <div className={styles.container}>
@@ -79,6 +95,8 @@ function StartPage() {
           <NarratorControls
             onSkip={handleSkip}
             onRepeat={handleRepeat}
+            onSend={mostrarBotaoProximo ? handleNext : null}
+            showNext={mostrarBotaoProximo}
           />
         </div>
 
@@ -96,6 +114,7 @@ function StartPage() {
             usuario={currentUser}
             skipSignal={skipSignal}
             repeatTrigger={repeatTrigger}
+            onFalaReady={setCurrentFala}
           />
         </div>
 
