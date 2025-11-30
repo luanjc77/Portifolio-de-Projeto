@@ -1,118 +1,156 @@
-# DarkAccess - Cybersecurity Learning Platform
+# DarkAccess - Plataforma de Estudos Gameficada
 
 ![Status do Projeto](https://img.shields.io/badge/status-Em%20Produ%C3%A7%C3%A3o-green)
 ![Linguagem Principal](https://img.shields.io/badge/language-JavaScript-yellow)
 ![Licença](https://img.shields.io/badge/license-MIT-green)
 ![Hospedagem](https://img.shields.io/badge/hosted-GCP-blue)
 
+
 ## Acesso ao Projeto
 
 **Aplicação:** [http://34.132.60.57](http://34.132.60.57)  
-**Backend API:** [http://34.132.60.57:3001](http://34.132.60.57:3001)  
 **Hospedagem:** Google Cloud Platform (GCP) - Ubuntu Server
 
 ---
+## Contexto 
 
-## Sobre o Projeto
+Com o avanço acelerado das tecnologias digitais e a presença constante da internet na rotina das pessoas, a segurança digital tornou-se uma área de extrema relevância. Entretanto, apesar do crescente interesse pelo tema, o primeiro contato com conteúdos de cibersegurança frequentemente revela uma problemática recorrente: para aqueles que já possuem algum conhecimento prévio, a abordagem excessivamente teórica tende a ser pouco estimulante; por outro lado, para iniciantes que ainda não dominam conceitos fundamentais de tecnologia, os materiais disponíveis costumam ser excessivamente complexos, técnicos ou pouco didáticos.
 
-O **DarkAccess** é uma plataforma educacional desenvolvida como projeto acadêmico que visa democratizar o aprendizado de cibersegurança. O projeto preenche a lacuna entre conteúdos introdutórios teóricos e plataformas de hacking altamente técnicas (como HackTheBox), oferecendo:
+Somado a isso, grande parte das metodologias de ensino ainda adota modelos rígidos, dificultando o engajamento e a compreensão prática do conteúdo. Observa-se também que muitas soluções educacionais gamificadas sobre segurança digital são voltadas principalmente para crianças ou para públicos já técnicos, deixando uma lacuna significativa para estudantes iniciantes do ensino superior na área de tecnologia.
 
-- **Narrativa Imersiva:** Sistema de narrador interativo com efeito máquina de escrever que guia o jogador pela jornada
-- **Aprendizado Prático:** Laboratórios isolados em containers Docker para cada desafio
-- **Progressão Gamificada:** Sistema de etapas, conquistas e vidas
-- **Acessibilidade:** 100% via navegador web, sem necessidade de instalações complexas
+É nesse contexto que surge o DarkAccess, uma proposta inovadora de aprendizagem prática e interativa. O projeto busca preencher essa lacuna ao oferecer uma abordagem introdutória, acessível e envolvente, adequada ao nível de conhecimento de novos universitários. Por meio de mecânicas gamificadas e cenários aplicados, o DarkAccess promove um primeiro contato mais motivador, dinâmico e eficiente com conceitos essenciais da segurança digital.
 
 ---
 
-## Funcionalidades Principais
+## DarkAccess - A Plataforma de Gameficação sobre Cybersegurança
 
-* **Narrativa:** Uma história com temática hacker, guiada por um "narrador" que interage com o jogador e evolui com seu progresso.
-* **Desafios Práticos:** Ambientes de laboratório reais e isolados (usando Docker) para cada desafio, permitindo uma experiência prática e segura.
-* **Sistema de Progressão e Ranking:** Fases com dificuldade progressiva, sistema de pontuação e um ranking para estimular a competitividade.
-* **Acesso 100% via Navegador:** Nenhuma instalação ou configuração complexa necessária. O usuário precisa apenas de um navegador moderno para jogar.
+Uma plataforma web desenvolvida com React.js no Front-End e Node.js + Express no Back-End. A aplicação apresenta uma narrativa interativa que acompanha o usuário ao longo de sua jornada, introduzindo conceitos de cibersegurança de maneira contextualizada e envolvente.
 
-## Stack Tecnológica
+Além de transmitir conhecimento, o projeto busca estimular a criatividade na resolução de desafios e instigar a curiosidade do usuário sobre o tema. A proposta é que, após vivenciar a experiência oferecida pelo DarkAccess, o usuário sinta-se motivado a aprofundar seus estudos na área de segurança digital, explorando novas possibilidades de aprendizado e desenvolvimento.
 
-### **Backend**
-- **Node.js 18** + **Express.js** - API REST
-- **PostgreSQL 14** - Banco de dados relacional
-- **bcrypt** - Hash seguro de senhas (10 salt rounds)
-- **Prometheus** - Métricas e monitoramento
-- **Docker** - Gerenciamento dinâmico de containers de labs
+Os temas apresentados até o momento estão divididos entre narrador e dois laboratórios práticos:
 
-### **Frontend**
-- **React 18** - Interface do usuário
-- **React Router v6** - Navegação SPA
-- **Nginx** - Servidor web de produção
-- **CSS Modules** - Estilização componetizada
+Narrador - Através de suas falas apresenta temas como: 
+- VPN
+- Diferença entre Surface, DeepWeb e DarkWeb
+- Phishing
 
-### **Infraestrutura**
-- **Docker Compose** - Orquestração de containers
-- **Traefik v3** - Proxy reverso e load balancing
-- **GCP (Google Cloud Platform)** - Hospedagem em VM Ubuntu Server
-- **GitHub Actions** - CI/CD automatizado
-- **Jest + Supertest** - Testes automatizados (cobertura 85%+)
-- **SonarQube** - Análise de qualidade de código
+Lab01 - laboratório prático que simula um site de uma empresa, mas que contem falhas de:
+- XSS (Cross-Site Scripting)
+- Arquivos expostos
 
-## Funcionalidades Implementadas
+Lab02 - Simula um acesso a um computador, demonstrando:
+- Perigo de utilizar senhas padrão
+- Quebra de autenticação
+- Vazamento de arquivos
 
-### **Sistema de Autenticação**
--  Registro de usuários com hash bcrypt
--  Login com validação de credenciais
--  Gerenciamento de sessão via localStorage
--  Sistema de vidas (3 tentativas por desafio)
-
-### **Sistema de Progressão**
--  Narrador interativo com efeito máquina de escrever
--  Etapas progressivas do jogo (inicio → welcome → start → labs → deepweb)
--  Sistema de conquistas desbloqueáveis
--  Validação de respostas com feedback instantâneo
--  Progressão salva no banco de dados
-
-### **Gerenciamento Dinâmico de Labs**
-- Criação automática de containers Docker por usuário
-- Isolamento de ambientes (1 container por usuário/lab)
-- Detecção e atribuição de portas dinâmicas
-- Cleanup automático de containers (flag `--rm`)
-- Rastreamento de labs ativos no PostgreSQL
-
-### **Laboratórios Disponíveis**
--  **Lab 01:** XSS Challenge (Cross-Site Scripting)
-  - Formulário de contato vulnerável
-  - Validação de payload XSS
--  **Lab 02:** SQL Injection (OSDB)
-  - Sistema de login explorável
-  - Arquivos sensíveis ocultos
+Conexão com VPN - Apresenta o conceito de uma VPN e qual sua finalidade 
 
 
-### **Interface do Usuário**
--  Design dark/cyberpunk responsivo
--  Navegação SPA fluida (React Router)
--  Componente Narrator com animações
--  Telas: Home, Login, Register, Welcome, Start, DarkAccess, DeepWeb, User Profile
--  Feedback visual de carregamento e erros
+### **Contexto da Narrativa**
 
+A Arpheus Tech é uma empresa tradicional do setor tecnológico, com muitos anos de história e experiência. Iniciou sua trajetória como uma pequena desenvolvedora web, mas, ao longo do tempo, expandiu-se e consolidou-se no mercado graças à qualidade de seus projetos e à capacidade de adaptação às mudanças da era digital.
 
-### **Fluxo de Criação de Lab:**
-1. Usuário clica em "Acessar Lab"
-2. Frontend → POST `/api/docker/start-lab`
-3. Backend verifica container existente no PostgreSQL
-4. Se não existe: cria container Docker isolado
-5. Registra container ativo no banco
-6. Retorna URL do lab para o usuário
-7. Usuário acessa lab em nova aba
+Com essa longa vivência no mundo da tecnologia, a Arpheus acompanhou de perto a evolução da internet — e, junto dela, o crescimento constante dos crimes cibernéticos. Ao observar falhas comuns, como sistemas sem validações adequadas, arquivos sensíveis deixados expostos, rotas não protegidas, uso de credenciais fracas e inúmeros descuidos de desenvolvimento, a empresa percebeu a necessidade urgente de fortalecer a segurança digital.
+
+Foi então que a Arpheus decidiu transformar-se: deixou de atuar apenas no desenvolvimento web e passou a concentrar seus esforços em segurança cibernética. Dessa mudança nasceu a Aurora IA, uma inteligência artificial avançada, criada para monitorar os sistemas internos da corporação e de seus clientes. Além da proteção ativa, a Aurora possui um modo de treinamento, focado em capacitar desenvolvedores e usuários comuns a reconhecerem as ameaças e perigos espalhados pela internet.
+
+Para intensificar o aprendizado de forma prática e instigante, a Arpheus liberou para a Aurora um conjunto de sistemas de teste — ambientes preparados especialmente para que seus alunos possam explorar vulnerabilidades reais, porém controladas. O objetivo é desafiar, despertar curiosidade e fortalecer a habilidade dos participantes em detectar riscos e se defender no universo digital.
 
 ---
 
-### **1. Clone o repositório:**
-```bash
-git clone https://github.com/luanjc77/Portifolio-de-Projeto.git
-cd Portifolio-de-Projeto
-```
+## Caso de Uso
+
+## <img width="2040" height="2120" alt="image" src="https://github.com/user-attachments/assets/f5214aeb-c95e-4967-9cc0-3492cbf8ef7a" />
 
 ---
 
-## Requisitos do Sistema
+## Arquitetura do Projeto
+
+<img width="2842" height="1001" alt="diagrama de arquitetura" src="https://github.com/user-attachments/assets/0480b6a9-ce9e-4c9a-bba6-826084bdbf03" />
+
+
+| Cor | Componente | Descrição |
+|-----|------------|-----------|
+| 🟠 Laranja | **Usuário** | Estudante de cibersegurança que acessa a plataforma |
+| 🔵 Azul Claro | **Frontend** | Interface do usuário (React 18 + Nginx) |
+| 🟢 Verde-Água | **Backend** | API REST (Node.js 18 + Express 4.21) |
+| 🟢 Verde-Escuro | **Traefik** | Reverse Proxy e roteador de requisições |
+| 🟢 Verde | **Docker/Labs** | Engine Docker e containers de laboratórios |
+| 🟣 Roxo | **Database** | Banco de dados PostgreSQL 14 |
+| 🔵 Azul | **Cloud** | Infraestrutura Google Cloud Platform |
+
+#### Detalhamento dos Componentes
+
+1. **Usuário** acessa `http://34.132.60.57` via navegador web
+   - O IP público da VM GCP está configurado sem DNS/domínio customizado
+   - Tráfego HTTP na porta 80
+
+2. **Traefik** (porta 80) recebe a requisição e realiza roteamento inteligente:
+   - **Host: `34.132.60.57` ou `localhost`** → Redireciona para **Frontend** (prioridade 1)
+   - **Path: `/api/*`** → Redireciona para **Backend** na porta 3001 (prioridade 2)
+   - **Labs dinâmicos** → Roteamento via labels Docker para containers de usuários específicos
+
+3. **Frontend (React + Nginx)** :
+   - Nginx retorna o `index.html` e assets estáticos do build React
+   - Usuário navega entre páginas: `/login`, `/register`, `/start`, `/darkaccess`, `/deepweb`, `/user`
+   - React Router gerencia navegação client-side sem recarregar página
+
+4. **Frontend** executa chamadas REST para o **Backend**:
+   - `POST http://34.132.60.57:3001/api/auth/login` → Autenticação
+   - `GET http://34.132.60.57:3001/api/narrador/:userId/mensagens` → Narrativa
+   - `POST http://34.132.60.57:3001/api/labs/start` → Provisionar lab
+   - `GET http://34.132.60.57:3001/api/conquistas/:userId` → Conquistas
+   - Respostas em formato JSON com dados estruturados
+
+5. **Backend (Node.js + Express)** processa requisições:
+   - Valida credenciais com bcrypt para autenticação
+   - Consulta **PostgreSQL** via prepared statements: `SELECT * FROM usuarios WHERE usuario = $1`
+   - Retorna dados: `{success: true, userId, pontos, vidas, etapa_atual}`
+   - Armazena estado do narrador: fase atual, mensagens exibidas
+
+6. **Backend** gerencia labs via **Docker Engine**:
+   - Monta `/var/run/docker.sock` para controlar containers
+   - Cria container: `docker.createContainer({name: 'lab02-user-123', network: 'challenge-net'})`
+   - Inicia lab: `container.start()` com porta aleatória mapeada (ex: 32768)
+   - Traefik detecta automaticamente via labels e cria rota dinâmica
+   - Agenda remoção: `setTimeout(() => container.stop().remove(), 30 * 60 * 1000)`
+
+7. **Labs** são acessados pelo usuário:
+   - Backend retorna URL: `http://34.132.60.57:32768` (porta mapeada)
+   - Usuário abre em nova aba e interage com ambiente isolado
+   - Lab02-OSDB: Exploração de SQL Injection em Node.js + SQLite
+   - XSS-Challenge: Testes de Cross-Site Scripting em React + Vite
+
+8. **PostgreSQL** persiste todos os dados:
+   - Tabela `usuarios`: credenciais, progresso, pontos, vidas
+   - Tabela `narrador_estado`: fase atual e mensagens já exibidas
+   - Tabela `conquistas_usuario`: achievements desbloqueados
+   - Volume `db_data` garante persistência mesmo após restart dos containers
+
+9. **Toda infraestrutura roda na GCP VM**:
+   - IP público: `34.132.60.57` (e2-medium, Ubuntu 22.04)
+   - Rede `darkaccess-net`: Frontend, Backend, PostgreSQL, Traefik
+   - Rede `challenge-net`: Labs isolados dos serviços principais
+   - Firewall GCP: Apenas portas 80/443 expostas publicamente
+
+#### Camadas de Segurança
+
+- **Traefik**: SSL/TLS termination, firewall de aplicação
+- **Backend**: Bcrypt (10 rounds), prepared statements SQL
+- **Docker**: Isolamento de containers, networks separadas (darkaccess-net, challenge-net)
+- **GCP**: Firewall rules (apenas portas 80/443 expostas)
+
+#### Fluxo de Dados
+
+1. **Usuário** acessa via navegador (HTTP/HTTPS)
+2. **Traefik** recebe e roteia baseado em host/path
+3. **Frontend** serve a interface React
+4. **Frontend** faz chamadas REST para o **Backend**
+5. **Backend** consulta o **PostgreSQL** para dados persistidos
+6. **Backend** cria/gerencia labs via **Docker Engine**
+7. **Labs** são acessados dinamicamente pelo usuário
+8. Toda infraestrutura roda na **GCP VM**
 
 ### **Requisitos Funcionais (RF)**
 
@@ -142,12 +180,8 @@ cd Portifolio-de-Projeto
 
 ---
 
-### **Contexto da Narrativa**
+a descrição de cada RFC 
 
-A Arpheus Tech é uma empresa tradicional do setor tecnológico, com muitos anos de história e experiência. Iniciou sua trajetória como uma pequena desenvolvedora web, mas, ao longo do tempo, expandiu-se e consolidou-se no mercado graças à qualidade de seus projetos e à capacidade de adaptação às mudanças da era digital.
 
-Com essa longa vivência no mundo da tecnologia, a Arpheus acompanhou de perto a evolução da internet — e, junto dela, o crescimento constante dos crimes cibernéticos. Ao observar falhas comuns, como sistemas sem validações adequadas, arquivos sensíveis deixados expostos, rotas não protegidas, uso de credenciais fracas e inúmeros descuidos de desenvolvimento, a empresa percebeu a necessidade urgente de fortalecer a segurança digital.
+os testes implementados e seus resultados.
 
-Foi então que a Arpheus decidiu transformar-se: deixou de atuar apenas no desenvolvimento web e passou a concentrar seus esforços em segurança cibernética. Dessa mudança nasceu a Aurora IA, uma inteligência artificial avançada, criada para monitorar os sistemas internos da corporação e de seus clientes. Além da proteção ativa, a Aurora possui um modo de treinamento, focado em capacitar desenvolvedores e usuários comuns a reconhecerem as ameaças e perigos espalhados pela internet.
-
-Para intensificar o aprendizado de forma prática e instigante, a Arpheus liberou para a Aurora um conjunto de sistemas de teste — ambientes preparados especialmente para que seus alunos possam explorar vulnerabilidades reais, porém controladas. O objetivo é desafiar, despertar curiosidade e fortalecer a habilidade dos participantes em detectar riscos e se defender no universo digital.
