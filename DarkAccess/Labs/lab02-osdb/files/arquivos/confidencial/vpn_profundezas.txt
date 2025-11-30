@@ -1,0 +1,3 @@
+user=obscuro
+password=G2p<MmkQVO$`mP4yS&C1
+IP=119.234.212.107
