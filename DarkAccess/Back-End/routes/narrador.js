@@ -109,7 +109,8 @@ router.post("/resposta", async (req, res) => {
       };
 
       const proximaEtapaPorLab = {
-        'lab02_pergunta1': 'antes_acesso_profundezas'
+        'lab01_pergunta1': 'lab02_intro',
+        'lab02_pergunta1': 'explicacao_surface_deep_dark'
       };
 
       const conquistaCodigo = conquistasPorEtapa[etapa] || fala.conquista_codigo;
@@ -229,11 +230,39 @@ router.put("/etapa", async (req, res) => {
     return res.status(400).json({ success: false, message: "Parâmetros inválidos" });
 
   try {
+    // Verificar se usuário está saindo de inicio_primeiro_acesso
+    const userCheck = await db.query(`
+      SELECT etapa_atual, primeiro_acesso FROM usuarios WHERE id = $1
+    `, [usuario_id]);
+
+    const etapaAnterior = userCheck.rows[0]?.etapa_atual;
+    const isPrimeiroAcesso = userCheck.rows[0]?.primeiro_acesso;
+
+    // Atualizar etapa do usuário
     await db.query(`
       UPDATE usuarios
       SET etapa_atual = $1, primeiro_acesso = false
       WHERE id = $2
     `, [nova_etapa, usuario_id]);
+
+    // Se estava em inicio_primeiro_acesso e é primeiro acesso, desbloquear conquista
+    if (etapaAnterior === 'inicio_primeiro_acesso' && isPrimeiroAcesso === true) {
+      const conquistaQuery = await db.query(`
+        SELECT id FROM conquistas WHERE codigo = 'primeiro_acesso'
+      `);
+
+      if (conquistaQuery.rows.length > 0) {
+        await db.query(`
+          INSERT INTO conquistas_usuario (usuario_id, conquista_id)
+          VALUES ($1, $2)
+          ON CONFLICT DO NOTHING
+        `, [usuario_id, conquistaQuery.rows[0].id]);
+
+        console.log(`🏆 Conquista 'primeiro_acesso' desbloqueada para usuário ${usuario_id}`);
+      } else {
+        console.warn(`⚠️ Conquista 'primeiro_acesso' não encontrada no banco`);
+      }
+    }
 
     res.json({ success: true, message: "Etapa atualizada com sucesso." });
 

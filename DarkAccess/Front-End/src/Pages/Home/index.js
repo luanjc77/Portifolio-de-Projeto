@@ -103,19 +103,30 @@ function HomePage() {
 
     setUserResponse("");
     
-    // Se acertou, redirecionar para Start
+    // Se acertou a pergunta
     if (data.correta) {
-      // Se o backend retornou nova_etapa, usar ela
+      // Atualizar vida se retornou
+      if (data.vidas !== undefined) {
+        setPlayerLife(data.vidas);
+      }
+      
+      // Se o backend retornou nova_etapa, atualizar estado
       if (data.nova_etapa) {
         const userAtualizado = {...currentUser, etapa_atual: data.nova_etapa, primeiro_acesso: false};
         setCurrentUser(userAtualizado);
         localStorage.setItem('user', JSON.stringify(userAtualizado));
+        
+        // Atualizar etapa atual para carregar novas falas do narrador
+        setCurrentEtapa(data.nova_etapa);
+        
+        // Não redirecionar - manter na mesma tela
+        // O narrador carregará automaticamente as falas da nova etapa
       }
-      
-      // Pequeno delay para mostrar a mensagem antes de redirecionar
-      setTimeout(() => {
-        navigate('/inicio');
-      }, 1000);
+    } else {
+      // Se errou, atualizar vida
+      if (data.vidas !== undefined) {
+        setPlayerLife(data.vidas);
+      }
     }
   };
 
