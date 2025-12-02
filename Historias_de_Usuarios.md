@@ -14,7 +14,7 @@ João Victor - Estutando Sistema da Informação
 
 <img width="547" height="411" alt="image" src="https://github.com/user-attachments/assets/29ff400b-a253-40e9-83a6-c498d5638fab" />
 
-Jéssica - Formadad em Redes e já atuou com segurança da informação
+Jéssica - Formada em Redes e já atuou com segurança da informação
 
 <img width="2268" height="676" alt="image" src="https://github.com/user-attachments/assets/330faa7c-c2ff-447e-add6-491881cb9f7d" />
 
