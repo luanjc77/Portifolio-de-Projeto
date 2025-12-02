@@ -97,12 +97,17 @@ Para intensificar o aprendizado de forma prática e instigante, a Arpheus libero
 - React Icons 5.5.0
 - CSS Modules
 
+<img width="295" height="507" alt="image" src="https://github.com/user-attachments/assets/a958fe50-34d1-4e9d-8696-280e52075155" />
+
 **Backend:**
 - Node.js 18
 - Express 5.1.0
 - bcrypt 6.0.0
 - pg 8.16.3 (PostgreSQL client)
 - dockerode (Docker API client)
+
+<img width="316" height="485" alt="image" src="https://github.com/user-attachments/assets/8db8a9be-1239-40b1-af60-770dac73531f" />
+
   
 **Banco de Dados:**
 - PostgreSQL 14
