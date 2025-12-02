@@ -1,4 +1,4 @@
-<img width="1920" height="969" alt="image" src="https://github.com/user-attachments/assets/074350d7-f9d0-41ed-a4e2-688db490ce30" /># DarkAccess - Plataforma de Estudos Gameficada
+# DarkAccess - Plataforma de Estudos Gameficada
 
 ![Status do Projeto](https://img.shields.io/badge/status-Em%20Produ%C3%A7%C3%A3o-green)
 ![Linguagem Principal](https://img.shields.io/badge/language-JavaScript-yellow)
@@ -113,6 +113,11 @@ Para intensificar o aprendizado de forma prática e instigante, a Arpheus libero
 - Traefik 3.0 (reverse proxy)
 - GCP e2-medium (Ubuntu 22.04)
 
+# VM - GCP
+<img width="1920" height="969" alt="image" src="https://github.com/user-attachments/assets/074350d7-f9d0-41ed-a4e2-688db490ce30" />
+
+
+## Diagrama de Arquitetura
 <img width="1920" height="969" alt="image" src="https://github.com/user-attachments/assets/6a0273b9-7245-421d-8cb7-752fab18caea" />
 
 ---
@@ -480,7 +485,6 @@ const container = await docker.createContainer({
 
 #### Camadas de Segurança
 
-
 - **Traefik**: SSL/TLS termination, firewall de aplicação
 - **Backend**: Bcrypt (10 rounds), prepared statements SQL
 - **Docker**: Isolamento de containers, networks separadas (darkaccess-net, challenge-net)
@@ -513,14 +517,16 @@ Principais métricas monitoradas:
 - Usuários Ativos
 - Processos CPU
 
+---
 ## Qualidade de Software - SonarQube
 
 <img width="2938" height="1658" alt="image" src="https://github.com/user-attachments/assets/7b1fab91-801c-4ba8-8d1e-b385e68992b5" />
 
+---
 
 ## Teste Front-End
 
-![Uploading image.png…]()
+<img width="928" height="519" alt="image" src="https://github.com/user-attachments/assets/0fc16c56-e1bd-4851-878c-0e289db5eb43" />
 
 
 
