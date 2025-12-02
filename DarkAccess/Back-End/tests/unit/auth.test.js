@@ -16,6 +16,9 @@ describe('Auth Routes - Unit Tests', () => {
     app.use(express.json());
     app.use('/api/auth', authRouter);
     jest.clearAllMocks();
+    
+    // Garantir que bcrypt.compare sempre retorne um valor válido
+    bcrypt.compare = jest.fn();
   });
 
   describe('GET /api/auth/user/:id', () => {
@@ -95,10 +98,6 @@ describe('Auth Routes - Unit Tests', () => {
   });
 
   describe('POST /api/auth/login', () => {
-    beforeEach(() => {
-      bcrypt.compare.mockReset();
-    });
-
     it('deve fazer login com credenciais válidas', async () => {
       db.query.mockResolvedValueOnce({
         rows: [{
