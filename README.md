@@ -199,7 +199,7 @@ Com base nos feedbacks coletados, foram definidas as seguintes melhorias para as
 7. **Labs** são acessados pelo usuário:
    - Backend retorna URL: `http://34.132.60.57:32768` (porta mapeada)
    - Usuário abre em nova aba e interage com ambiente isolado
-   - Lab02-OSDB: Exploração de SQL Injection em Node.js + SQLite
+   - Lab02-OSDB: Exploração de Sistema Operacional
    - XSS-Challenge: Testes de Cross-Site Scripting em React + Vite
 
 8. **PostgreSQL** persiste todos os dados:
