@@ -65,7 +65,7 @@ Foi realizada uma pesquisa disponibilizando a aplicação para um grupo de usuá
 Os resultados foram extremamente positivos e geraram insights valiosos para orientar o próximo ciclo de desenvolvimento, contribuindo diretamente para a evolução do produto.
 
 ### Relatos dos Usuários
-Os relatos completos podem ser encontrados em: /Historias_de_Usuarios.md
+Os relatos completos podem ser encontrados em: [Relatos dos Usuários](./Historias_de_Usuarios.md)
 
 ---
 
