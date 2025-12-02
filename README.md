@@ -64,13 +64,12 @@ Para intensificar o aprendizado de forma prática e instigante, a Arpheus libero
 Foi realizada uma pesquisa disponibilizando a aplicação para um grupo de usuários testarem livremente, explorando suas funcionalidades de acordo com a própria experiência de uso.  
 Os resultados foram extremamente positivos e geraram insights valiosos para orientar o próximo ciclo de desenvolvimento, contribuindo diretamente para a evolução do produto.
 
-### 📂 Relatos dos Usuários
-Os relatos completos podem ser encontrados em:  
-`/Historias_de_Usuarios.md`
+### Relatos dos Usuários
+Os relatos completos podem ser encontrados em: /Historias_de_Usuarios.md
 
 ---
 
-## 🗺️ Roadmap de Melhorias
+## Roadmap de Melhorias
 
 Com base nos feedbacks coletados, foram definidas as seguintes melhorias para as próximas versões da aplicação:
 
