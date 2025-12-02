@@ -59,6 +59,30 @@ Para intensificar o aprendizado de forma prática e instigante, a Arpheus libero
 
 ---
 
+### Casos de Uso - Pesquisa com Usuários
+
+Foi realizada uma pesquisa disponibilizando a aplicação para um grupo de usuários testarem livremente, explorando suas funcionalidades de acordo com a própria experiência de uso.  
+Os resultados foram extremamente positivos e geraram insights valiosos para orientar o próximo ciclo de desenvolvimento, contribuindo diretamente para a evolução do produto.
+
+### 📂 Relatos dos Usuários
+Os relatos completos podem ser encontrados em:  
+`/Historias_de_Usuarios.md`
+
+---
+
+## 🗺️ Roadmap de Melhorias
+
+Com base nos feedbacks coletados, foram definidas as seguintes melhorias para as próximas versões da aplicação:
+
+- [ ] **Implementar validação JWT** para reforçar a segurança  
+- [ ] **Ajustar responsividade** e desenvolver **versão mobile**  
+- [ ] **Melhorar o fluxo de perguntas e respostas** entre usuário e narrador  
+- [ ] **Aprimorar a exibição do progresso** do usuário  
+- [ ] **Corrigir erros e inconsistências nas falas** do narrador  
+
+---
+
+##Diagrama de Caso de Uso
 
 ## <img width="2040" height="2120" alt="image" src="https://github.com/user-attachments/assets/f5214aeb-c95e-4967-9cc0-3492cbf8ef7a" />
 
