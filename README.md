@@ -484,7 +484,6 @@ const container = await docker.createContainer({
 
 ---
 
-
 #### Camadas de Segurança
 
 - **Traefik**: SSL/TLS termination, firewall de aplicação
@@ -922,6 +921,111 @@ Back-End/
 ├── jest.config.js             # Configuração do Jest
 ├── jest.setup.js              # Setup global
 └── package.json
+```
+
+
+
+## Processo de Deploy
+
+### Ambiente de Produção
+
+**Infraestrutura:**
+- **Cloud:** Google Cloud Platform (GCP)
+- **Região:** us-central1
+- **VM:** e2-medium (2 vCPUs, 4 GB RAM)
+- **OS:** Ubuntu 22.04 LTS
+- **IP Público:** 34.132.60.57 (fixo)
+- **Firewall:** Porta 80 aberta, 3001 aberta
+
+### Pré-requisitos
+
+```bash
+# Instalados na VM
+- Docker 24+
+- Docker Compose 2.x
+- Git
+- Node.js 18 (apenas para desenvolvimento local)
+```
+
+### Comandos de Deploy
+
+#### 1. Clone do Repositório
+
+```bash
+ssh usuario@34.132.60.57
+cd /opt
+git clone https://github.com/luanjc77/Portifolio-de-Projeto.git
+cd Portifolio-de-Projeto
+```
+
+#### 2. Configurar Variáveis de Ambiente
+
+```bash
+# Criar arquivo .env na raiz
+cat > .env << EOF
+# PostgreSQL
+POSTGRES_USER=darkaccess_user
+POSTGRES_PASSWORD=senhasegura123
+POSTGRES_DB=darkaccess
+
+# Backend
+DB_HOST=db_darkaccess
+DB_USER=darkaccess_user
+DB_PASS=senhasegura123
+DB_NAME=darkaccess
+DB_PORT=5432
+
+API_HOST=0.0.0.0
+API_PORT=3001
+NODE_ENV=production
+
+# Deploy
+DOMAIN=34.132.60.57
+USE_TRAEFIK=true
+EOF
+```
+
+#### 3. Build e Iniciar Containers
+
+```bash
+# Build das imagens (primeira vez ou após mudanças)
+docker-compose build --no-cache
+
+# Subir todos os serviços
+docker-compose up -d
+
+# Verificar status
+docker-compose ps
+```
+
+**Saída Esperada:**
+```
+NAME                   STATUS              PORTS
+darkaccess-backend     Up 10 seconds       0.0.0.0:3001->3001/tcp
+darkaccess-frontend    Up 10 seconds       80/tcp
+db_darkaccess          Up 10 seconds       0.0.0.0:5432->5432/tcp
+traefik                Up 10 seconds       0.0.0.0:80->80/tcp
+```
+
+#### 4. Verificar Logs
+
+```bash
+# Logs de todos os containers
+docker-compose logs -f
+
+# Logs de um container específico
+docker logs darkaccess-backend -f
+docker logs traefik -f
+```
+
+### Atualização de Código
+
+#### Atualizar Backend/Frontend
+
+```bash
+# Na VM de produção
+cd /opt/Portifolio-de-Projeto
+docker compose -d --build
 ```
 
 ## Conclusão
