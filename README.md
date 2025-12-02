@@ -181,7 +181,302 @@ Para intensificar o aprendizado de forma prática e instigante, a Arpheus libero
    - Rede `challenge-net`: Labs isolados dos serviços principais
    - Firewall GCP: Apenas portas 80/443 expostas publicamente
 
+
+## Todos os Componentes do Sistema
+
+### 1. Traefik (Reverse Proxy)
+
+**Imagem:** `traefik:v3.0`
+
+**Função:**
+- Ponto de entrada único para todo tráfego HTTP (porta 80)
+- Roteamento inteligente baseado em labels dos containers
+- Gerenciamento de acesso aos labs dinâmicos
+
+**Portas:**
+- `80:80` - HTTP (ÚNICA porta exposta externamente)
+
+**Volumes:**
+```yaml
+- /var/run/docker.sock:/var/run/docker.sock  # Descoberta automática de containers
+- ./traefik/traefik.yml:/etc/traefik/traefik.yml  # Configuração estática
+- ./traefik/dynamic.yml:/etc/traefik/dynamic.yml  # Configuração dinâmica
+- ./traefik/acme.json:/acme.json  # Certificados SSL (futuro)
+```
+
+**Redes:**
+- `darkaccess-net` - Rede principal da aplicação
+- `challenge-net` - Rede isolada dos labs
+
+**Configuração (`traefik.yml`):**
+```yaml
+api:
+  dashboard: true  # Dashboard em localhost:8080
+
+entryPoints:
+  web:
+    address: ":80"
+
+providers:
+  docker:
+    exposedByDefault: false  # Apenas containers com traefik.enable=true
+  file:
+    filename: /etc/traefik/dynamic.yml
+    watch: true
+```
+
+**Middleware (`dynamic.yml`):**
+```yaml
+http:
+  middlewares:
+    strip-challenge:
+      stripPrefixRegex:
+        regex:
+          - "/challenge/[A-Za-z0-9-]+"  # Remove prefixo de labs
+```
+
+---
+
+### 2. Frontend (React SPA)
+
+**Build:** Multi-stage Dockerfile
+
+**Stage 1 - Build:**
+```dockerfile
+FROM node:18-alpine AS build
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --silent
+COPY . .
+RUN npm run build
+```
+
+**Stage 2 - Serve:**
+```dockerfile
+FROM nginx:stable-alpine
+COPY --from=build /app/build /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+```
+
+**Labels Traefik:**
+```yaml
+labels:
+  - "traefik.enable=true"
+  - "traefik.http.routers.frontend.rule=Host(`34.132.60.57`) || Host(`localhost`)"
+  - "traefik.http.routers.frontend.entrypoints=web"
+  - "traefik.http.services.frontend.loadbalancer.server.port=80"
+  - "traefik.http.routers.frontend.priority=1"
+```
+
+**Características:**
+- Single Page Application (SPA) React 19.1.1
+- Servido via Nginx (leve e eficiente)
+- Roteamento via React Router 7.9.3
+- Build otimizado (minificação, tree shaking)
+
+---
+
+### 3. Backend (Node.js + Express)
+
+**Imagem Base:** `node:18-slim`
+
+**Dockerfile:**
+```dockerfile
+FROM node:18-slim
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+EXPOSE 3001
+CMD ["npm", "start"]
+```
+
+**Portas:**
+- `3001:3001` - Exposição direta (SEM Traefik)
+
+**Volumes Críticos:**
+```yaml
+volumes:
+  - /var/run/docker.sock:/var/run/docker.sock  # API Docker para criar containers
+  - /usr/bin/docker:/usr/bin/docker            # Binário Docker CLI
+  - ./DarkAccess/Back-End:/app                 # Hot reload (dev)
+```
+
+**Variáveis de Ambiente:**
+```bash
+# Banco de Dados
+DB_HOST=db_darkaccess
+DB_USER=darkaccess_user
+DB_PASS=senhasegura123
+DB_NAME=darkaccess
+DB_PORT=5432
+
+# API
+API_HOST=0.0.0.0
+API_PORT=3001
+NODE_ENV=production
+
+# Deploy
+DOMAIN=34.132.60.57    # IP público da VM GCP
+USE_TRAEFIK=true       # Habilita modo Traefik para labs
+```
+
+**Capacidades Especiais:**
+- **Criação de Containers:** Acesso root ao Docker host via socket
+- **Gestão de Labs:** Cria/destrói containers sob demanda
+- **Métricas:** Exporta métricas Prometheus em `/metrics`
+
+**Dependências:**
+- `express@5.1.0` - Framework web
+- `pg@8.16.3` - Cliente PostgreSQL
+- `bcrypt@6.0.0` - Hash de senhas
+- `dockerode` - Cliente Docker API
+- `prom-client` - Métricas Prometheus
+
+---
+
+### 4. PostgreSQL (Banco de Dados)
+
+**Imagem Custom:** `costaluan/db_darkaccess`
+
+**Conteúdo da Imagem:**
+- PostgreSQL 14
+- Schema inicial (tabelas, índices)
+- Dados iniciais:
+  - Conquistas disponíveis
+  - Falas do narrador
+  - Dicas por etapa
+
+**Volume Persistente:**
+```yaml
+volumes:
+  - db_data:/var/lib/postgresql/data  # Dados sobrevivem a restarts
+```
+
+**Portas:**
+- `5432:5432` - Exposição interna na rede `darkaccess-net`
+
+**Variáveis:**
+```bash
+POSTGRES_USER=darkaccess_user
+POSTGRES_PASSWORD=senhasegura123
+POSTGRES_DB=darkaccess
+```
+
+**Tabelas Principais:**
+- `usuarios` - Dados de autenticação e progressão
+- `conquistas` - Badges desbloqueáveis
+- `conquistas_usuario` - Relacionamento N:N
+- `falas_narrador` - Narrativa do jogo
+- `dicas_narrador` - Dicas contextualizadas
+- `labs_ativos` - Registro de containers criados
+
+---
+
+### 5. Labs Dinâmicos (Containers Sob Demanda)
+
+**Diferencial:** Não estão no `docker-compose.yml` - são criados pelo backend via Docker API.
+
+#### Lab01 - XSS Challenge
+
+**Imagem:** `costaluan/lab01-atualizado:latest`
+
+**Aplicação:** Tech Horizon (blog de tecnologia vulnerável)
+
+**Vulnerabilidades:**
+- XSS Reflected e Stored
+- Arquivos sensíveis expostos (`/files/leaked-config.json`)
+- CORS permissivo
+
+**Porta Interna:** 5173 (Vite dev server)
+
+**Nomeação:** `user{usuario_id}-lab01-{timestamp}`
+
+#### Lab02 - OS Command Injection Database (OSDB)
+
+**Imagem:** `costaluan/lab02-osdb:latest`
+
+**Aplicação:** Sistema de busca de arquivos com vulnerabilidade
+
+**Vulnerabilidades:**
+- SQL Injection
+- Command Injection via input de busca
+- Senhas padrão em arquivos
+- Path traversal
+
+**Porta Interna:** 3000 (Node.js + Express)
+
+**Nomeação:** `user{usuario_id}-lab02-{timestamp}`
+
+#### Configuração de Container Dinâmico
+
+```javascript
+// Backend: routes/docker.js
+const container = await docker.createContainer({
+  Image: `costaluan/${lab_id}-atualizado:latest`,
+  name: containerName,
+  ExposedPorts: { [`${labConfig.porta}/tcp`]: {} },
+  HostConfig: {
+    PortBindings: { [`${labConfig.porta}/tcp`]: [{ HostPort: `${port}` }] },
+    NetworkMode: 'challenge-net',
+    AutoRemove: false,
+    RestartPolicy: { Name: 'no' }
+  },
+  Labels: {
+    'traefik.enable': 'true',
+    'managed-by': 'darkaccess-backend',
+    'user-id': usuario_id,
+    'lab-id': lab_id,
+    'created-at': new Date().toISOString()
+  }
+});
+```
+
+**Lifecycle:**
+1. **Criação:** POST `/api/docker/start-lab`
+2. **Registro:** Salvo em `activeContainers` (Map) + `labs_ativos` (DB)
+3. **Uso:** Usuário acessa via `http://34.132.60.57:{porta}`
+4. **Auto-destruição:** Após 30 minutos de inatividade
+5. **Remoção Manual:** POST `/api/docker/stop-lab`
+
+---
+
+## Redes Docker
+
+### darkaccess-net (Rede Principal)
+
+**Driver:** `bridge`
+
+**Containers:**
+- `traefik`
+- `darkaccess-frontend`
+- `darkaccess-backend`
+- `db_darkaccess`
+
+**Finalidade:** Comunicação entre componentes principais da aplicação.
+
+### challenge-net (Rede de Labs)
+
+**Driver:** `bridge`
+
+**Containers:**
+- `traefik` (conectado a ambas as redes)
+- Labs dinâmicos (`user*-lab*`)
+
+**Finalidade:** Isolamento dos labs vulneráveis.
+
+**Segurança:**
+- Labs não acessam `darkaccess-net`
+- Labs não acessam banco de dados diretamente
+- Labs não acessam backend diretamente
+
+---
+
+
 #### Camadas de Segurança
+
 
 - **Traefik**: SSL/TLS termination, firewall de aplicação
 - **Backend**: Bcrypt (10 rounds), prepared statements SQL
@@ -198,6 +493,11 @@ Para intensificar o aprendizado de forma prática e instigante, a Arpheus libero
 6. **Backend** cria/gerencia labs via **Docker Engine**
 7. **Labs** são acessados dinamicamente pelo usuário
 8. Toda infraestrutura roda na **GCP VM**
+
+---
+## Diagrama do Banco de Dados
+
+<img width="2763" height="1903" alt="Diagrama BD" src="https://github.com/user-attachments/assets/c94c170d-6133-40ed-9450-5a14893addc2" />
 
 ---
 
@@ -252,6 +552,9 @@ Ran all test suites.
 
 
 ## testes do Back
+---------------|---------|----------|---------|---------|--------------------------------------
+File           | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s                    
+---------------|---------|----------|---------|---------|--------------------------------------
 All files      |   76.12 |    75.17 |    67.5 |   76.48 |                                                                                                                 
  auth.js       |     100 |    88.88 |     100 |     100 | 51,171-172                                                                                                      
  conquistas.js |     100 |      100 |     100 |     100 |                                                                                                                 
@@ -260,3 +563,12 @@ All files      |   76.12 |    75.17 |    67.5 |   76.48 |
  labs.js       |     100 |      100 |     100 |     100 |                                                                                                                 
  narrador.js   |   97.82 |       84 |     100 |   97.82 | 134,263                                                                                                         
 ---------------|---------|----------|---------|---------|-----------------------------------------------------------------------------------------------------------------
+
+
+
+## Conclusão
+
+O **DarkAccess** é um sistema educacional completo que combina gamificação, narrativa interativa e ambientes práticos isolados para ensinar cibersegurança de forma envolvente. A arquitetura baseada em microserviços Docker, banco de dados relacional e frontend moderno garante escalabilidade, segurança e manutenibilidade.
+
+Os requisitos funcionais cobrem toda a jornada do usuário desde registro até conclusão dos labs, enquanto os requisitos não funcionais garantem performance, segurança e observabilidade adequadas para um ambiente de produção.
+
