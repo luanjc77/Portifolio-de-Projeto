@@ -1,4 +1,4 @@
-# DarkAccess - Plataforma de Estudos Gameficada
+<img width="1920" height="969" alt="image" src="https://github.com/user-attachments/assets/074350d7-f9d0-41ed-a4e2-688db490ce30" /># DarkAccess - Plataforma de Estudos Gameficada
 
 ![Status do Projeto](https://img.shields.io/badge/status-Em%20Produ%C3%A7%C3%A3o-green)
 ![Linguagem Principal](https://img.shields.io/badge/language-JavaScript-yellow)
@@ -113,6 +113,9 @@ Para intensificar o aprendizado de forma prática e instigante, a Arpheus libero
 - Traefik 3.0 (reverse proxy)
 - GCP e2-medium (Ubuntu 22.04)
 
+<img width="1920" height="969" alt="image" src="https://github.com/user-attachments/assets/6a0273b9-7245-421d-8cb7-752fab18caea" />
+
+---
 
 <img width="2842" height="1001" alt="diagrama de arquitetura" src="https://github.com/user-attachments/assets/0480b6a9-ce9e-4c9a-bba6-826084bdbf03" />
 
@@ -517,56 +520,13 @@ Principais métricas monitoradas:
 
 ## Teste Front-End
 
-File                             | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s                    
----------------------------------|---------|----------|---------|---------|--------------------------------------
-All files                        |   28.53 |    20.63 |   26.92 |   29.07 |                                      
- src                             |       0 |      100 |       0 |       0 |                                      
-  index.js                       |       0 |      100 |     100 |       0 | 6-7                                  
-  routes.js                      |       0 |      100 |       0 |       0 | 12                                   
- src/Pages/DarkAccess            |       0 |        0 |       0 |       0 |                                      
-  index.js                       |       0 |        0 |       0 |       0 | 6-103                                
- src/Pages/DeepWeb               |       0 |      100 |       0 |       0 |                                      
-  index.js                       |       0 |      100 |       0 |       0 | 5                                    
- src/Pages/Home                  |   26.04 |    16.66 |   31.25 |   26.96 |                                      
-  index.js                       |   26.04 |    16.66 |   31.25 |   26.96 | 37-57,66-73,80-83,87-131,167,188-247 
- src/Pages/Login                 |   33.33 |    33.33 |      25 |   33.33 |                                      
-  index.js                       |   33.33 |    33.33 |      25 |   33.33 | 15-42,55-63                          
- src/Pages/Register              |   39.13 |       50 |      20 |   39.13 |                                      
-  index.js                       |   39.13 |       50 |      20 |   39.13 | 16-36,49-65                          
- src/Pages/Start                 |       0 |        0 |       0 |       0 |                                      
-  index.js                       |       0 |        0 |       0 |       0 | 11-135                               
- src/Pages/User                  |       0 |        0 |       0 |       0 |                                      
-  index.js                       |       0 |        0 |       0 |       0 | 6-179                                
- src/Pages/Welcome               |       0 |      100 |       0 |       0 |                                      
-  index.js                       |       0 |      100 |       0 |       0 | 7-17                                 
- src/components/Narrator         |   82.95 |    73.52 |     100 |   84.81 |                                      
-  index.js                       |   82.95 |    73.52 |     100 |   84.81 | 33,43-47,97-98,125-128               
- src/components/NarratorControls |      50 |    81.25 |      50 |      50 |                                      
-  index.js                       |      50 |    81.25 |      50 |      50 | 24                                   
- src/components/User             |     100 |      100 |     100 |     100 |                                      
-  index.js                       |     100 |      100 |     100 |     100 |                                      
- src/utils                       |   20.68 |     7.14 |   33.33 |   22.22 |                                      
-  progressao.js                  |   20.68 |     7.14 |   33.33 |   22.22 | 19-65                                
-                                 |         |          |         |         |
-Test Suites: 4 failed, 2 passed, 6 total
-Tests:       21 failed, 12 passed, 33 total
-Snapshots:   0 total
-Time:        13.724 s
-Ran all test suites.
+![Uploading image.png…]()
+
 
 
 ## testes do Back
 
-File           | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s                    
----------------|---------|----------|---------|---------|--------------------------------------
-All files      |   76.12 |    75.17 |    67.5 |   76.48 |                                                                                                                 
- auth.js       |     100 |    88.88 |     100 |     100 | 51,171-172                                                                                                      
- conquistas.js |     100 |      100 |     100 |     100 |                                                                                                                 
- deepweb.js    |     100 |      100 |     100 |     100 |                                                                                                                 
- docker.js     |   51.38 |       52 |      48 |   51.97 | 47-71,83-98,120-127,154-156,161-162,167,175-196,240-246,265-269,280-285,298-304,311-313,322-353,396-414,474-494 
- labs.js       |     100 |      100 |     100 |     100 |                                                                                                                 
- narrador.js   |   97.82 |       84 |     100 |   97.82 | 134,263                                                                                                         
----------------|---------|----------|---------|---------|-----------------------------------------------------------------------------------------------------------------
+<img width="2232" height="490" alt="image" src="https://github.com/user-attachments/assets/31891633-d420-42ac-99be-c7d9fe267440" />
 
 
 
