@@ -95,6 +95,10 @@ describe('Auth Routes - Unit Tests', () => {
   });
 
   describe('POST /api/auth/login', () => {
+    beforeEach(() => {
+      bcrypt.compare.mockReset();
+    });
+
     it('deve fazer login com credenciais válidas', async () => {
       db.query.mockResolvedValueOnce({
         rows: [{
@@ -105,7 +109,7 @@ describe('Auth Routes - Unit Tests', () => {
         }]
       }).mockResolvedValueOnce({});
 
-      bcrypt.compare.mockResolvedValueOnce(true);
+      bcrypt.compare.mockResolvedValue(true);
 
       const response = await request(app)
         .post('/api/auth/login')
@@ -130,7 +134,7 @@ describe('Auth Routes - Unit Tests', () => {
         }]
       });
 
-      bcrypt.compare.mockImplementation(() => Promise.resolve(false));
+      bcrypt.compare.mockResolvedValue(false);
 
       const response = await request(app)
         .post('/api/auth/login')

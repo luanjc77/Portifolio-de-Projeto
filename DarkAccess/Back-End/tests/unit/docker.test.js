@@ -12,10 +12,12 @@ describe('Docker Routes - Unit Tests (75% backend coverage)', () => {
   let app;
 
   beforeEach(() => {
+    jest.clearAllMocks();
+    jest.resetModules();
+    
     app = express();
     app.use(express.json());
     app.use('/api/docker', dockerRouter);
-    jest.clearAllMocks();
     
     process.env.DOMAIN = 'localhost';
     process.env.USE_TRAEFIK = 'false';
@@ -109,11 +111,11 @@ describe('Docker Routes - Unit Tests (75% backend coverage)', () => {
       });
 
       const response = await request(app)
-        .get('/api/docker/labs-ativos/1');
+        .get('/api/docker/labs-ativos/100');
 
       expect(response.status).toBe(200);
       expect(response.body.success).toBe(true);
-      expect(response.body.labs).toBeDefined();
+      expect(response.body).toHaveProperty('labs');
       expect(Array.isArray(response.body.labs)).toBe(true);
     });
 
@@ -125,7 +127,7 @@ describe('Docker Routes - Unit Tests (75% backend coverage)', () => {
 
       expect(response.status).toBe(200);
       expect(response.body.success).toBe(true);
-      expect(response.body.labs).toBeDefined();
+      expect(response.body).toHaveProperty('labs');
       expect(response.body.labs).toEqual([]);
     });
   });
