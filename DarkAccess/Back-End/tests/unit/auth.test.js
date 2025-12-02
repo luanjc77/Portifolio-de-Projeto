@@ -110,7 +110,7 @@ describe('Auth Routes - Unit Tests', () => {
       const response = await request(app)
         .post('/api/auth/login')
         .send({
-          username: 'testuser',
+          identifier: 'testuser',
           password: 'correctpass'
         });
 
@@ -129,7 +129,7 @@ describe('Auth Routes - Unit Tests', () => {
       const response = await request(app)
         .post('/api/auth/login')
         .send({
-          username: 'testuser',
+          identifier: 'testuser',
           password: 'wrongpass'
         });
 
@@ -142,7 +142,7 @@ describe('Auth Routes - Unit Tests', () => {
       const response = await request(app)
         .post('/api/auth/login')
         .send({
-          username: 'ghost',
+          identifier: 'ghost',
           password: 'pass'
         });
 

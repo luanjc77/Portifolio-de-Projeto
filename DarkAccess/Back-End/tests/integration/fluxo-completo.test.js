@@ -63,7 +63,7 @@ describe('Fluxo Completo - Integration Tests', () => {
     const loginRes = await request(app)
       .post('/api/auth/login')
       .send({
-        username: 'integrationtest',
+        identifier: 'integrationtest',
         password: 'testpass123'
       });
 

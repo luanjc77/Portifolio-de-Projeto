@@ -244,13 +244,6 @@ describe('Docker Routes - Unit Tests (75% backend coverage)', () => {
         .get('/api/docker/labs-ativos/888');
 
       expect(response.status).toBe(500);
-    });'deve tratar erro de banco', async () => {
-      db.query.mockRejectedValueOnce(new Error('DB Error'));
-
-      const response = await request(app)
-        .get('/api/docker/labs-ativos/1');
-
-      expect(response.status).toBe(500);
     });
   });
 });
