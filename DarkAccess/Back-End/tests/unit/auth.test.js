@@ -122,7 +122,8 @@ describe('Auth Routes - Unit Tests', () => {
     it('deve rejeitar senha incorreta', async () => {
       db.query.mockResolvedValueOnce({
         rows: [{ 
-          id: 1, 
+          id: 1,
+          username: 'testuser',
           password_hash: 'hashedpass',
           primeiro_acesso: false,
           etapa_atual: 'lab01_intro'

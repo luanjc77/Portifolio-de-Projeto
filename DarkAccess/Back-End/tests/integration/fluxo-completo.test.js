@@ -89,9 +89,15 @@ describe('Fluxo Completo - Integration Tests', () => {
     });
 
     // Mock do UPDATE
+    db.query.mockResolvedValueOnce({});
+
+    // Mock da query de conquista primeiro_acesso
     db.query.mockResolvedValueOnce({
-      rows: [{ etapa_atual: 'lab01_intro' }]
+      rows: [{ id: 1 }]
     });
+
+    // Mock da inserção da conquista
+    db.query.mockResolvedValueOnce({});
 
     const etapaRes = await request(app)
       .put('/api/narrador/etapa')
