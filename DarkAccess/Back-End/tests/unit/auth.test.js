@@ -130,7 +130,7 @@ describe('Auth Routes - Unit Tests', () => {
         }]
       });
 
-      bcrypt.compare.mockResolvedValueOnce(false);
+      bcrypt.compare.mockImplementation(() => Promise.resolve(false));
 
       const response = await request(app)
         .post('/api/auth/login')

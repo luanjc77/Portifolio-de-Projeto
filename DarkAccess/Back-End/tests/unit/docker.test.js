@@ -113,6 +113,7 @@ describe('Docker Routes - Unit Tests (75% backend coverage)', () => {
 
       expect(response.status).toBe(200);
       expect(response.body.success).toBe(true);
+      expect(response.body.labs).toBeDefined();
       expect(Array.isArray(response.body.labs)).toBe(true);
     });
 
@@ -124,7 +125,8 @@ describe('Docker Routes - Unit Tests (75% backend coverage)', () => {
 
       expect(response.status).toBe(200);
       expect(response.body.success).toBe(true);
-      expect(Array.isArray(response.body.labs)).toBe(true);
+      expect(response.body.labs).toBeDefined();
+      expect(response.body.labs).toEqual([]);
     });
   });
 });
