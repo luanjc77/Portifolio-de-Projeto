@@ -59,13 +59,61 @@ Para intensificar o aprendizado de forma prática e instigante, a Arpheus libero
 
 ---
 
-## Caso de Uso
 
 ## <img width="2040" height="2120" alt="image" src="https://github.com/user-attachments/assets/f5214aeb-c95e-4967-9cc0-3492cbf8ef7a" />
 
 ---
 
 ## Arquitetura do Projeto
+
+## Requisitos Funcionais
+
+RF01 - Sistema de Autenticação e Autorização (registro, login, criptografia bcrypt)
+RF02 - Sistema de Progressão por Etapas (controle de progressão narrativa sequencial)
+RF03 - Sistema de Narrador Interativo (falas com efeito typewriter, skip, repetir)
+RF04 - Sistema de Desafios e Validação de Respostas (validação, conquistas, perda de vida)
+RF05 - Sistema de Dicas (dicas contextualizadas, contador de uso)
+RF06 - Sistema de Conquistas (desbloqueio automático, exibição no perfil)
+RF07 - Gestão Dinâmica de Laboratórios Docker (criar/destruir containers isolados)
+RF08 - Sistema de Ranking (ordenação por vida, conquistas, dicas)
+RF09 - Perfil de Usuário (estatísticas, conquistas, avatar)
+RF10 - Navegação entre Páginas (login, home, labs, perfil)
+
+## Requisitos Não Funcionais
+RNF01 - Performance (APIs < 500ms, containers < 10s, carregamento < 3s)
+RNF02 - Segurança (bcrypt, prepared statements, CORS, isolamento Docker)
+RNF03 - Escalabilidade (backend stateless, portas dinâmicas, SPA)
+RNF04 - Disponibilidade (GCP e2-medium, Docker Compose)
+RNF05 - Usabilidade (interface "terminal hacker", feedback visual, responsivo)
+RNF06 - Manutenibilidade (código modular, documentação)
+RNF07 - Portabilidade (Docker, funciona em Linux/Windows)
+RNF08 - Confiabilidade (transações atômicas, validações, tratamento de erros)
+RNF09 - Compatibilidade com navegadores modernos
+
+
+**Frontend:**
+- React 19.1.1
+- React Router DOM 7.9.3
+- Axios 1.13.2
+- React Icons 5.5.0
+- CSS Modules
+
+**Backend:**
+- Node.js 18
+- Express 5.1.0
+- bcrypt 6.0.0
+- pg 8.16.3 (PostgreSQL client)
+- dockerode (Docker API client)
+  
+**Banco de Dados:**
+- PostgreSQL 14
+
+**Infraestrutura:**
+- Docker 24+
+- Docker Compose
+- Traefik 3.0 (reverse proxy)
+- GCP e2-medium (Ubuntu 22.04)
+
 
 <img width="2842" height="1001" alt="diagrama de arquitetura" src="https://github.com/user-attachments/assets/0480b6a9-ce9e-4c9a-bba6-826084bdbf03" />
 
@@ -152,36 +200,13 @@ Para intensificar o aprendizado de forma prática e instigante, a Arpheus libero
 7. **Labs** são acessados dinamicamente pelo usuário
 8. Toda infraestrutura roda na **GCP VM**
 
-### **Requisitos Funcionais (RF)**
-
-| ID | Descrição |
-|----|-----------|
-| **RF01** | Sistema de autenticação com registro e login | 
-| **RF02** | Sistema de progressão por etapas (fases do jogo) | 
-| **RF03** | Narrador interativo guiando o jogador | 
-| **RF04** | Criação dinâmica de ambientes de laboratório isolados | 
-| **RF05** | Sistema de conquistas desbloqueáveis |
-| **RF06** | Validação de respostas dos desafios | 
-| **RF07** | Feedback instantâneo ao jogador | 
-| **RF08** | Perfil de usuário conquistas | 
-
-
-### **Requisitos Não-Funcionais (RNF)**
-
-| ID | Descrição | 
-|----|-----------|
-| **RNF01** | Hash seguro de senhas (bcrypt 10 rounds) | 
-| **RNF02** | Proteção contra SQL Injection (prepared statements) | 
-| **RNF03** | Isolamento de ambientes de laboratório | 
-| **RNF04** | Disponibilidade 99% (uptime) | 
-| **RNF05** | Cobertura de testes automatizados > 80% | 
-| **RNF06** | Deploy automatizado via CI/CD | 
-| **RNF07** | Logs estruturados e métricas Prometheus | 
-
 ---
 
-a descrição de cada RFC 
+## Observabilidade - Grafana
 
+<img width="1919" height="962" alt="image" src="https://github.com/user-attachments/assets/85a0c53e-03a6-4ea4-a453-a16420aa7f26" />
 
-os testes implementados e seus resultados.
-
+Principais métricas monitoradas:
+- HTTP Request total
+- Usuários Ativos
+- Processos CPU
