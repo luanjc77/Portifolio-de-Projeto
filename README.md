@@ -68,28 +68,27 @@ Para intensificar o aprendizado de forma prática e instigante, a Arpheus libero
 
 ## Requisitos Funcionais
 
-RF01 - Sistema de Autenticação e Autorização (registro, login, criptografia bcrypt)
-RF02 - Sistema de Progressão por Etapas (controle de progressão narrativa sequencial)
-RF03 - Sistema de Narrador Interativo (falas com efeito typewriter, skip, repetir)
-RF04 - Sistema de Desafios e Validação de Respostas (validação, conquistas, perda de vida)
-RF05 - Sistema de Dicas (dicas contextualizadas, contador de uso)
-RF06 - Sistema de Conquistas (desbloqueio automático, exibição no perfil)
-RF07 - Gestão Dinâmica de Laboratórios Docker (criar/destruir containers isolados)
-RF08 - Sistema de Ranking (ordenação por vida, conquistas, dicas)
-RF09 - Perfil de Usuário (estatísticas, conquistas, avatar)
-RF10 - Navegação entre Páginas (login, home, labs, perfil)
+- RF01 - Sistema de Autenticação e Autorização (registro, login, criptografia bcrypt)
+- RF02 - Sistema de Progressão por Etapas (controle de progressão narrativa sequencial)
+- RF03 - Sistema de Narrador Interativo (falas com efeito typewriter, skip, repetir)
+- RF04 - Sistema de Desafios e Validação de Respostas (validação, conquistas, perda de vida)
+- RF05 - Sistema de Dicas (dicas contextualizadas, contador de uso)
+- RF06 - Sistema de Conquistas (desbloqueio automático, exibição no perfil)
+- RF07 - Gestão Dinâmica de Laboratórios Docker (criar/destruir containers isolados)
+- RF08 - Sistema de Ranking (ordenação por vida, conquistas, dicas)
+- RF09 - Perfil de Usuário (estatísticas, conquistas, avatar)
+- RF10 - Navegação entre Páginas (login, home, labs, perfil)
 
 ## Requisitos Não Funcionais
-RNF01 - Performance (APIs < 500ms, containers < 10s, carregamento < 3s)
-RNF02 - Segurança (bcrypt, prepared statements, CORS, isolamento Docker)
-RNF03 - Escalabilidade (backend stateless, portas dinâmicas, SPA)
-RNF04 - Disponibilidade (GCP e2-medium, Docker Compose)
-RNF05 - Usabilidade (interface "terminal hacker", feedback visual, responsivo)
-RNF06 - Manutenibilidade (código modular, documentação)
-RNF07 - Portabilidade (Docker, funciona em Linux/Windows)
-RNF08 - Confiabilidade (transações atômicas, validações, tratamento de erros)
-RNF09 - Compatibilidade com navegadores modernos
-
+- RNF01 - Performance (APIs < 500ms, containers < 10s, carregamento < 3s)
+- RNF02 - Segurança (bcrypt, prepared statements, CORS, isolamento Docker)
+- RNF03 - Escalabilidade (backend stateless, portas dinâmicas, SPA)
+- RNF04 - Disponibilidade (GCP e2-medium, Docker Compose)
+- RNF05 - Usabilidade (interface "terminal hacker", feedback visual, responsivo)
+- RNF06 - Manutenibilidade (código modular, documentação)
+- RNF07 - Portabilidade (Docker, funciona em Linux/Windows)
+- RNF08 - Confiabilidade (transações atômicas, validações, tratamento de erros)
+- RNF09 - Compatibilidade com navegadores modernos
 
 **Frontend:**
 - React 19.1.1
