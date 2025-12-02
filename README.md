@@ -123,9 +123,6 @@ Para intensificar o aprendizado de forma prática e instigante, a Arpheus libero
 
 
 ## Diagrama de Arquitetura
-<img width="1920" height="969" alt="image" src="https://github.com/user-attachments/assets/6a0273b9-7245-421d-8cb7-752fab18caea" />
-
----
 
 <img width="2842" height="1001" alt="diagrama de arquitetura" src="https://github.com/user-attachments/assets/0480b6a9-ce9e-4c9a-bba6-826084bdbf03" />
 
