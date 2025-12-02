@@ -508,6 +508,23 @@ const container = await docker.createContainer({
 
 ---
 
+# Actions
+
+Existem duas Actions principais que executam a cada novo commit realizado na branch main:
+- Build: Para executar o SonarQube
+
+<img width="514" height="420" alt="image" src="https://github.com/user-attachments/assets/49a25612-24a8-4294-8bfe-a69df4d54e82" />
+
+
+- GCP-Deploy: Para executar uma atualização direta no respitório de produçao na VM
+
+<img width="553" height="487" alt="image" src="https://github.com/user-attachments/assets/589b2c0d-d93f-4e18-acc1-b451243aff32" />
+
+  
+<img width="2938" height="1642" alt="image" src="https://github.com/user-attachments/assets/d52d1c1d-ed87-4d89-9a25-447a7163a8e0" />
+
+---
+
 ## Observabilidade - Grafana
 
 <img width="1919" height="962" alt="image" src="https://github.com/user-attachments/assets/85a0c53e-03a6-4ea4-a453-a16420aa7f26" />
@@ -523,18 +540,387 @@ Principais métricas monitoradas:
 <img width="2938" height="1658" alt="image" src="https://github.com/user-attachments/assets/7b1fab91-801c-4ba8-8d1e-b385e68992b5" />
 
 ---
+## Teste Unitários
+
+O projeto DarkAccess implementa testes automatizados tanto no frontend quanto no backend para garantir a qualidade e confiabilidade do código. Os testes foram desenvolvidos utilizando **Jest** como framework principal, com bibliotecas complementares específicas para cada contexto.
 
 ## Teste Front-End
 
+### Tecnologias Utilizadas
+- **Jest**: Framework de testes
+- **@testing-library/react**: Testes de componentes React
+- **@testing-library/jest-dom**: Matchers customizados
+- **MemoryRouter**: Mock de react-router-dom
+
+### Cobertura Alcançada: 28.53%
+
 <img width="928" height="519" alt="image" src="https://github.com/user-attachments/assets/0fc16c56-e1bd-4851-878c-0e289db5eb43" />
 
+### Estrutura de Testes
+
+#### Testes de Componentes (`src/`)
+
+**1. Narrator.test.js (5 testes)**
+- Renderização do componente
+- Efeito de digitação
+- Busca de fala via API
+- Trigger de repetição
+- Tratamento de erros
+
+```javascript
+it('deve renderizar o componente Narrator', () => {
+  const { container } = render(<Narrator messages={[]} />);
+  expect(container.querySelector('.box')).toBeInTheDocument();
+});
+```
+
+**2. User.test.js (6 testes)**
+- Renderização do wrapper
+- Aplicação de estilo de vida
+- Renderização de avatar SVG
+- Handler de onClick
+- Valores diferentes de life
+
+**3. HomePage.test.js (10 testes)**
+- Renderização da página
+- Botões de labs
+- Início de desafios
+- Sistema de dicas
+- Atualização de input
+- Integração com Narrator e User
+
+**4. Login.test.js (7 testes)**
+- Renderização do formulário
+- Atualização de campos
+- Fluxo de login bem-sucedido
+- Tratamento de erros
+- Navegação para registro
+
+**5. Register.test.js (4 testes)**
+- Renderização do formulário
+- Atualização de campos
+- Fluxo de registro
+- Link para login
+
+**6. progressao.test.js (1 teste)**
+- Cálculo de progressão
+
+### Configuração do Jest (Frontend)
+
+**package.json:**
+```json
+{
+  "jest": {
+    "transformIgnorePatterns": [
+      "node_modules/(?!(react-router|react-router-dom)/)"
+    ]
+  }
+}
+```
+
+**jest.config.js:**
+```javascript
+module.exports = {
+  transformIgnorePatterns: [
+    'node_modules/(?!(react-router|react-router-dom|@remix-run)/)'
+  ],
+  moduleNameMapper: {
+    '\\.(css|less|scss|sass)$': 'identity-obj-proxy'
+  }
+};
+```
+
+### Setup Global (Frontend)
+
+**setupTests.js:**
+```javascript
+// Mocks globais
+global.fetch = jest.fn();
+Storage.prototype.getItem = jest.fn();
+Storage.prototype.setItem = jest.fn();
+window.matchMedia = jest.fn().mockImplementation(query => ({
+  matches: false,
+  media: query,
+  addListener: jest.fn(),
+  removeListener: jest.fn(),
+}));
+```
+
+### Mock Manual do React Router
+
+**src/__mocks__/react-router-dom.js:**
+```javascript
+const MemoryRouter = ({ children }) => <div>{children}</div>;
+const useNavigate = () => jest.fn();
+const Link = ({ children, to, ...props }) => <a href={to} {...props}>{children}</a>;
+
+module.exports = {
+  MemoryRouter,
+  BrowserRouter: MemoryRouter,
+  useNavigate,
+  Link,
+  NavLink,
+  useLocation,
+  useParams,
+};
+```
+
+### Estratégia de Mocking (Frontend)
+
+1. **API Fetch**: Mock global em setupTests.js
+```javascript
+global.fetch.mockResolvedValueOnce({
+  ok: true,
+  json: async () => mockData
+});
+```
+
+2. **LocalStorage**: Mock de Storage prototype
+```javascript
+Storage.prototype.setItem = jest.fn();
+Storage.prototype.getItem = jest.fn(() => 'mockValue');
+```
+
+3. **React Router**: Mock manual para evitar problemas com v7
+```javascript
+import { MemoryRouter } from 'react-router-dom';
+render(<MemoryRouter><Component /></MemoryRouter>);
+```
+
+4. **Componentes**: Mock de componentes filhos
+```javascript
+jest.mock('../components/Narrator', () => ({
+  __esModule: true,
+  default: () => <div>Narrator Mock</div>
+}));
+```
 
 
-## testes do Back
+### Como Executar os Testes
+
+```bash
+# Entrar no diretório do frontend
+cd DarkAccess/Front-End
+
+# Executar todos os testes
+npm test
+
+# Executar com cobertura
+npm test -- --coverage --watchAll=false
+
+# Executar teste específico
+npm test -- Narrator.test.js
+
+# Executar em modo interativo
+npm test
+```
+
+### Estrutura de Arquivos de Teste
+```
+Front-End/
+├── src/
+│   ├── components/
+│   │   ├── Narrator/
+│   │   │   ├── index.js
+│   │   │   └── Narrator.test.js
+│   │   └── User/
+│   │       ├── index.js
+│   │       └── User.test.js
+│   ├── Pages/
+│   │   ├── Home/
+│   │   │   ├── index.js
+│   │   │   └── HomePage.test.js
+│   │   ├── Login/
+│   │   │   ├── index.js
+│   │   │   └── Login.test.js
+│   │   └── Register/
+│   │       ├── index.js
+│   │       └── Register.test.js
+│   ├── utils/
+│   │   └── progressao.test.js
+│   ├── __mocks__/
+│   │   └── react-router-dom.js
+│   └── setupTests.js          # Setup global
+├── jest.config.js
+└── package.json
+```
+
+
+# Back-End
+
+### Tecnologias Utilizadas
+- **Jest**: Framework de testes
+- **Supertest**: Testes de endpoints HTTP
+- **Mocks**: Simulação de banco de dados e processos externos
+
+### Cobertura Alcançada: 76.12%
 
 <img width="2232" height="490" alt="image" src="https://github.com/user-attachments/assets/31891633-d420-42ac-99be-c7d9fe267440" />
 
+### Estrutura de Testes
 
+#### Testes Unitários (`tests/unit/`)
+
+**1. auth.test.js (18 testes)**
+- Registro de novos usuários
+- Login com email e username
+- Validação de credenciais
+- Busca de dados do usuário com conquistas
+- Sistema de ranking
+- Tratamento de erros (400, 401, 404, 500)
+
+```javascript
+describe('POST /api/auth/register', () => {
+  it('deve registrar um novo usuário com sucesso', async () => {
+    // Mock do banco de dados
+    db.query.mockResolvedValueOnce({ rows: [mockUser] });
+    
+    const response = await request(app)
+      .post('/api/auth/register')
+      .send({ username, email, password });
+    
+    expect(response.status).toBe(200);
+    expect(response.body.success).toBe(true);
+  });
+});
+```
+
+**2. narrador.test.js (22 testes)**
+- Busca de falas por etapa
+- Validação de tela permitida
+- Concatenação de múltiplas falas
+- Sistema de respostas corretas/incorretas
+- Penalização de vida por erros
+- Desbloqueio de conquistas
+- Sistema de dicas
+- Atualização de etapas
+
+**3. conquistas.test.js (4 testes)**
+- Listagem de conquistas do usuário
+- Tratamento de usuários sem conquistas
+- Validação de erros de banco
+
+**4. labs.test.js (10 testes)**
+- Inicialização de labs (XSS e SO)
+- Validação de challengeId
+- Uso de variáveis de ambiente
+- Parada de labs
+
+**5. deepweb.test.js (7 testes)**
+- Validação de credenciais (username, password, IP)
+- Liberação de acesso às profundezas
+- Tratamento de campos faltantes
+- Erros de autenticação
+
+**6. docker.test.js (17 testes)**
+- Validação de parâmetros
+- Reconhecimento de labs (lab01, lab02)
+- Verificação de containers existentes
+- Listagem de labs ativos
+- Parada de containers
+- Uso de variáveis de ambiente (DOMAIN, USE_TRAEFIK)
+
+#### Testes de Integração (`tests/integration/`)
+
+**fluxo-completo.test.js (10 testes, 5 ativos)**
+- Fluxo de registro e login
+- Fluxo de jogo completo (login → fala → etapa → conquistas)
+- Fluxo de labs e respostas
+- Sistema de ranking
+- Sistema de dicas
+- Desbloqueio de conquista de primeiro acesso
+
+### Configuração do Jest (Backend)
+
+**jest.config.js:**
+```javascript
+module.exports = {
+  testEnvironment: 'node',
+  coverageDirectory: 'coverage',
+  collectCoverageFrom: [
+    'routes/**/*.js',
+    '!routes/**/index.js',
+    '!**/node_modules/**',
+    '!**/tests/**'
+  ],
+  coverageThreshold: {
+    global: {
+      branches: 75,
+      functions: 67,
+      lines: 76,
+      statements: 76
+    }
+  }
+};
+```
+
+### Estratégia de Mocking (Backend)
+
+1. **Banco de Dados**: Mock completo do módulo `db.js`
+```javascript
+jest.mock('../../db');
+db.query.mockResolvedValueOnce({ rows: [...] });
+```
+
+2. **Child Process**: Mock de `spawn` para testes de Docker
+```javascript
+jest.mock('child_process');
+spawn.mockReturnValue(mockSpawn);
+```
+
+3. **Variáveis de Ambiente**: Configuração específica por teste
+```javascript
+process.env.VPN_USER = 'testuser';
+process.env.DOMAIN = 'localhost';
+```
+
+## Como Executar os Testes
+
+```bash
+# Entrar no diretório do backend
+cd DarkAccess/Back-End
+
+# Executar todos os testes
+npm test
+
+# Executar com cobertura
+npm run test:coverage
+
+# Executar apenas testes unitários
+npm run test:unit
+
+# Executar apenas testes de integração
+npm run test:integration
+
+# Executar em modo watch
+npm run test:watch
+```
+
+## Estrutura de Arquivos de Testes
+
+```
+Back-End/
+├── routes/                    # Código fonte
+│   ├── auth.js
+│   ├── narrador.js
+│   ├── conquistas.js
+│   ├── labs.js
+│   ├── deepweb.js
+│   └── docker.js
+├── tests/
+│   ├── unit/                  # Testes unitários
+│   │   ├── auth.test.js
+│   │   ├── narrador.test.js
+│   │   ├── conquistas.test.js
+│   │   ├── labs.test.js
+│   │   ├── deepweb.test.js
+│   │   └── docker.test.js
+│   └── integration/           # Testes de integração
+│       └── fluxo-completo.test.js
+├── jest.config.js             # Configuração do Jest
+├── jest.setup.js              # Setup global
+└── package.json
+```
 
 ## Conclusão
 
