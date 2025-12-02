@@ -89,7 +89,9 @@ describe('Fluxo Completo - Integration Tests', () => {
     });
 
     // Mock do UPDATE
-    db.query.mockResolvedValueOnce({});
+    db.query.mockResolvedValueOnce({
+      rows: [{ etapa_atual: 'lab01_intro' }]
+    });
 
     const etapaRes = await request(app)
       .put('/api/narrador/etapa')
@@ -157,7 +159,9 @@ describe('Fluxo Completo - Integration Tests', () => {
           conquista_codigo: null
         }]
       })
-      .mockResolvedValueOnce({}); // UPDATE vidas
+      .mockResolvedValueOnce({
+        rows: [{ vidas: 90 }]
+      }); // UPDATE vidas RETURNING
 
     const respostaRes = await request(app)
       .post('/api/narrador/resposta')

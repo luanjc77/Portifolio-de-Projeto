@@ -224,6 +224,13 @@ describe('Docker Routes - Unit Tests (75% backend coverage)', () => {
 
       const response = await request(app)
         .get('/api/docker/labs-ativos/1');
+
+      expect(response.status).toBe(200);
+      expect(response.body.success).toBe(true);
+      expect(response.body.labs).toHaveLength(1);
+      expect(response.body.labs[0].lab_id).toBe('lab01');
+    });
+
     it('deve retornar array vazio se não há labs ativos', async () => {
       // Limpar containers ativos da memória primeiro
       const dockerRouter = require('../../routes/docker');
