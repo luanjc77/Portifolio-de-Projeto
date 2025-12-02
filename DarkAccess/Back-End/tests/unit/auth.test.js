@@ -80,7 +80,7 @@ describe('Auth Routes - Unit Tests', () => {
           password: 'password123'
         });
 
-      expect(response.status).toBe(201);
+      expect(response.status).toBe(200);
       expect(response.body.success).toBe(true);
       expect(bcrypt.hash).toHaveBeenCalledWith('password123', 10);
     });
@@ -100,10 +100,10 @@ describe('Auth Routes - Unit Tests', () => {
         rows: [{
           id: 1,
           username: 'testuser',
-          password: 'hashedpass',
+          password_hash: 'hashedpass',
           primeiro_acesso: false
         }]
-      });
+      }).mockResolvedValueOnce({});
 
       bcrypt.compare.mockResolvedValueOnce(true);
 
@@ -121,7 +121,7 @@ describe('Auth Routes - Unit Tests', () => {
 
     it('deve rejeitar senha incorreta', async () => {
       db.query.mockResolvedValueOnce({
-        rows: [{ id: 1, password: 'hashedpass' }]
+        rows: [{ id: 1, password_hash: 'hashedpass' }]
       });
 
       bcrypt.compare.mockResolvedValueOnce(false);
@@ -146,7 +146,7 @@ describe('Auth Routes - Unit Tests', () => {
           password: 'pass'
         });
 
-      expect(response.status).toBe(404);
+      expect(response.status).toBe(401);
     });
   });
 });

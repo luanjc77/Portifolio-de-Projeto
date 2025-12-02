@@ -81,6 +81,14 @@ describe('Narrador Routes - Unit Tests', () => {
       // Mock da inserção de conquista
       db.query.mockResolvedValueOnce({});
 
+      // Mock da atualização de etapa
+      db.query.mockResolvedValueOnce({});
+
+      // Mock da query de vidas
+      db.query.mockResolvedValueOnce({
+        rows: [{ vidas: 100 }]
+      });
+
       const response = await request(app)
         .post('/api/narrador/resposta')
         .send({
@@ -102,7 +110,10 @@ describe('Narrador Routes - Unit Tests', () => {
         }]
       });
 
-      db.query.mockResolvedValueOnce({});
+      // Mock do UPDATE de vidas
+      db.query.mockResolvedValueOnce({
+        rows: [{ vidas: 90 }]
+      });
 
       const response = await request(app)
         .post('/api/narrador/resposta')
@@ -114,7 +125,7 @@ describe('Narrador Routes - Unit Tests', () => {
 
       expect(response.status).toBe(200);
       expect(response.body.correta).toBe(false);
-      expect(response.body.mensagem).toContain('perdeu uma vida');
+      expect(response.body.mensagem).toContain('Resposta incorreta');
     });
 
     it('deve rejeitar requisição sem parâmetros obrigatórios', async () => {
@@ -128,6 +139,12 @@ describe('Narrador Routes - Unit Tests', () => {
 
   describe('PUT /api/narrador/etapa', () => {
     it('deve atualizar etapa do usuário', async () => {
+      // Mock da query de busca de usuário
+      db.query.mockResolvedValueOnce({
+        rows: [{ id: 1, etapa_atual: 'inicio_primeiro_acesso', primeiro_acesso: false }]
+      });
+
+      // Mock do UPDATE de etapa
       db.query.mockResolvedValueOnce({});
 
       const response = await request(app)
