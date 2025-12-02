@@ -510,9 +510,13 @@ Principais métricas monitoradas:
 - Usuários Ativos
 - Processos CPU
 
+## Qualidade de Software - SonarQube
+
+<img width="2938" height="1658" alt="image" src="https://github.com/user-attachments/assets/7b1fab91-801c-4ba8-8d1e-b385e68992b5" />
+
 
 ## Teste Front-End
----------------------------------|---------|----------|---------|---------|--------------------------------------
+
 File                             | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s                    
 ---------------------------------|---------|----------|---------|---------|--------------------------------------
 All files                        |   28.53 |    20.63 |   26.92 |   29.07 |                                      
@@ -543,7 +547,7 @@ All files                        |   28.53 |    20.63 |   26.92 |   29.07 |
   index.js                       |     100 |      100 |     100 |     100 |                                      
  src/utils                       |   20.68 |     7.14 |   33.33 |   22.22 |                                      
   progressao.js                  |   20.68 |     7.14 |   33.33 |   22.22 | 19-65                                
----------------------------------|---------|----------|---------|---------|--------------------------------------
+                                 |         |          |         |         |
 Test Suites: 4 failed, 2 passed, 6 total
 Tests:       21 failed, 12 passed, 33 total
 Snapshots:   0 total
@@ -552,7 +556,7 @@ Ran all test suites.
 
 
 ## testes do Back
----------------|---------|----------|---------|---------|--------------------------------------
+
 File           | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s                    
 ---------------|---------|----------|---------|---------|--------------------------------------
 All files      |   76.12 |    75.17 |    67.5 |   76.48 |                                                                                                                 
