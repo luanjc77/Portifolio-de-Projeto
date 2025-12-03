@@ -18,3 +18,6 @@ Jéssica - Formada em Redes e já atuou com segurança da informação
 
 <img width="2268" height="676" alt="image" src="https://github.com/user-attachments/assets/330faa7c-c2ff-447e-add6-491881cb9f7d" />
 
+
+LinieChan772
+<img width="1862" height="436" alt="image" src="https://github.com/user-attachments/assets/27ff79da-5821-4100-acce-61e4dee9db97" />
